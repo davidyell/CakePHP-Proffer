@@ -92,8 +92,18 @@ class ProfferBehavior extends Behavior {
 		$imagine = new Imagine();
 		$image = $imagine->open($path['full']);
 		foreach ($this->config($field)['thumbnailSizes'] as $prefix => $thumbSize) {
-			$image->resize(new Box($thumbSize[0], $thumbSize[1]))
-				->save($path['parts']['root'] . DS . $path['parts']['table'] . DS . $path['parts']['seed'] . DS . $prefix . '_' . $path['parts']['name']);
+			$filePath = $path['parts']['root'] . DS . $path['parts']['table'] . DS . $path['parts']['seed'] . DS . $prefix . '_' . $path['parts']['name'];
+
+			// Both sizes, box resize
+			if (isset($thumbSize['w']) && isset($thumbSize['h'])) {
+				$image->resize(new Box($thumbSize['w'], $thumbSize['h']));
+			} elseif (isset($thumbSize['w']) && !isset($thumbSize['h'])) {
+				$image->resize($image->getSize()->widen($thumbSize['w']));
+			} elseif (!isset($thumbSize['w']) && isset($thumbSize['h'])) {
+				$image->resize($image->getSize()->heighten($thumbSize['h']));
+			}
+
+			$image->save($filePath);
 		}
 	}
 }
