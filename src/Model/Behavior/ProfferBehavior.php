@@ -2,12 +2,15 @@
 namespace Proffer\Model\Behavior;
 
 use ArrayObject;
+use Cake\Core\Plugin;
 use Cake\Event\Event;
 use Cake\Network\Exception\BadRequestException;
 use Cake\ORM\Behavior;
 use Cake\ORM\Entity;
 use Cake\ORM\Table;
 use Cake\Utility\String;
+use Imagine\Image\Box;
+use Imagine\Imagick\Imagine;
 
 /**
  * Proffer behavior
@@ -20,20 +23,6 @@ class ProfferBehavior extends Behavior {
  * @var array
  */
 	protected $_defaultConfig = [];
-
-	/**
-	$path = WWW_ROOT . 'files' . DS;
-	$file = $this->request->data['photo'];
-	if ($file['error'] == UPLOAD_ERR_OK) {
-		if (is_uploaded_file($file['tmp_name'])) {
-			$tmp = $file['tmp_name'];
-			$name = $file['name'];
-			move_uploaded_file($tmp, $path . $name);
-
-			$player->set('photo', $name);
-		}
-	}
-	 */
 
 /**
  * beforeSave method
@@ -59,6 +48,8 @@ class ProfferBehavior extends Behavior {
 				if (move_uploaded_file($entity->get($field)['tmp_name'], $path['full'])) {
 					$entity->set($field, $entity->get($field)['name']);
 					$entity->set($settings['dir'], $path['parts']['seed']);
+
+					$this->makeThumbs($field, $path);
 				}
 			}
 		}
@@ -90,4 +81,19 @@ class ProfferBehavior extends Behavior {
 		return ['full' => $fullPath, 'parts' => $path];
 	}
 
+/**
+ * Generate the defined thumbnails
+ *
+ * @param $field The name of the upload field
+ * @param $path The path array
+ * @return void
+ */
+	protected function makeThumbs($field, $path) {
+		$imagine = new Imagine();
+		$image = $imagine->open($path['full']);
+		foreach ($this->config($field)['thumbnailSizes'] as $prefix => $thumbSize) {
+			$image->resize(new Box($thumbSize[0], $thumbSize[1]))
+				->save($path['parts']['root'] . DS . $path['parts']['table'] . DS . $path['parts']['seed'] . DS . $prefix . '_' . $path['parts']['name']);
+		}
+	}
 }

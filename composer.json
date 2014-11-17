@@ -1,28 +1,30 @@
 {
     "name": "davidyell/proffer",
     "description": "An upload plugin for CakePHP 3",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "David Yell",
-            "email": "neon1024@gmail.com"
-        }
-    ],
 	"type": "cakephp-plugin",
+  	"keywords": ["cakephp", "cakephp3", "upload", "file", "image"],
+  	"homepage": "https://github.com/davidyell/CakePHP3-Proffer",
+  	"license": "MIT",
+  	"authors": [
+	  {
+		"name": "David Yell",
+		"email": "neon1024@gmail.com"
+	  }
+	],
+	"support": {
+	  "irc": "irc://irc.freenode.org/cakephp",
+	  "issues": "https://github.com/davidyell/CakePHP3-Proffer/issues",
+	  "source": "https://github.com/davidyell/CakePHP3-Proffer"
+	},
+	"require": {
+	  "imagine/imagine": "0.6.2"
+	},
+	"autoload": {
+	  "psr-4": {
+		"Proffer\\": "src"
+	  }
+	},
 	"extra": {
 		"installer-name": "Proffer"	
-	},
-	"homepage": "https://github.com/davidyell/CakePHP3-Proffer",
-	"support": {
-		"irc": "irc://irc.freenode.org/cakephp",
-		"issues": "https://github.com/davidyell/CakePHP3-Proffer/issues",
-		"source": "https://github.com/davidyell/CakePHP3-Proffer"
-	},
-	"keywords": ["cakephp", "cakephp3", "upload", "file", "image"],
-    "require": {},
-	"autoload": {
-		"psr-4": {
-			"Proffer\\": "src"
-		}
 	}
 }
