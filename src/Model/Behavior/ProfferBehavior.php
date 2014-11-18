@@ -68,13 +68,17 @@ class ProfferBehavior extends Behavior {
 	protected function buildPath(Table $table, Entity $entity, $field) {
 		$path['root'] = WWW_ROOT . 'files';
 		$path['table'] = strtolower($table->alias());
-		$path['seed'] = String::uuid();
+
+		if (!empty($entity->get($this->config($field)['dir']))) {
+			$path['seed'] = $entity->get($this->config($field)['dir']);
+		} else {
+			$path['seed'] = String::uuid();
+		}
+
 		$path['name'] = $entity->get($field)['name'];
 
 		$fullPath = implode(DS, $path);
-		if (file_exists($fullPath)) {
-			$this->buildPath($table, $entity, $field);
-		} else {
+		if (!file_exists($fullPath)) {
 			mkdir($path['root'] . DS . $path['table'] . DS . $path['seed'] . DS, 0777, true);
 		}
 
