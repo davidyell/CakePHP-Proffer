@@ -23,8 +23,13 @@ You will need to add the behaviour to your Table class.
 ```php
 <?php
 $this->addBehavior('Proffer.Proffer', [
-	'photo' => [ // Configure the settings for this field
-		'dir' => 'photo_dir'
+	'photo' => [	// The name of your upload field
+		'dir' => 'photo_dir',	// The name of the field to store the folder
+		'thumbnailSizes' => [
+			'square' => ['w' => 200, 'h' => 200],	// Define the sizes of your thumbnails
+			'portrait' => ['w' => 100, 'h' => 300, 'crop' => true],		// Crop will crop the image as well as resize it
+		],
+		'thumbnailMethod' => 'imagick'	// Options are Imagick, Gd or Gmagick
 	]
 ]);
 ```
