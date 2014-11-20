@@ -15,14 +15,10 @@ use Cake\ORM\Behavior;
 use Cake\ORM\Entity;
 use Cake\ORM\Table;
 use Cake\Utility\String;
-use Imagine\Image\ImageInterface;
-use Imagine\Image\ImagineInterface;
+use Proffer\Event\ImageTransform;
 use Imagine\Imagick\Imagine as Imagick;
 use Imagine\Gd\Imagine as Gd;
 use Imagine\Gmagick\Imagine as Gmagick;
-use Imagine\Image\Point;
-use Imagine\Image\Box;
-use Imagine\Filter\Transformation;
 
 /**
  * Proffer behavior
@@ -44,11 +40,14 @@ class ProfferBehavior extends Behavior {
 	private $Imagine;
 
 /**
- * Constructor hook
+ * Initialize the behavior
  *
  * @param array $config
+ * @return void
  */
 	public function initialize(array $config) {
+		$imageTransform = new ImageTransform();
+		$this->_table->eventManager()->attach($imageTransform);
 	}
 
 /**
@@ -116,20 +115,24 @@ class ProfferBehavior extends Behavior {
  */
 	protected function makeThumbs($field, $path) {
 		$image = $this->Imagine->open($path['full']);
+
 		foreach ($this->config($field)['thumbnailSizes'] as $prefix => $thumbSize) {
 			$filePath = $path['parts']['root'] . DS . $path['parts']['table'] . DS . $path['parts']['seed'] . DS . $prefix . '_' . $path['parts']['name'];
 
-			$event = new Event('Proffer.beforeThumbs', $this->_table, [$image]);
+			$event = new Event('Proffer.beforeThumbs', $this->_table, ['image' => $image, 'dimensions' => $thumbSize]);
 			$this->_table->eventManager()->dispatch($event);
 
-			if (isset($thumbSize['crop']) && $thumbSize['crop'] === false) {
-				$image = $this->thumbnailCropScale($image, $thumbSize['w'], $thumbSize['h']);
-			} else {
-				$image = $this->thumbnailScale($image, $thumbSize['w'], $thumbSize['h']);
+			// Event listener handles generation
+			if (!empty($event->result)) {
+				$image = $event->result;
 			}
 
-			$event = new Event('Proffer.afterThumbs', $this->_table, [$image]);
+			$event = new Event('Proffer.afterThumbs', $this->_table, ['image' => $image, 'dimensions' => $thumbSize]);
 			$this->_table->eventManager()->dispatch($event);
+
+			if (!empty($event->result)) {
+				$image = $event->result;
+			}
 
 			$image->save($filePath);
 		}
@@ -164,43 +167,4 @@ class ProfferBehavior extends Behavior {
 		return ['full' => $fullPath, 'parts' => $path];
 	}
 
-/**
- * Scale an image to best fit a thumbnail size
- *
- * @param \Imagine\Image\ImageInterface $image
- * @param int $width The width in pixels
- * @param int $height The height in pixels
- * @return \Imagine\Image\ImageInterface
- */
-	protected function thumbnailScale($image, $width, $height) {
-		$transformation = new Transformation();
-		$transformation->thumbnail(new Box($width, $height));
-		return $transformation->apply($image);
-	}
-
-/**
- * Create a thumbnail by scaling an image and cropping it to fit the exact dimensions
- *
- * @param \Imagine\Image\ImageInterface $image
- * @param int $targetWidth The width in pixels
- * @param int $targetHeight The height in pixels
- * @return \Imagine\Image\ImageInterface
- */
-	protected function thumbnailCropScale($image, $targetWidth, $targetHeight) {
-		$target = new Box($targetWidth, $targetHeight);
-		$sourceSize = $image->getSize();
-
-		if ($sourceSize->getWidth() > $sourceSize->getHeight()) {
-			$width = $sourceSize->getWidth() * ($target->getHeight() / $sourceSize->getHeight());
-			$cropPoint = new Point((int)(max($width - $target->getWidth(), 0) / 2), 0);
-		} else {
-			$height = $sourceSize->getHeight() * ($target->getWidth() / $sourceSize->getWidth());
-			$cropPoint = new Point(0, (int)(max($height - $target->getHeight(), 0) / 2));
-		}
-
-		$box = new Box($targetWidth, $targetHeight);
-
-		return $image->thumbnail($box, ImageInterface::THUMBNAIL_OUTBOUND)
-			->crop($cropPoint, $target);
-	}
 }
