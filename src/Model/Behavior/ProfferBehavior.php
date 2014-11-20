@@ -116,20 +116,18 @@ class ProfferBehavior extends Behavior {
 	protected function makeThumbs($field, $path) {
 		$image = $this->Imagine->open($path['full']);
 
-		foreach ($this->config($field)['thumbnailSizes'] as $prefix => $thumbSize) {
+		foreach ($this->config($field)['thumbnailSizes'] as $prefix => $dimensions) {
 			$filePath = $path['parts']['root'] . DS . $path['parts']['table'] . DS . $path['parts']['seed'] . DS . $prefix . '_' . $path['parts']['name'];
 
-			$event = new Event('Proffer.beforeThumbs', $this->_table, ['image' => $image, 'dimensions' => $thumbSize]);
-			$this->_table->eventManager()->dispatch($event);
-
 			// Event listener handles generation
+			$event = new Event('Proffer.beforeThumbs', $this->_table, ['image' => $image, 'dimensions' => $dimensions]);
+			$this->_table->eventManager()->dispatch($event);
 			if (!empty($event->result)) {
 				$image = $event->result;
 			}
 
-			$event = new Event('Proffer.afterThumbs', $this->_table, ['image' => $image, 'dimensions' => $thumbSize]);
+			$event = new Event('Proffer.afterThumbs', $this->_table, ['image' => $image, 'dimensions' => $dimensions]);
 			$this->_table->eventManager()->dispatch($event);
-
 			if (!empty($event->result)) {
 				$image = $event->result;
 			}
