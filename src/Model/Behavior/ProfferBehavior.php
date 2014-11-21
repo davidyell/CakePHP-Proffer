@@ -131,6 +131,11 @@ class ProfferBehavior extends Behavior {
  * @return void
  */
 	protected function makeThumbs($field, $path) {
+		// Don't generate thumbnails for non-images
+		if (getimagesize($path['full']) === false) {
+			return;
+		}
+
 		$image = $this->Imagine->open($path['full']);
 
 		foreach ($this->config($field)['thumbnailSizes'] as $prefix => $dimensions) {
