@@ -114,8 +114,11 @@ class ProfferBehavior extends Behavior {
 					$entity->set($field, $entity->get($field)['name']);
 					$entity->set($settings['dir'], $path['parts']['seed']);
 
-					$this->setImagine($this->config($field)['thumbnailMethod']);
-					$this->makeThumbs($field, $path);
+					// Don't generate thumbnails for non-images
+					if (getimagesize($path['full']) !== false) {
+						$this->setImagine($this->config($field)['thumbnailMethod']);
+						$this->makeThumbs($field, $path);
+					}
 				}
 			}
 		}
@@ -131,11 +134,6 @@ class ProfferBehavior extends Behavior {
  * @return void
  */
 	protected function makeThumbs($field, $path) {
-		// Don't generate thumbnails for non-images
-		if (getimagesize($path['full']) === false) {
-			return;
-		}
-
 		$image = $this->Imagine->open($path['full']);
 
 		foreach ($this->config($field)['thumbnailSizes'] as $prefix => $dimensions) {
