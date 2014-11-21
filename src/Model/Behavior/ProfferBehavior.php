@@ -76,6 +76,23 @@ class ProfferBehavior extends Behavior {
 	}
 
 /**
+ * beforeValidate method
+ *
+ * @param Event $event
+ * @param Entity $entity
+ * @param ArrayObject $options
+ */
+	public function beforeValidate(Event $event, Entity $entity, ArrayObject $options) {
+		foreach ($this->config() as $field => $settings) {
+
+			if ($this->_table->validator()->isEmptyAllowed($field, false) && $entity->get($field)['error'] === UPLOAD_ERR_NO_FILE) {
+				$entity->__unset($field);
+			}
+
+		}
+	}
+
+/**
  * beforeSave method
  *
  * @param Event $event
