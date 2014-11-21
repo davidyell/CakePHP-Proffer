@@ -9,12 +9,22 @@ namespace Proffer\Event;
 
 use Cake\Event\Event;
 use Cake\Event\EventListenerInterface;
+use Imagine\Imagick\Imagine as Imagick;
+use Imagine\Gd\Imagine as Gd;
+use Imagine\Gmagick\Imagine as Gmagick;
 use Imagine\Image\ImageInterface;
 use Imagine\Image\Point;
 use Imagine\Image\Box;
 use Imagine\Filter\Transformation;
 
 class ImageTransform implements EventListenerInterface {
+
+/**
+ * Store our instance of Imagine
+ *
+ * @var ImagineInterface $Imagine
+ */
+	private $Imagine;
 
 /**
  * Returns a list of events this object is implementing. When the class is registered
@@ -25,24 +35,71 @@ class ImageTransform implements EventListenerInterface {
  */
 	public function implementedEvents() {
 		return [
-			'Proffer.beforeThumbs' => 'makeThumbnails'
+			'Proffer.beforeThumbs' => 'makeThumbnails',
+			'Proffer.afterThumbs' => 'saveThumbs'
 		];
+	}
+
+/**
+ * Get the specified Imagine engine class
+ *
+ * @return ImagineInterface
+ */
+	protected function getImagine() {
+		return $this->Imagine;
+	}
+
+/**
+ * Set the Imagine engine class
+ *
+ * @param string $engine
+ * @return void
+ */
+	protected function setImagine($engine = 'imagick') {
+		if ($engine === 'gd') {
+			$this->Imagine = new Gd();
+		} elseif ($engine === 'gmagick') {
+			$this->Imagine = new Gmagick();
+		}
+
+		$this->Imagine = new Imagick();
 	}
 
 /**
  * Generate thumbnails
  *
  * @param Event $event
- * @param ImageInterface $image
+ * @param array $path
+ * @param string $thumbnailMethod
  * @param array $dimensions
  * @return ImageInterface
  */
-	public function makeThumbnails(Event $event, ImageInterface $image, array $dimensions) {
+	public function makeThumbnails(Event $event, array $path, $thumbnailMethod, array $dimensions) {
+		$this->setImagine($thumbnailMethod);
+
+		$image = $this->Imagine->open($path['full']);
+
 		if (isset($thumbSize['crop']) && $thumbSize['crop'] === false) {
 			$image = $this->thumbnailCropScale($image, $dimensions['w'], $dimensions['h']);
 		} else {
 			$image = $this->thumbnailScale($image, $dimensions['w'], $dimensions['h']);
 		}
+
+		return $image;
+	}
+
+/**
+ * Save thumbnail to the file system
+ *
+ * @param Event $event
+ * @param ImageInterface $image
+ * @param array $path The path array
+ * @param string $prefix The thumbnail size prefix
+ * @return ImageInterface
+ */
+	public function saveThumbs(Event $event, ImageInterface $image, $path, $prefix) {
+		$filePath = $path['parts']['root'] . DS . $path['parts']['table'] . DS . $path['parts']['seed'] . DS . $prefix . '_' . $path['parts']['name'];
+		$image->save($filePath);
 
 		return $image;
 	}

@@ -16,9 +16,6 @@ use Cake\ORM\Entity;
 use Cake\ORM\Table;
 use Cake\Utility\String;
 use Proffer\Event\ImageTransform;
-use Imagine\Imagick\Imagine as Imagick;
-use Imagine\Gd\Imagine as Gd;
-use Imagine\Gmagick\Imagine as Gmagick;
 
 /**
  * Proffer behavior
@@ -33,13 +30,6 @@ class ProfferBehavior extends Behavior {
 	protected $_defaultConfig = [];
 
 /**
- * Store our instance of Imagine
- *
- * @var ImagineInterface $Imagine
- */
-	private $Imagine;
-
-/**
  * Initialize the behavior
  *
  * @param array $config
@@ -51,31 +41,6 @@ class ProfferBehavior extends Behavior {
 	}
 
 /**
- * Get the specified Imagine engine class
- *
- * @return ImagineInterface
- */
-	protected function getImagine() {
-		return $this->Imagine;
-	}
-
-/**
- * Set the Imagine engine class
- *
- * @param string $engine
- * @return void
- */
-	protected function setImagine($engine = 'imagick') {
-		if ($engine === 'gd') {
-			$this->Imagine = new Gd();
-		} elseif ($engine === 'gmagick') {
-			$this->Imagine = new Gmagick();
-		}
-
-		$this->Imagine = new Imagick();
-	}
-
-/**
  * beforeValidate method
  *
  * @param Event $event
@@ -84,11 +49,9 @@ class ProfferBehavior extends Behavior {
  */
 	public function beforeValidate(Event $event, Entity $entity, ArrayObject $options) {
 		foreach ($this->config() as $field => $settings) {
-
 			if ($this->_table->validator()->isEmptyAllowed($field, false) && $entity->get($field)['error'] === UPLOAD_ERR_NO_FILE) {
 				$entity->__unset($field);
 			}
-
 		}
 	}
 
@@ -116,7 +79,6 @@ class ProfferBehavior extends Behavior {
 
 					// Don't generate thumbnails for non-images
 					if (getimagesize($path['full']) !== false) {
-						$this->setImagine($this->config($field)['thumbnailMethod']);
 						$this->makeThumbs($field, $path);
 					}
 				}
@@ -134,25 +96,30 @@ class ProfferBehavior extends Behavior {
  * @return void
  */
 	protected function makeThumbs($field, $path) {
-		$image = $this->Imagine->open($path['full']);
-
 		foreach ($this->config($field)['thumbnailSizes'] as $prefix => $dimensions) {
-			$filePath = $path['parts']['root'] . DS . $path['parts']['table'] . DS . $path['parts']['seed'] . DS . $prefix . '_' . $path['parts']['name'];
 
 			// Event listener handles generation
-			$event = new Event('Proffer.beforeThumbs', $this->_table, ['image' => $image, 'dimensions' => $dimensions]);
+			$event = new Event('Proffer.beforeThumbs', $this->_table, [
+				'path' => $path,
+				'thumbnailMethod' => $this->config($field)['thumbnailMethod'],
+				'dimensions' => $dimensions
+			]);
+
 			$this->_table->eventManager()->dispatch($event);
 			if (!empty($event->result)) {
 				$image = $event->result;
 			}
 
-			$event = new Event('Proffer.afterThumbs', $this->_table, ['image' => $image, 'dimensions' => $dimensions]);
+			$event = new Event('Proffer.afterThumbs', $this->_table, [
+				'image' => $image,
+				'path' => $path,
+				'prefix' => $prefix
+			]);
+
 			$this->_table->eventManager()->dispatch($event);
 			if (!empty($event->result)) {
 				$image = $event->result;
 			}
-
-			$image->save($filePath);
 		}
 	}
 
