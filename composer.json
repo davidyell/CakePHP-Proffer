@@ -19,6 +19,9 @@
 	"require": {
 	  "imagine/imagine": "0.6.2"
 	},
+  	"require-dev": {
+	  "phpunit/phpunit": "*"
+	},
 	"autoload": {
 	  "psr-4": {
 		"Proffer\\": "src"
