@@ -15,6 +15,7 @@ use Cake\ORM\Behavior;
 use Cake\ORM\Entity;
 use Cake\ORM\Table;
 use Cake\Utility\String;
+use Exception;
 use Proffer\Event\ImageTransform;
 
 /**
@@ -67,13 +68,13 @@ class ProfferBehavior extends Behavior {
 		foreach ($this->config() as $field => $settings) {
 			if ($entity->has($field) && is_array($entity->get($field)) && $entity->get($field)['error'] === UPLOAD_ERR_OK) {
 
-				if (!is_uploaded_file($entity->get($field)['tmp_name'])) {
+				if (!$this->isUploadedFile($entity->get($field)['tmp_name'])) {
 					throw new BadRequestException('File must be uploaded using HTTP post.');
 				}
 
 				$path = $this->buildPath($this->_table, $entity, $field);
 
-				if (move_uploaded_file($entity->get($field)['tmp_name'], $path['full'])) {
+				if ($this->moveUploadedFile($entity->get($field)['tmp_name'], $path['full'])) {
 					$entity->set($field, $entity->get($field)['name']);
 					$entity->set($settings['dir'], $path['parts']['seed']);
 
@@ -81,6 +82,8 @@ class ProfferBehavior extends Behavior {
 					if (getimagesize($path['full']) !== false) {
 						$this->makeThumbs($field, $path);
 					}
+				} else {
+					throw new Exception('Cannot move file');
 				}
 			}
 		}
@@ -152,4 +155,23 @@ class ProfferBehavior extends Behavior {
 		return ['full' => $fullPath, 'parts' => $path];
 	}
 
+/**
+ * Wrapper method for is_uploaded_file so that we can test
+ *
+ * @param string $file
+ * @return bool
+ */
+	protected function isUploadedFile($file) {
+		return is_uploaded_file($file);
+	}
+
+/**
+ * Wrapper method for move_uploaded_file so that we can test
+ *
+ * @param string $file
+ * @param string $destination
+ */
+	protected function moveUploadedFile($file, $destination) {
+		return move_uploaded_file($file, $destination);
+	}
 }
