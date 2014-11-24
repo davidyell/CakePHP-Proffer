@@ -56,13 +56,18 @@ class ImageTransform implements EventListenerInterface {
  * @return void
  */
 	protected function setImagine($engine = 'imagick') {
-		if ($engine === 'gd') {
-			$this->Imagine = new Gd();
-		} elseif ($engine === 'gmagick') {
-			$this->Imagine = new Gmagick();
+		switch ($engine) {
+			case 'gd':
+				$this->Imagine = new Gd();
+				break;
+			case 'gmagick':
+				$this->Imagine = new Gmagick();
+				break;
+			default:
+			case 'imagick':
+				$this->Imagine = new Imagick();
+				break;
 		}
-
-		$this->Imagine = new Imagick();
 	}
 
 /**
@@ -77,7 +82,7 @@ class ImageTransform implements EventListenerInterface {
 	public function makeThumbnails(Event $event, array $path, $thumbnailMethod, array $dimensions) {
 		$this->setImagine($thumbnailMethod);
 
-		$image = $this->Imagine->open($path['full']);
+		$image = $this->getImagine()->open($path['full']);
 
 		if (isset($thumbSize['crop']) && $thumbSize['crop'] === false) {
 			$image = $this->thumbnailCropScale($image, $dimensions['w'], $dimensions['h']);
