@@ -13,6 +13,7 @@ in a similar vein to how [@josegonzalez](https://github.com/josegonzalez) had wr
 
 ##Status
 This is currently in alpha, but will upload images for you.
+[![Build Status](https://travis-ci.org/davidyell/CakePHP3-Proffer.svg?branch=master)](https://travis-ci.org/davidyell/CakePHP3-Proffer)
 
 ##Installation
 You can find it on Packagist [https://packagist.org/packages/davidyell/proffer](https://packagist.org/packages/davidyell/proffer)
@@ -94,7 +95,8 @@ The thumbnails are generated using the (http://imagine.readthedocs.org/en/latest
 use the documentation there to build your own thumbnail generating listeners.
 
 ##Contribution
-Please open a pull request or submit an issue is there is anything you would like to contribute.
+Please open a pull request or submit an issue is there is anything you would like to contribute. Please write a test for 
+new functionality that you add and be sure to run the tests.
 
 ##License
 Please see [LICENSE](LICENSE)
