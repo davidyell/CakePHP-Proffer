@@ -83,14 +83,14 @@ $validator->add('photo', 'proffer', [
 ]);
 ```
 
-You can [http://book.cakephp.org/3.0/en/core-libraries/validation.html#adding-validation-providers](read more about custom validation providers in the book).
+You can [read more about custom validation providers in the book](http://book.cakephp.org/3.0/en/core-libraries/validation.html#adding-validation-providers).
 
 ##Customisation
 Proffer uses an event listener to generate thumbnails. If you want to customise your thumbnail generation in any way 
 you can either create your own listener and listen for the `Proffer.beforeThumbs` and `Proffer.afterThumbs` methods, or
 just extend and overload the methods in the default listener located in `src/Event/ImageTransform.php`.
 
-The thumbnails are generated using the [http://imagine.readthedocs.org/en/latest/index.html](Imagine library). So you can
+The thumbnails are generated using the (http://imagine.readthedocs.org/en/latest/index.html)[Imagine library]. So you can
 use the documentation there to build your own thumbnail generating listeners.
 
 ##Contribution
