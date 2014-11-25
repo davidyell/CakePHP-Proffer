@@ -22,9 +22,9 @@ class ImageTransform implements EventListenerInterface {
 /**
  * Store our instance of Imagine
  *
- * @var ImagineInterface $Imagine
+ * @var ImagineInterface $imagine
  */
-	private $Imagine;
+	private $imagine;
 
 /**
  * Returns a list of events this object is implementing. When the class is registered
@@ -46,7 +46,7 @@ class ImageTransform implements EventListenerInterface {
  * @return ImagineInterface
  */
 	protected function getImagine() {
-		return $this->Imagine;
+		return $this->imagine;
 	}
 
 /**
@@ -59,13 +59,13 @@ class ImageTransform implements EventListenerInterface {
 		switch ($engine) {
 			default:
 			case 'gd':
-				$this->Imagine = new Gd();
+				$this->imagine = new Gd();
 				break;
 			case 'gmagick':
-				$this->Imagine = new Gmagick();
+				$this->imagine = new Gmagick();
 				break;
 			case 'imagick':
-				$this->Imagine = new Imagick();
+				$this->imagine = new Imagick();
 				break;
 		}
 	}
@@ -75,8 +75,8 @@ class ImageTransform implements EventListenerInterface {
  *
  * @param Event $event The event instance
  * @param array $path The path array
- * @param string $thumbnailMethod Which engine to use to make thumbnails
  * @param array $dimensions Array of thumbnail dimensions
+ * @param string $thumbnailMethod Which engine to use to make thumbnails
  * @return ImageInterface
  */
 	public function makeThumbnails(Event $event, array $path, array $dimensions, $thumbnailMethod = 'gd') {

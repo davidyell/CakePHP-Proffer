@@ -56,7 +56,7 @@ class ProfferTestBehavior extends ProfferBehavior {
  */
 class ProfferBehaviorTest extends PHPUnit_Framework_TestCase {
 
-	private $Behavior;
+	private $behavior;
 
 	private $config = [
 		'photo' => [
@@ -127,7 +127,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase {
  */
 	public function testBeforeValidate($entityData, $allowEmpty, $expected) {
 		$table = $this->getMock('Cake\ORM\Table', null);
-		$this->Behavior = new ProfferBehavior($table, $this->config);
+		$this->behavior = new ProfferBehavior($table, $this->config);
 
 		$validator = $this->getMock('Cake\Validation\Validator', null);
 		$table->validator('test', $validator);
@@ -138,7 +138,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase {
 
 		$entity = new Entity($entityData);
 
-		$this->Behavior->beforeValidate($this->getMock('Cake\Event\Event', null, ['beforeValidate']), $entity, new ArrayObject());
+		$this->behavior->beforeValidate($this->getMock('Cake\Event\Event', null, ['beforeValidate']), $entity, new ArrayObject());
 		$result = $entity->toArray();
 
 		$this->assertEquals($expected, $result);
@@ -149,7 +149,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase {
  */
 	public function testBeforeSaveWithoutUploadingAFile() {
 		$table = $this->getMock('Cake\ORM\Table', null);
-		$this->Behavior = new ProfferBehavior($table, $this->config);
+		$this->behavior = new ProfferBehavior($table, $this->config);
 
 		$entity = new Entity([
 			'photo' => [
@@ -160,7 +160,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase {
 			]
 		]);
 
-		$this->Behavior->beforeSave($this->getMock('Cake\Event\Event', null, ['beforeSave']), $entity, new ArrayObject());
+		$this->behavior->beforeSave($this->getMock('Cake\Event\Event', null, ['beforeSave']), $entity, new ArrayObject());
 	}
 
 /**
@@ -168,7 +168,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase {
  */
 	public function testBeforeSaveWithValidFile() {
 		$table = $this->getMock('Cake\ORM\Table', null);
-		$this->Behavior = new ProfferTestBehavior($table, $this->config);
+		$this->behavior = new ProfferTestBehavior($table, $this->config);
 
 		$entity = new Entity([
 			'photo' => [
@@ -179,7 +179,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase {
 			]
 		]);
 
-		$this->Behavior->beforeSave($this->getMock('Cake\Event\Event', null, ['beforeSave']), $entity, new ArrayObject());
+		$this->behavior->beforeSave($this->getMock('Cake\Event\Event', null, ['beforeSave']), $entity, new ArrayObject());
 
 		$expectedField = 'image_640x480.jpg';
 		$expectedSeed = 'proffer_test';

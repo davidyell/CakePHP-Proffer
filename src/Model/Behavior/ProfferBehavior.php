@@ -66,6 +66,7 @@ class ProfferBehavior extends Behavior {
  * @param Entity $entity The entity
  * @param ArrayObject $options Array of options
  * @return true
+ * @throws Cake\Network\Exception\BadRequestException
  * @throws Exception
  */
 	public function beforeSave(Event $event, Entity $entity, ArrayObject $options) {
