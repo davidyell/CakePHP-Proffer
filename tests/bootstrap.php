@@ -67,7 +67,7 @@ Cake\Core\Configure::write('Session', [
 	'defaults' => 'php'
 ]);
 
-Cake\Core\Plugin::load('Crud', ['path' => ROOT . DS, 'autoload' => true]);
+Cake\Core\Plugin::load('Proffer');
 
 Cake\Routing\DispatcherFactory::add('Routing');
 Cake\Routing\DispatcherFactory::add('ControllerFactory');
