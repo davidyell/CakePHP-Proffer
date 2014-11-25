@@ -62,8 +62,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase {
 			'thumbnailSizes' => [
 				'square' => ['w' => 200, 'h' => 200],
 				'portrait' => ['w' => 100, 'h' => 300],
-			],
-			'thumbnailMethod' => 'imagick'
+			]
 		]
 	];
 

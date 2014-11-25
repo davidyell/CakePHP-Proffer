@@ -55,15 +55,15 @@ class ImageTransform implements EventListenerInterface {
  * @param string $engine
  * @return void
  */
-	protected function setImagine($engine = 'imagick') {
+	protected function setImagine($engine = 'gd') {
 		switch ($engine) {
+			default:
 			case 'gd':
 				$this->Imagine = new Gd();
 				break;
 			case 'gmagick':
 				$this->Imagine = new Gmagick();
 				break;
-			default:
 			case 'imagick':
 				$this->Imagine = new Imagick();
 				break;
