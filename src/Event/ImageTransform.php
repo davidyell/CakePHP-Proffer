@@ -55,7 +55,7 @@ class ImageTransform implements EventListenerInterface {
  * @param string $engine
  * @return void
  */
-	protected function setImagine($engine = 'gd') {
+	protected function setImagine($engine) {
 		switch ($engine) {
 			default:
 			case 'gd':
@@ -79,7 +79,7 @@ class ImageTransform implements EventListenerInterface {
  * @param array $dimensions
  * @return ImageInterface
  */
-	public function makeThumbnails(Event $event, array $path, $thumbnailMethod, array $dimensions) {
+	public function makeThumbnails(Event $event, array $path, $thumbnailMethod = 'gd', array $dimensions) {
 		$this->setImagine($thumbnailMethod);
 
 		$image = $this->getImagine()->open($path['full']);

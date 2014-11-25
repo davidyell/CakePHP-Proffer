@@ -101,12 +101,14 @@ class ProfferBehavior extends Behavior {
 	protected function makeThumbs($field, $path) {
 		foreach ($this->config($field)['thumbnailSizes'] as $prefix => $dimensions) {
 
+			$eventParams = ['path' => $path, 'thumbnailMethod' => null, 'dimensions' => $dimensions];
+
+			if (isset($this->config($field)['thumbnailMethod'])) {
+				$params['thumbnailMethod'] = $this->config($field)['thumbnailMethod'];
+			}
+
 			// Event listener handles generation
-			$event = new Event('Proffer.beforeThumbs', $this->_table, [
-				'path' => $path,
-				'thumbnailMethod' => $this->config($field)['thumbnailMethod'],
-				'dimensions' => $dimensions
-			]);
+			$event = new Event('Proffer.beforeThumbs', $this->_table, $eventParams);
 
 			$this->_table->eventManager()->dispatch($event);
 			if (!empty($event->result)) {
