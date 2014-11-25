@@ -9,13 +9,13 @@ namespace Proffer\Event;
 
 use Cake\Event\Event;
 use Cake\Event\EventListenerInterface;
-use Imagine\Imagick\Imagine as Imagick;
+use Imagine\Filter\Transformation;
 use Imagine\Gd\Imagine as Gd;
 use Imagine\Gmagick\Imagine as Gmagick;
+use Imagine\Image\Box;
 use Imagine\Image\ImageInterface;
 use Imagine\Image\Point;
-use Imagine\Image\Box;
-use Imagine\Filter\Transformation;
+use Imagine\Imagick\Imagine as Imagick;
 
 class ImageTransform implements EventListenerInterface {
 
@@ -52,7 +52,7 @@ class ImageTransform implements EventListenerInterface {
 /**
  * Set the Imagine engine class
  *
- * @param string $engine
+ * @param string $engine The name of the image engine to use
  * @return void
  */
 	protected function setImagine($engine) {
@@ -73,13 +73,13 @@ class ImageTransform implements EventListenerInterface {
 /**
  * Generate thumbnails
  *
- * @param Event $event
- * @param array $path
- * @param string $thumbnailMethod
- * @param array $dimensions
+ * @param Event $event The event instance
+ * @param array $path The path array
+ * @param string $thumbnailMethod Which engine to use to make thumbnails
+ * @param array $dimensions Array of thumbnail dimensions
  * @return ImageInterface
  */
-	public function makeThumbnails(Event $event, array $path, $thumbnailMethod = 'gd', array $dimensions) {
+	public function makeThumbnails(Event $event, array $path, array $dimensions, $thumbnailMethod = 'gd') {
 		$this->setImagine($thumbnailMethod);
 
 		$image = $this->getImagine()->open($path['full']);
@@ -96,8 +96,8 @@ class ImageTransform implements EventListenerInterface {
 /**
  * Save thumbnail to the file system
  *
- * @param Event $event
- * @param ImageInterface $image
+ * @param Event $event The event
+ * @param ImageInterface $image The ImageInterface instance from Imagine
  * @param array $path The path array
  * @param string $prefix The thumbnail size prefix
  * @return ImageInterface
@@ -112,10 +112,10 @@ class ImageTransform implements EventListenerInterface {
 /**
  * Scale an image to best fit a thumbnail size
  *
- * @param \Imagine\Image\ImageInterface $image
+ * @param ImageInterface $image The ImageInterface instance from Imagine
  * @param int $width The width in pixels
  * @param int $height The height in pixels
- * @return \Imagine\Image\ImageInterface
+ * @return ImageInterface
  */
 	protected function thumbnailScale($image, $width, $height) {
 		$transformation = new Transformation();
@@ -126,10 +126,10 @@ class ImageTransform implements EventListenerInterface {
 /**
  * Create a thumbnail by scaling an image and cropping it to fit the exact dimensions
  *
- * @param \Imagine\Image\ImageInterface $image
+ * @param ImageInterface $image The ImageInterface instance from Imagine
  * @param int $targetWidth The width in pixels
  * @param int $targetHeight The height in pixels
- * @return \Imagine\Image\ImageInterface
+ * @return ImageInterface
  */
 	protected function thumbnailCropScale($image, $targetWidth, $targetHeight) {
 		$target = new Box($targetWidth, $targetHeight);

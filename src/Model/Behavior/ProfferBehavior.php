@@ -33,7 +33,7 @@ class ProfferBehavior extends Behavior {
 /**
  * Initialize the behavior
  *
- * @param array $config
+ * @param array $config Array of pass configuration
  * @return void
  */
 	public function initialize(array $config) {
@@ -44,9 +44,10 @@ class ProfferBehavior extends Behavior {
 /**
  * beforeValidate method
  *
- * @param Event $event
- * @param Entity $entity
- * @param ArrayObject $options
+ * @param Event $event The event
+ * @param Entity $entity The current entity
+ * @param ArrayObject $options Array of options
+ * @return true
  */
 	public function beforeValidate(Event $event, Entity $entity, ArrayObject $options) {
 		foreach ($this->config() as $field => $settings) {
@@ -54,15 +55,18 @@ class ProfferBehavior extends Behavior {
 				$entity->__unset($field);
 			}
 		}
+
+		return true;
 	}
 
 /**
  * beforeSave method
  *
- * @param Event $event
- * @param Entity $entity
- * @param ArrayObject $options
- * @return bool
+ * @param Event $event The event
+ * @param Entity $entity The entity
+ * @param ArrayObject $options Array of options
+ * @return true
+ * @throws Exception
  */
 	public function beforeSave(Event $event, Entity $entity, ArrayObject $options) {
 		foreach ($this->config() as $field => $settings) {
@@ -101,7 +105,7 @@ class ProfferBehavior extends Behavior {
 	protected function makeThumbs($field, $path) {
 		foreach ($this->config($field)['thumbnailSizes'] as $prefix => $dimensions) {
 
-			$eventParams = ['path' => $path, 'thumbnailMethod' => null, 'dimensions' => $dimensions];
+			$eventParams = ['path' => $path, 'dimensions' => $dimensions, 'thumbnailMethod' => null];
 
 			if (isset($this->config($field)['thumbnailMethod'])) {
 				$params['thumbnailMethod'] = $this->config($field)['thumbnailMethod'];
@@ -131,16 +135,17 @@ class ProfferBehavior extends Behavior {
 /**
  * Build a path to upload a file to. Both parts and full path
  *
- * @param Table $table
- * @param Entity $entity
- * @param $field
+ * @param Table $table The table
+ * @param Entity $entity The entity
+ * @param string $field The upload field name
  * @return array
  */
 	protected function buildPath(Table $table, Entity $entity, $field) {
 		$path['root'] = WWW_ROOT . 'files';
 		$path['table'] = strtolower($table->alias());
 
-		if (!empty($entity->get($this->config($field)['dir']))) {
+		$dir = $entity->get($this->config($field)['dir']);
+		if (!empty($dir)) {
 			$path['seed'] = $entity->get($this->config($field)['dir']);
 		} else {
 			$path['seed'] = String::uuid();
@@ -160,7 +165,7 @@ class ProfferBehavior extends Behavior {
 /**
  * Wrapper method for is_uploaded_file so that we can test
  *
- * @param string $file
+ * @param string $file The tmp_name path to the uploaded file
  * @return bool
  */
 	protected function isUploadedFile($file) {
@@ -170,8 +175,9 @@ class ProfferBehavior extends Behavior {
 /**
  * Wrapper method for move_uploaded_file so that we can test
  *
- * @param string $file
- * @param string $destination
+ * @param string $file Path to the uploaded file
+ * @param string $destination The destination file name
+ * @return bool
  */
 	protected function moveUploadedFile($file, $destination) {
 		return move_uploaded_file($file, $destination);

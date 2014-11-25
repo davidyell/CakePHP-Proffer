@@ -22,6 +22,7 @@ use Proffer\Model\Behavior\ProfferBehavior;
  * @package Proffer\Tests\Model\Behavior
  */
 class ProfferTestBehavior extends ProfferBehavior {
+
 	public function isUploadedFile($file) {
 		return true;
 	}
@@ -45,6 +46,7 @@ class ProfferTestBehavior extends ProfferBehavior {
 
 		return copy($file, $destination);
 	}
+
 }
 
 /**
@@ -67,7 +69,6 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase {
 	];
 
 	public function setUp() {
-
 	}
 
 /**
@@ -162,7 +163,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase {
 		$this->Behavior->beforeSave($this->getMock('Cake\Event\Event', null, ['beforeSave']), $entity, new ArrayObject());
 	}
 
-/*
+/**
  * A bit of a unit and integration test as it will still dispatch the events to the listener
  */
 	public function testBeforeSaveWithValidFile() {
@@ -190,4 +191,5 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase {
 		$this->assertFileExists(TMP . 'Tests' . DS . 'proffer_test' . DS . 'portrait_image_640x480.jpg');
 		$this->assertFileExists(TMP . 'Tests' . DS . 'proffer_test' . DS . 'square_image_640x480.jpg');
 	}
+
 }
