@@ -17,7 +17,8 @@
 	  "source": "https://github.com/davidyell/CakePHP3-Proffer"
 	},
 	"require": {
-	  "imagine/imagine": "0.6.2"
+	  "imagine/imagine": "0.6.2",
+        "cakephp/cakephp": "3.0.0-beta3"
 	},
   	"require-dev": {
 	  "phpunit/phpunit": "*"
