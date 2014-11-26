@@ -101,9 +101,9 @@ class ProfferBehavior extends Behavior {
  *
  * Remove images from records which have been deleted, if they exist
  *
- * @param Event $event
- * @param Entity $entity
- * @param ArrayObject $options
+ * @param Event $event The passed event
+ * @param Entity $entity The entity
+ * @param ArrayObject $options Array of options
  * @return bool
  */
 	public function afterDelete(Event $event, Entity $entity, ArrayObject $options) {
