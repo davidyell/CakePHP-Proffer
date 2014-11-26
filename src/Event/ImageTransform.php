@@ -22,9 +22,9 @@ class ImageTransform implements EventListenerInterface {
 /**
  * Store our instance of Imagine
  *
- * @var ImagineInterface $imagine
+ * @var ImagineInterface $__imagine
  */
-	private $imagine;
+	private $__imagine;
 
 /**
  * Returns a list of events this object is implementing. When the class is registered
@@ -45,8 +45,8 @@ class ImageTransform implements EventListenerInterface {
  *
  * @return ImagineInterface
  */
-	protected function getImagine() {
-		return $this->imagine;
+	protected function _getImagine() {
+		return $this->__imagine;
 	}
 
 /**
@@ -55,17 +55,17 @@ class ImageTransform implements EventListenerInterface {
  * @param string $engine The name of the image engine to use
  * @return void
  */
-	protected function setImagine($engine) {
+	protected function _setImagine($engine) {
 		switch ($engine) {
 			default:
 			case 'gd':
-				$this->imagine = new Gd();
+				$this->__imagine = new Gd();
 				break;
 			case 'gmagick':
-				$this->imagine = new Gmagick();
+				$this->__imagine = new Gmagick();
 				break;
 			case 'imagick':
-				$this->imagine = new Imagick();
+				$this->__imagine = new Imagick();
 				break;
 		}
 	}
@@ -80,14 +80,14 @@ class ImageTransform implements EventListenerInterface {
  * @return ImageInterface
  */
 	public function makeThumbnails(Event $event, array $path, array $dimensions, $thumbnailMethod = 'gd') {
-		$this->setImagine($thumbnailMethod);
+		$this->_setImagine($thumbnailMethod);
 
-		$image = $this->getImagine()->open($path['full']);
+		$image = $this->_getImagine()->open($path['full']);
 
 		if (isset($thumbSize['crop']) && $thumbSize['crop'] === false) {
-			$image = $this->thumbnailCropScale($image, $dimensions['w'], $dimensions['h']);
+			$image = $this->_thumbnailCropScale($image, $dimensions['w'], $dimensions['h']);
 		} else {
-			$image = $this->thumbnailScale($image, $dimensions['w'], $dimensions['h']);
+			$image = $this->_thumbnailScale($image, $dimensions['w'], $dimensions['h']);
 		}
 
 		return $image;
@@ -117,7 +117,7 @@ class ImageTransform implements EventListenerInterface {
  * @param int $height The height in pixels
  * @return ImageInterface
  */
-	protected function thumbnailScale($image, $width, $height) {
+	protected function _thumbnailScale($image, $width, $height) {
 		$transformation = new Transformation();
 		$transformation->thumbnail(new Box($width, $height));
 		return $transformation->apply($image);
@@ -131,7 +131,7 @@ class ImageTransform implements EventListenerInterface {
  * @param int $targetHeight The height in pixels
  * @return ImageInterface
  */
-	protected function thumbnailCropScale($image, $targetWidth, $targetHeight) {
+	protected function _thumbnailCropScale($image, $targetWidth, $targetHeight) {
 		$target = new Box($targetWidth, $targetHeight);
 		$sourceSize = $image->getSize();
 

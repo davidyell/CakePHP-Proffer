@@ -73,19 +73,19 @@ class ProfferBehavior extends Behavior {
 		foreach ($this->config() as $field => $settings) {
 			if ($entity->has($field) && is_array($entity->get($field)) && $entity->get($field)['error'] === UPLOAD_ERR_OK) {
 
-				if (!$this->isUploadedFile($entity->get($field)['tmp_name'])) {
+				if (!$this->_isUploadedFile($entity->get($field)['tmp_name'])) {
 					throw new BadRequestException('File must be uploaded using HTTP post.');
 				}
 
-				$path = $this->buildPath($this->_table, $entity, $field);
+				$path = $this->_buildPath($this->_table, $entity, $field);
 
-				if ($this->moveUploadedFile($entity->get($field)['tmp_name'], $path['full'])) {
+				if ($this->_moveUploadedFile($entity->get($field)['tmp_name'], $path['full'])) {
 					$entity->set($field, $entity->get($field)['name']);
 					$entity->set($settings['dir'], $path['parts']['seed']);
 
 					// Don't generate thumbnails for non-images
 					if (getimagesize($path['full']) !== false) {
-						$this->makeThumbs($field, $path);
+						$this->_makeThumbs($field, $path);
 					}
 				} else {
 					throw new Exception('Cannot move file');
@@ -103,7 +103,7 @@ class ProfferBehavior extends Behavior {
  * @param string $path The path array
  * @return void
  */
-	protected function makeThumbs($field, $path) {
+	protected function _makeThumbs($field, $path) {
 		foreach ($this->config($field)['thumbnailSizes'] as $prefix => $dimensions) {
 
 			$eventParams = ['path' => $path, 'dimensions' => $dimensions, 'thumbnailMethod' => null];
@@ -141,7 +141,7 @@ class ProfferBehavior extends Behavior {
  * @param string $field The upload field name
  * @return array
  */
-	protected function buildPath(Table $table, Entity $entity, $field) {
+	protected function _buildPath(Table $table, Entity $entity, $field) {
 		$path['root'] = WWW_ROOT . 'files';
 		$path['table'] = strtolower($table->alias());
 
@@ -169,7 +169,7 @@ class ProfferBehavior extends Behavior {
  * @param string $file The tmp_name path to the uploaded file
  * @return bool
  */
-	protected function isUploadedFile($file) {
+	protected function _isUploadedFile($file) {
 		return is_uploaded_file($file);
 	}
 
@@ -180,7 +180,7 @@ class ProfferBehavior extends Behavior {
  * @param string $destination The destination file name
  * @return bool
  */
-	protected function moveUploadedFile($file, $destination) {
+	protected function _moveUploadedFile($file, $destination) {
 		return move_uploaded_file($file, $destination);
 	}
 }
