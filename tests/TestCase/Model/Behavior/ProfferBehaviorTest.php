@@ -27,7 +27,7 @@ class ProfferTestBehavior extends ProfferBehavior {
 		return true;
 	}
 
-	protected function _buildPath(Table $table, Entity $entity, $field) {
+	protected function _buildPath(Table $table, Entity $entity, $field, $filename) {
 		return [
 			'full' => TMP . 'Tests' . DS . 'proffer_test' . DS . 'image_640x480.jpg',
 			'parts' => [
@@ -62,7 +62,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase {
 		'photo' => [
 			'dir' => 'photo_dir',
 			'thumbnailSizes' => [
-				'square' => ['w' => 200, 'h' => 200],
+				'square' => ['w' => 200, 'h' => 200, 'crop' => true],
 				'portrait' => ['w' => 100, 'h' => 300],
 			]
 		]

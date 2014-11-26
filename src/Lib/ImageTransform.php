@@ -67,7 +67,7 @@ class ImageTransform {
 
 		$image = $this->_getImagine()->open($path['full']);
 
-		if (isset($thumbSize['crop']) && $thumbSize['crop'] === false) {
+		if (isset($thumbSize['crop']) && $thumbSize['crop'] === true) {
 			$image = $this->_thumbnailCropScale($image, $dimensions['w'], $dimensions['h']);
 		} else {
 			$image = $this->_thumbnailScale($image, $dimensions['w'], $dimensions['h']);
@@ -84,7 +84,7 @@ class ImageTransform {
  * @param string $prefix The thumbnail size prefix
  * @return ImageInterface
  */
-	public function saveThumbs(ImageInterface $image, $path, $prefix) {
+	public function saveThumbs(ImageInterface $image, array $path, $prefix) {
 		$filePath = $path['parts']['root'] . DS . $path['parts']['table'] . DS . $path['parts']['seed'] . DS . $prefix . '_' . $path['parts']['name'];
 		$image->save($filePath);
 
