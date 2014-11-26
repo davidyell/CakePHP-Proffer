@@ -1,14 +1,12 @@
 <?php
 /**
- * Event listener to perform transformations on an image
+ * Created by PhpStorm.
  *
  * @author David Yell <neon1024@gmail.com>
  */
 
-namespace Proffer\Event;
+namespace Proffer\Lib;
 
-use Cake\Event\Event;
-use Cake\Event\EventListenerInterface;
 use Imagine\Filter\Transformation;
 use Imagine\Gd\Imagine as Gd;
 use Imagine\Gmagick\Imagine as Gmagick;
@@ -17,7 +15,7 @@ use Imagine\Image\ImageInterface;
 use Imagine\Image\Point;
 use Imagine\Imagick\Imagine as Imagick;
 
-class ImageTransform implements EventListenerInterface {
+class ImageTransform {
 
 /**
  * Store our instance of Imagine
@@ -25,20 +23,6 @@ class ImageTransform implements EventListenerInterface {
  * @var ImagineInterface $__imagine
  */
 	private $__imagine;
-
-/**
- * Returns a list of events this object is implementing. When the class is registered
- * in an event manager, each individual method will be associated with the respective event.
- *
- * @return array associative array or event key names pointing to the function
- * that should be called in the object when the respective event is fired
- */
-	public function implementedEvents() {
-		return [
-			'Proffer.beforeThumbs' => 'makeThumbnails',
-			'Proffer.afterThumbs' => 'saveThumbs'
-		];
-	}
 
 /**
  * Get the specified Imagine engine class
@@ -73,13 +57,12 @@ class ImageTransform implements EventListenerInterface {
 /**
  * Generate thumbnails
  *
- * @param Event $event The event instance
  * @param array $path The path array
  * @param array $dimensions Array of thumbnail dimensions
  * @param string $thumbnailMethod Which engine to use to make thumbnails
  * @return ImageInterface
  */
-	public function makeThumbnails(Event $event, array $path, array $dimensions, $thumbnailMethod = 'gd') {
+	public function makeThumbnails(array $path, array $dimensions, $thumbnailMethod = 'gd') {
 		$this->_setImagine($thumbnailMethod);
 
 		$image = $this->_getImagine()->open($path['full']);
@@ -96,13 +79,12 @@ class ImageTransform implements EventListenerInterface {
 /**
  * Save thumbnail to the file system
  *
- * @param Event $event The event
  * @param ImageInterface $image The ImageInterface instance from Imagine
  * @param array $path The path array
  * @param string $prefix The thumbnail size prefix
  * @return ImageInterface
  */
-	public function saveThumbs(Event $event, ImageInterface $image, $path, $prefix) {
+	public function saveThumbs(ImageInterface $image, $path, $prefix) {
 		$filePath = $path['parts']['root'] . DS . $path['parts']['table'] . DS . $path['parts']['seed'] . DS . $prefix . '_' . $path['parts']['name'];
 		$image->save($filePath);
 

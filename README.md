@@ -89,7 +89,10 @@ You can [read more about custom validation providers in the book](http://book.ca
 ##Customisation
 Proffer uses an event listener to generate thumbnails. If you want to customise your thumbnail generation in any way 
 you can either create your own listener and listen for the `Proffer.beforeThumbs` and `Proffer.afterThumbs` methods, or
-just extend and overload the methods in the default listener located in `src/Event/ImageTransform.php`.
+just extend and overload the methods in the default listener located in `src/Event/ProfferListener.php`.
+
+The listener is separated from the thumbnail generation allowing you to hook to your own class which allows you to use
+your own image library if you don't want to use Imagine.
 
 The thumbnails are generated using the (http://imagine.readthedocs.org/en/latest/index.html)[Imagine library]. So you can
 use the documentation there to build your own thumbnail generating listeners.

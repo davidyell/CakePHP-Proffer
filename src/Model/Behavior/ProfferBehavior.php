@@ -16,7 +16,7 @@ use Cake\ORM\Entity;
 use Cake\ORM\Table;
 use Cake\Utility\String;
 use Exception;
-use Proffer\Event\ImageTransform;
+use Proffer\Event\ProfferListener;
 
 /**
  * Proffer behavior
@@ -37,8 +37,8 @@ class ProfferBehavior extends Behavior {
  * @return void
  */
 	public function initialize(array $config) {
-		$imageTransform = new ImageTransform();
-		$this->_table->eventManager()->attach($imageTransform);
+		$listener = new ProfferListener();
+		$this->_table->eventManager()->attach($listener);
 	}
 
 /**
@@ -97,13 +97,13 @@ class ProfferBehavior extends Behavior {
 	}
 
 /**
- * Generate the defined thumbnails
+ * Dispatch events to allow generation of thumbnails
  *
  * @param string $field The name of the upload field
- * @param string $path The path array
+ * @param array $path The path array
  * @return void
  */
-	protected function _makeThumbs($field, $path) {
+	protected function _makeThumbs($field, array $path) {
 		foreach ($this->config($field)['thumbnailSizes'] as $prefix => $dimensions) {
 
 			$eventParams = ['path' => $path, 'dimensions' => $dimensions, 'thumbnailMethod' => null];
