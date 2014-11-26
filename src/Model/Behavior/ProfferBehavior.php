@@ -97,6 +97,40 @@ class ProfferBehavior extends Behavior {
 	}
 
 /**
+ * afterDelete method
+ *
+ * Remove images from records which have been deleted, if they exist
+ *
+ * @param Event $event The passed event
+ * @param Entity $entity The entity
+ * @param ArrayObject $options Array of options
+ * @return bool
+ */
+	public function afterDelete(Event $event, Entity $entity, ArrayObject $options) {
+		foreach ($this->config() as $field => $settings) {
+
+			$field = $entity->get($field);
+			$dir = $entity->get($settings['dir']);
+
+			if (!empty($entity) && !empty($dir)) {
+				$path = $this->_buildPath($this->_table, $entity, $field, $entity->get($field));
+
+				foreach ($settings['thumbnailSizes'] as $prefix => $dimensions) {
+					$filename = $path['parts']['root'] . DS . $path['parts']['table'] . DS . $path['parts']['seed'] . DS . $prefix . '_' . $entity->get($field);
+					unlink($filename);
+				}
+
+				$filename = $path['parts']['root'] . DS . $path['parts']['table'] . DS . $path['parts']['seed'] . DS . $entity->get($field);
+				unlink($filename);
+
+				rmdir($path['parts']['root'] . DS . $path['parts']['table'] . DS . $path['parts']['seed'] . DS);
+			}
+		}
+
+		return true;
+	}
+
+/**
  * Dispatch events to allow generation of thumbnails
  *
  * @param string $field The name of the upload field
