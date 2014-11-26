@@ -98,7 +98,7 @@ The thumbnails are generated using the [Imagine library](http://imagine.readthed
 use the documentation there to build your own thumbnail generating listeners.
 
 ##Regenerating thumbnails
-If you would like to regenerate the thumbnails for files already on your system, or you've changes your configuration. You
+If you would like to regenerate the thumbnails for files already on your system, or you've changed your configuration. You
 can use the built-in shell to regenerate the thumbnails for a table. To get help with the shell, use the `-h` flag.
 
 ```bash
