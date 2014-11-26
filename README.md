@@ -97,6 +97,15 @@ your own image library if you don't want to use Imagine.
 The thumbnails are generated using the (http://imagine.readthedocs.org/en/latest/index.html)[Imagine library]. So you can
 use the documentation there to build your own thumbnail generating listeners.
 
+##Regenerating thumbnails
+If you would like to regenerate the thumbnails for files already on your system, or you've changes your configuration. You
+can use the built-in shell to regenerate the thumbnails for a table. To get help with the shell, use the `-h` flag.
+
+```bash
+$ bin/cake proffer.proffer generate <table>
+$ bin/cake proffer.proffer -h
+```
+
 ##Contribution
 Please open a pull request or submit an issue is there is anything you would like to contribute. Please write a test for 
 new functionality that you add and be sure to run the tests.
