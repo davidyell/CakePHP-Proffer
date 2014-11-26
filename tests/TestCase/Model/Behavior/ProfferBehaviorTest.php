@@ -23,11 +23,11 @@ use Proffer\Model\Behavior\ProfferBehavior;
  */
 class ProfferTestBehavior extends ProfferBehavior {
 
-	public function isUploadedFile($file) {
+	protected function _isUploadedFile($file) {
 		return true;
 	}
 
-	public function buildPath(Table $table, Entity $entity, $field) {
+	protected function _buildPath(Table $table, Entity $entity, $field) {
 		return [
 			'full' => TMP . 'Tests' . DS . 'proffer_test' . DS . 'image_640x480.jpg',
 			'parts' => [
@@ -39,7 +39,7 @@ class ProfferTestBehavior extends ProfferBehavior {
 		];
 	}
 
-	public function moveUploadedFile($file, $destination) {
+	protected function _moveUploadedFile($file, $destination) {
 		if (!file_exists(TMP . 'Tests' . DS . 'proffer_test' . DS)) {
 			mkdir(TMP . 'Tests' . DS . 'proffer_test' . DS, 0777, true);
 		}
