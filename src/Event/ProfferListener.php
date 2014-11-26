@@ -17,7 +17,7 @@ use Imagine\Image\ImageInterface;
 use Imagine\Image\Point;
 use Imagine\Imagick\Imagine as Imagick;
 
-class ImageTransform implements EventListenerInterface {
+class ProfferListener implements EventListenerInterface {
 
 /**
  * Store our instance of Imagine

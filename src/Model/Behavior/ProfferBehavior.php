@@ -16,7 +16,7 @@ use Cake\ORM\Entity;
 use Cake\ORM\Table;
 use Cake\Utility\String;
 use Exception;
-use Proffer\Event\ImageTransform;
+use Proffer\Event\ProfferListener;
 
 /**
  * Proffer behavior
@@ -37,8 +37,8 @@ class ProfferBehavior extends Behavior {
  * @return void
  */
 	public function initialize(array $config) {
-		$imageTransform = new ImageTransform();
-		$this->_table->eventManager()->attach($imageTransform);
+		$listener = new ProfferListener();
+		$this->_table->eventManager()->attach($listener);
 	}
 
 /**
