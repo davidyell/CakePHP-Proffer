@@ -97,13 +97,13 @@ class ProfferBehavior extends Behavior {
 	}
 
 /**
- * Generate the defined thumbnails
+ * Dispatch events to allow generation of thumbnails
  *
  * @param string $field The name of the upload field
- * @param string $path The path array
+ * @param array $path The path array
  * @return void
  */
-	protected function _makeThumbs($field, $path) {
+	protected function _makeThumbs($field, array $path) {
 		foreach ($this->config($field)['thumbnailSizes'] as $prefix => $dimensions) {
 
 			$eventParams = ['path' => $path, 'dimensions' => $dimensions, 'thumbnailMethod' => null];
