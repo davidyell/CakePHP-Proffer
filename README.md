@@ -99,13 +99,28 @@ your own image library if you don't want to use Imagine.
 The thumbnails are generated using the [Imagine library](http://imagine.readthedocs.org/en/latest/index.html). So you can
 use the documentation there to build your own thumbnail generating listeners.
 
-##Regenerating thumbnails
+##Proffer shell tasks
+Proffer comes with a built in shell which can help you achieve certain things when dealing with your uploaded files. To 
+find out more about the shell you can use the `-h` flag on the command line.
+
+```bash
+$ bin/cake proffer.proffer -h
+```
+
+###Regenerate thumbnail task
 If you would like to regenerate the thumbnails for files already on your system, or you've changed your configuration. You
-can use the built-in shell to regenerate the thumbnails for a table. To get help with the shell, use the `-h` flag.
+can use the built-in shell to regenerate the thumbnails for a table.
 
 ```bash
 $ bin/cake proffer.proffer generate <table>
-$ bin/cake proffer.proffer -h
+```
+
+###Cleanup task
+The cleanup task will look at a models uploads folder and match the files there with it's matching entry in the 
+database. If a file doesn't have a matching record in the database it will be deleted.
+
+```bash
+$ bin/cake proffer.proffer cleanup <table>
 ```
 
 ##Contribution
