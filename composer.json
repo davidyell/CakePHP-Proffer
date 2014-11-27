@@ -26,7 +26,8 @@
 	  "psr-4": {
 		"Proffer\\": "src",
 		"Proffer\\Tests\\": "tests/TestCase",
-		"Proffer\\Tests\\Fixture\\": "tests/Fixture"
+		"Proffer\\Tests\\Fixture\\": "tests/Fixture",
+		"Proffer\\Tests\\Stubs\\": "tests/Stubs"
 	  }
 	},
 	"extra": {

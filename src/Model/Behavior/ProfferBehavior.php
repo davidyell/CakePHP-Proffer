@@ -66,7 +66,6 @@ class ProfferBehavior extends Behavior {
  * @param Entity $entity The entity
  * @param ArrayObject $options Array of options
  * @return true
- * @throws Cake\Network\Exception\BadRequestException
  * @throws Exception
  */
 	public function beforeSave(Event $event, Entity $entity, ArrayObject $options) {
@@ -74,7 +73,7 @@ class ProfferBehavior extends Behavior {
 			if ($entity->has($field) && is_array($entity->get($field)) && $entity->get($field)['error'] === UPLOAD_ERR_OK) {
 
 				if (!$this->_isUploadedFile($entity->get($field)['tmp_name'])) {
-					throw new BadRequestException('File must be uploaded using HTTP post.');
+					throw new Exception('File must be uploaded using HTTP post.');
 				}
 
 				$path = $this->_buildPath($this->_table, $entity, $field, $entity->get($field)['name']);

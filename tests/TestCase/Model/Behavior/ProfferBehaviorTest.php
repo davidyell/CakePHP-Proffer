@@ -10,44 +10,11 @@ namespace Proffer\Tests\Model\Behavior;
 use ArrayObject;
 use Cake\Core\Plugin;
 use Cake\ORM\Entity;
-use Cake\ORM\Table;
 use PHPUnit_Framework_TestCase;
 use Proffer\Event\ImageTransform;
 use Proffer\Model\Behavior\ProfferBehavior;
-
-/**
- * Class ProfferTestBehavior
- * Test stub class to allow overloading of certain methods
- *
- * @package Proffer\Tests\Model\Behavior
- */
-class ProfferTestBehavior extends ProfferBehavior {
-
-	protected function _isUploadedFile($file) {
-		return true;
-	}
-
-	protected function _buildPath(Table $table, Entity $entity, $field, $filename) {
-		return [
-			'full' => TMP . 'Tests' . DS . 'proffer_test' . DS . 'image_640x480.jpg',
-			'parts' => [
-				'root' => TMP,
-				'table' => 'Tests',
-				'seed' => 'proffer_test',
-				'name' => 'image_640x480.jpg'
-			]
-		];
-	}
-
-	protected function _moveUploadedFile($file, $destination) {
-		if (!file_exists(TMP . 'Tests' . DS . 'proffer_test' . DS)) {
-			mkdir(TMP . 'Tests' . DS . 'proffer_test' . DS, 0777, true);
-		}
-
-		return copy($file, $destination);
-	}
-
-}
+use Proffer\Tests\Stubs\ProfferTestMoveBehavior;
+use Proffer\Tests\Stubs\ProfferTestPathBehavior;
 
 /**
  * Class ProfferBehaviorTest
@@ -55,8 +22,6 @@ class ProfferTestBehavior extends ProfferBehavior {
  * @package Proffer\Tests\Model\Behavior
  */
 class ProfferBehaviorTest extends PHPUnit_Framework_TestCase {
-
-	private $__behavior;
 
 	private $__config = [
 		'photo' => [
@@ -97,6 +62,11 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase {
 		}
 	}
 
+/**
+ * Data provider method for testing validation
+ *
+ * @return array
+ */
 	public function beforeValidateProvider() {
 		return [
 			[
@@ -127,7 +97,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase {
  */
 	public function testBeforeValidate($entityData, $allowEmpty, $expected) {
 		$table = $this->getMock('Cake\ORM\Table', null);
-		$this->__behavior = new ProfferBehavior($table, $this->__config);
+		$Proffer = new ProfferBehavior($table, $this->__config);
 
 		$validator = $this->getMock('Cake\Validation\Validator', null);
 		$table->validator('test', $validator);
@@ -138,58 +108,145 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase {
 
 		$entity = new Entity($entityData);
 
-		$this->__behavior->beforeValidate($this->getMock('Cake\Event\Event', null, ['beforeValidate']), $entity, new ArrayObject());
+		$Proffer->beforeValidate($this->getMock('Cake\Event\Event', null, ['beforeValidate']), $entity, new ArrayObject());
 		$result = $entity->toArray();
 
 		$this->assertEquals($expected, $result);
 	}
 
 /**
- * @throws BadRequestException
+ * Data provider method for testing valid file uploads
+ *
+ * @return array
+ */
+	public function validFileProvider() {
+		return [
+			[
+				[
+					'photo' => [
+						'name' => 'image_640x480.jpg',
+						'tmp_name' => Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg',
+						'size' => 33000,
+						'error' => UPLOAD_ERR_OK
+					]
+				],
+				[
+					'filename' => 'image_640x480.jpg',
+					'dir' => 'proffer_test'
+				]
+			],
+			[
+				[
+					'photo' => [
+						'name' => 'image_480x640.jpg',
+						'tmp_name' => Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_480x640.jpg',
+						'size' => 45704,
+						'error' => UPLOAD_ERR_OK
+					]
+				],
+				[
+					'filename' => 'image_480x640.jpg',
+					'dir' => 'proffer_test'
+				]
+			],
+		];
+	}
+
+/**
+ * A bit of a unit and integration test as it will still dispatch the events to the listener
+ *
+ * @dataProvider validFileProvider
+ */
+	public function testBeforeSaveWithValidFile(array $entityData, array $expected) {
+		$table = $this->getMock('Cake\ORM\Table', null);
+		$Proffer = new ProfferTestPathBehavior($table, $this->__config);
+
+		$entity = new Entity($entityData);
+
+		$Proffer->beforeSave($this->getMock('Cake\Event\Event', null, ['beforeSave']), $entity, new ArrayObject());
+
+		$this->assertEquals($expected['filename'], $entity->get('photo'));
+		$this->assertEquals($expected['dir'], $entity->get('photo_dir'));
+
+		$this->assertFileExists(TMP . 'Tests' . DS . 'proffer_test' . DS . $expected['filename']);
+		$this->assertFileExists(TMP . 'Tests' . DS . 'proffer_test' . DS . 'portrait_' . $expected['filename']);
+		$this->assertFileExists(TMP . 'Tests' . DS . 'proffer_test' . DS . 'square_' . $expected['filename']);
+	}
+
+/**
+ * @expectedException Exception
  */
 	public function testBeforeSaveWithoutUploadingAFile() {
 		$table = $this->getMock('Cake\ORM\Table', null);
-		$this->__behavior = new ProfferBehavior($table, $this->__config);
+		$Proffer = new ProfferBehavior($table, $this->__config);
 
 		$entity = new Entity([
 			'photo' => [
 				'name' => '',
 				'tmp_name' => '',
 				'size' => '',
-				'error' => ''
+				'error' => UPLOAD_ERR_OK
 			]
 		]);
 
-		$this->__behavior->beforeSave($this->getMock('Cake\Event\Event', null, ['beforeSave']), $entity, new ArrayObject());
+		$Proffer->beforeSave($this->getMock('Cake\Event\Event', null, ['beforeSave']), $entity, new ArrayObject());
 	}
 
 /**
- * A bit of a unit and integration test as it will still dispatch the events to the listener
+ *
  */
-	public function testBeforeSaveWithValidFile() {
+	public function testBuildPath() {
+		$table = $this->getMock('Cake\ORM\Table', ['alias']);
+		$table->method('alias')->willReturn('Examples');
+
+		$Proffer = new ProfferBehavior($table, $this->__config);
+
+		$entity = new Entity([
+			'photo' => 'image_640x480.jpg',
+			'photo_dir' => 'seed_value'
+		]);
+
+		$result = $Proffer->getPath($table, $entity, 'photo', 'image_640x480.jpg');
+		$expected = [
+			'full' => WWW_ROOT . 'files/examples/seed_value/image_640x480.jpg',
+			'parts' => [
+				'root' => WWW_ROOT . 'files',
+				'table' => 'examples',
+				'seed' => 'seed_value',
+				'name' => 'image_640x480.jpg'
+			]
+		];
+
+		$this->assertEquals($expected, $result);
+	}
+
+/**
+ * @expectedException Exception
+ */
+	public function testFailedToMoveFile() {
 		$table = $this->getMock('Cake\ORM\Table', null);
-		$this->__behavior = new ProfferTestBehavior($table, $this->__config);
+		$Proffer = new ProfferTestMoveBehavior($table, $this->__config);
 
 		$entity = new Entity([
 			'photo' => [
 				'name' => 'image_640x480.jpg',
 				'tmp_name' => Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg',
-				'size' => '33000',
+				'size' => 33000,
 				'error' => UPLOAD_ERR_OK
 			]
 		]);
 
-		$this->__behavior->beforeSave($this->getMock('Cake\Event\Event', null, ['beforeSave']), $entity, new ArrayObject());
-
-		$expectedField = 'image_640x480.jpg';
-		$expectedSeed = 'proffer_test';
-
-		$this->assertEquals($expectedField, $entity->get('photo'));
-		$this->assertEquals($expectedSeed, $entity->get('photo_dir'));
-
-		$this->assertFileExists(TMP . 'Tests' . DS . 'proffer_test' . DS . 'image_640x480.jpg');
-		$this->assertFileExists(TMP . 'Tests' . DS . 'proffer_test' . DS . 'portrait_image_640x480.jpg');
-		$this->assertFileExists(TMP . 'Tests' . DS . 'proffer_test' . DS . 'square_image_640x480.jpg');
+		$Proffer->beforeSave($this->getMock('Cake\Event\Event', null, ['beforeSave']), $entity, new ArrayObject());
 	}
 
+	public function testAfterDelete() {
+		$this->markTestIncomplete('This test has not been completed yet.');
+
+		$table = $this->getMock('Cake\ORM\Table', null);
+		$Proffer = new ProfferBehavior($table, $this->__config);
+
+		$entity = new Entity();
+
+		$Proffer->afterDelete($this->getMock('Cake\Event\Event', null, ['afterDelete']), $entity, new ArrayObject());
+	}
 }

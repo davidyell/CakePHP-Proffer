@@ -67,7 +67,7 @@ class ImageTransform {
 
 		$image = $this->_getImagine()->open($path['full']);
 
-		if (isset($thumbSize['crop']) && $thumbSize['crop'] === true) {
+		if (isset($dimensions['crop']) && $dimensions['crop'] === true) {
 			$image = $this->_thumbnailCropScale($image, $dimensions['w'], $dimensions['h']);
 		} else {
 			$image = $this->_thumbnailScale($image, $dimensions['w'], $dimensions['h']);
