@@ -1,6 +1,7 @@
 <?php
 /**
- * Created by PhpStorm.
+ * ImageTransform class
+ * This class deals with creating thumbnails for image uploads using the Imagine library
  *
  * @author David Yell <neon1024@gmail.com>
  */
