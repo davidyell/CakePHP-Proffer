@@ -108,11 +108,11 @@ class ProfferBehavior extends Behavior {
 	public function afterDelete(Event $event, Entity $entity, ArrayObject $options) {
 		foreach ($this->config() as $field => $settings) {
 
-			$field = $entity->get($field);
+			$filename = $entity->get($field);
 			$dir = $entity->get($settings['dir']);
 
 			if (!empty($entity) && !empty($dir)) {
-				$path = $this->_buildPath($this->_table, $entity, $field, $entity->get($field));
+				$path = $this->_buildPath($this->_table, $entity, $field, $filename);
 
 				foreach ($settings['thumbnailSizes'] as $prefix => $dimensions) {
 					$filename = $path['parts']['root'] . DS . $path['parts']['table'] . DS . $path['parts']['seed'] . DS . $prefix . '_' . $entity->get($field);
@@ -179,7 +179,7 @@ class ProfferBehavior extends Behavior {
 		$path['root'] = WWW_ROOT . 'files';
 		$path['table'] = strtolower($table->alias());
 
-		$dir = $entity->get($this->config($field)['dir']);
+		$dir = $entity->get((string)$this->config($field)['dir']);
 		if (!empty($dir)) {
 			$path['seed'] = $entity->get($this->config($field)['dir']);
 		} else {

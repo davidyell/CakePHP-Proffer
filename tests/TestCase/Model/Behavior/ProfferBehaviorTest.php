@@ -240,13 +240,29 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testAfterDelete() {
-		$this->markTestIncomplete('This test has not been completed yet.');
-
-		$table = $this->getMock('Cake\ORM\Table', null);
+		$table = $this->getMock('Cake\ORM\Table', ['alias']);
+		$table->method('alias')->willReturn('Examples');
 		$Proffer = new ProfferBehavior($table, $this->__config);
 
-		$entity = new Entity();
+		$entity = new Entity([
+			'photo' => 'image_640x480.jpg',
+			'photo_dir' => 'proffer_test'
+		]);
+
+		$path = $Proffer->getPath($table, $entity, 'photo', 'image_640x480.jpg');
+
+		if (!file_exists($path['parts']['root'] . DS . $path['parts']['table'] . DS . $path['parts']['seed'] . DS)) {
+			mkdir($path['parts']['root'] . DS . $path['parts']['table'] . DS . $path['parts']['seed'] . DS, 0777, true);
+		}
+
+		copy(Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg', $path['full']);
+		copy(Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg', $path['parts']['root'] . DS . $path['parts']['table'] . DS . $path['parts']['seed'] . DS . 'square_' . $path['parts']['name']);
+		copy(Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg', $path['parts']['root'] . DS . $path['parts']['table'] . DS . $path['parts']['seed'] . DS . 'portrait_' . $path['parts']['name']);
 
 		$Proffer->afterDelete($this->getMock('Cake\Event\Event', null, ['afterDelete']), $entity, new ArrayObject());
+
+		$this->assertFileNotExists($path['full']);
+		$this->assertFileNotExists(WWW_ROOT . 'files' . DS . 'examples' . DS . 'proffer_test' . DS . 'square_' . $path['parts']['name']);
+		$this->assertFileNotExists(WWW_ROOT . 'files' . DS . 'examples' . DS . 'proffer_test' . DS . 'portrait_' . $path['parts']['name']);
 	}
 }
