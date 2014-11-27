@@ -138,7 +138,7 @@ class ProfferShell extends Shell {
 /**
  * Do some checks on the table which has been passed to make sure that it has what we need
  *
- * @param string $table
+ * @param string $table The table
  * @return void
  */
 	protected function _checkTable($table) {
