@@ -29,8 +29,8 @@ class ProfferTestPathBehavior extends ProfferBehavior {
  * @return bool
  */
 	protected function _moveUploadedFile($file, $destination) {
-		if (!file_exists(TMP . 'Tests' . DS . 'proffer_test' . DS)) {
-			mkdir(TMP . 'Tests' . DS . 'proffer_test' . DS, 0777, true);
+		if (!file_exists(TMP . 'ProfferTests' . DS . 'proffertest' . DS . 'photo' . DS . 'proffer_test' . DS)) {
+			mkdir(TMP . 'ProfferTests' . DS . 'proffertest' . DS . 'photo' . DS . 'proffer_test' . DS, 0777, true);
 		}
 
 		return copy($file, $destination);
