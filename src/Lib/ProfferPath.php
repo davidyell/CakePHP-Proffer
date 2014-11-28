@@ -63,7 +63,7 @@ class ProfferPath {
  * @param string $table The name of the table the behaviour is dealing with.
  */
 	protected function setTable($table) {
-		$this->__table = $table;
+		$this->__table = strtolower($table);
 	}
 
 /**
@@ -102,10 +102,14 @@ class ProfferPath {
 	}
 
 /**
- * @param string $filename The name of the actual file including it's extension
+ * @param string|array $filename The name of the actual file including it's extension
  */
 	protected function setFilename($filename) {
-		$this->__filename = $filename;
+		if (is_array($filename)) {
+			$this->__filename = $filename['name'];
+		} else {
+			$this->__filename = $filename;
+		}
 	}
 
 /**
@@ -133,11 +137,11 @@ class ProfferPath {
  * @return string
  */
 	protected function generateSeed($seed = null) {
-		if ($seed === null) {
-			return String::uuid();
+		if ($seed) {
+			return $seed;
 		}
 
-		return $seed;
+		return String::uuid();
 	}
 
 /**
