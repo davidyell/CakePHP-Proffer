@@ -11,6 +11,7 @@ use Cake\Event\Event;
 use Cake\Event\EventListenerInterface;
 use Imagine\Image\ImageInterface;
 use Proffer\Lib\ImageTransform;
+use Proffer\Lib\ProfferPath;
 
 class ProfferListener implements EventListenerInterface {
 
@@ -32,12 +33,12 @@ class ProfferListener implements EventListenerInterface {
  * Event handler for the beforeThumbs event
  *
  * @param Event $event The passed event
- * @param array $path Array of path data
+ * @param ProfferPath $path Array of path data
  * @param array $dimensions Array of dimensions in pixels
  * @param string $thumbnailMethod The engine to use to make thumbnails
  * @return ImageInterface
  */
-	public function beforeThumbs(Event $event, array $path, array $dimensions, $thumbnailMethod = 'gd') {
+	public function beforeThumbs(Event $event, ProfferPath $path, array $dimensions, $thumbnailMethod = 'gd') {
 		$transform = new ImageTransform();
 		return $transform->makeThumbnails($path, $dimensions, $thumbnailMethod);
 	}
@@ -47,11 +48,11 @@ class ProfferListener implements EventListenerInterface {
  *
  * @param Event $event The passed event
  * @param ImageInterface $image An Imagine image instance
- * @param array $path Array of path data
+ * @param ProfferPath $path Array of path data
  * @param string $prefix The thumbnail prefix
  * @return ImageInterface
  */
-	public function afterThumbs(Event $event, ImageInterface $image, array $path, $prefix) {
+	public function afterThumbs(Event $event, ImageInterface $image, ProfferPath $path, $prefix) {
 		$transform = new ImageTransform();
 		return $transform->saveThumbs($image, $path, $prefix);
 	}
