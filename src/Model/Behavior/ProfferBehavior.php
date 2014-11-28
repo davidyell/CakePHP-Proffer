@@ -12,7 +12,6 @@ use ArrayObject;
 use Cake\Event\Event;
 use Cake\ORM\Behavior;
 use Cake\ORM\Entity;
-use Cake\ORM\Table;
 use Exception;
 use Proffer\Event\ProfferListener;
 use Proffer\Lib\ProfferPath;

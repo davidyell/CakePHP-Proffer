@@ -35,7 +35,12 @@ class ProfferPath {
  * @param array $settings Array of settings for the upload field
  */
 	public function __construct(Table $table, Entity $entity, $field, $settings) {
-		$this->_setRoot(WWW_ROOT . 'files');
+		if (isset($settings['root'])) {
+			$this->_setRoot($settings['root']);
+		} else {
+			$this->_setRoot(WWW_ROOT . 'files');
+		}
+
 		$this->_setTable($table->alias());
 		$this->_setField($field);
 		$this->_setSeed($this->_generateSeed($entity->get($settings['dir'])));

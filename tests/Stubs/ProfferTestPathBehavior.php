@@ -1,8 +1,6 @@
 <?php
 namespace Proffer\Tests\Stubs;
 
-use Cake\ORM\Entity;
-use Cake\ORM\Table;
 use Proffer\Model\Behavior\ProfferBehavior;
 
 /**

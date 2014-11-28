@@ -10,6 +10,7 @@ namespace Proffer\Tests\Model\Behavior;
 use ArrayObject;
 use Cake\Core\Plugin;
 use Cake\ORM\Entity;
+use Cake\ORM\Table;
 use PHPUnit_Framework_TestCase;
 use Proffer\Event\ImageTransform;
 use Proffer\Model\Behavior\ProfferBehavior;
@@ -33,7 +34,11 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase {
 		]
 	];
 
+/**
+ * Adjust the default root so that it doesn't overwrite and user files
+ */
 	public function setUp() {
+		$this->__config['photo']['root'] = TMP . 'ProfferTests' . DS;
 	}
 
 /**
@@ -64,8 +69,53 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase {
  * @return void
  */
 	public function tearDown() {
-		$this->__rrmdir(WWW_ROOT . 'files' . DS . 'proffertest' . DS);
-		$this->__rrmdir(TMP . 'Tests' . DS);
+		$this->__rrmdir(TMP . 'ProfferTests' . DS);
+	}
+
+/**
+ * Generate a mock of the ProfferPath class with various set returns to ensure that the path is always consistent
+ *
+ * @param Table $table Instance of the table
+ * @param Entity $entity Instance of the entity
+ * @return \PHPUnit_Framework_MockObject_MockObject
+ */
+	private function __getProfferPathMock(Table $table, Entity $entity) {
+		$path = $this->getMockBuilder('Proffer\Lib\ProfferPath')
+			->setConstructorArgs([$table, $entity, 'photo', $this->__config['photo']])
+			->setMethods(['fullPath', 'getFolder'])
+			->getMock();
+
+		$path->expects($this->any())
+			->method('fullPath')
+			->with($this->logicalOr(
+				$this->equalTo(null),
+				$this->equalTo('square'),
+				$this->equalTo('portrait')
+			))
+			->will($this->returnCallback(
+				function ($param) use ($table, $entity) {
+					$filename = '';
+					if ($param !== null) {
+						$filename = $param . '_';
+					}
+
+					$entityFieldData = $entity->get('photo');
+
+					if (is_array($entityFieldData)) {
+						$filename .= $entityFieldData['name'];
+					} else {
+						$filename .= $entityFieldData;
+					}
+
+					return TMP . 'ProfferTests' . DS . $table->alias() . DS . 'photo' . DS . 'proffer_test' . DS . $filename;
+				}
+			));
+
+		$path->expects($this->any())
+			->method('getFolder')
+			->willReturn(TMP . 'ProfferTests' . DS . $table->alias() . DS . 'photo' . DS . 'proffer_test' . DS);
+
+		return $path;
 	}
 
 /**
@@ -188,16 +238,16 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase {
 		$table->method('alias')
 			->willReturn('ProfferTest');
 
+		$entity = new Entity($entityData);
+		$path = $this->__getProfferPathMock($table, $entity, 'photo');
 		$Proffer = new ProfferTestPathBehavior($table, $this->__config);
 
-		$entity = new Entity($entityData);
-
-		$Proffer->beforeSave($this->getMock('Cake\Event\Event', null, ['beforeSave']), $entity, new ArrayObject());
+		$Proffer->beforeSave($this->getMock('Cake\Event\Event', null, ['beforeSave']), $entity, new ArrayObject(), $path);
 
 		$this->assertEquals($expected['filename'], $entity->get('photo'));
 		$this->assertEquals($expected['dir'], $entity->get('photo_dir'));
 
-		$testUploadPath = WWW_ROOT . 'files' . DS . 'proffertest' . DS . 'photo' . DS . 'proffer_test' . DS;
+		$testUploadPath = $path->getFolder();
 
 		$this->assertFileExists($testUploadPath . $expected['filename']);
 		$this->assertFileExists($testUploadPath . 'portrait_' . $expected['filename']);
@@ -212,6 +262,8 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase {
 		$table->method('alias')
 			->willReturn('ProfferTest');
 
+		$path = $this->__getProfferPathMock($table, new Entity(['photo' => 'image_640x480.jpg', 'photo_dir' => 'proffer_test']), 'photo');
+
 		$Proffer = new ProfferBehavior($table, $this->__config);
 
 		$entity = new Entity([
@@ -223,7 +275,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase {
 			]
 		]);
 
-		$Proffer->beforeSave($this->getMock('Cake\Event\Event', null, ['beforeSave']), $entity, new ArrayObject());
+		$Proffer->beforeSave($this->getMock('Cake\Event\Event', null, ['beforeSave']), $entity, new ArrayObject(), $path);
 	}
 
 /**
@@ -245,9 +297,14 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase {
 			]
 		]);
 
-		$Proffer->beforeSave($this->getMock('Cake\Event\Event', null, ['beforeSave']), $entity, new ArrayObject());
+		$path = $this->__getProfferPathMock($table, $entity, 'photo');
+
+		$Proffer->beforeSave($this->getMock('Cake\Event\Event', null, ['beforeSave']), $entity, new ArrayObject(), $path);
 	}
 
+/**
+ * Test afterDelete
+ */
 	public function testAfterDelete() {
 		$table = $this->getMock('Cake\ORM\Table', ['alias']);
 		$table->method('alias')
@@ -260,7 +317,8 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase {
 			'photo_dir' => 'proffer_test'
 		]);
 
-		$testUploadPath = WWW_ROOT . 'files' . DS . 'proffertest' . DS . 'photo' . DS . 'proffer_test' . DS;
+		$path = $this->__getProfferPathMock($table, $entity, 'photo');
+		$testUploadPath = $path->getFolder();
 
 		if (!file_exists($testUploadPath)) {
 			mkdir($testUploadPath, 0777, true);
@@ -270,7 +328,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase {
 		copy(Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg', $testUploadPath . 'square_image_640x480.jpg');
 		copy(Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg', $testUploadPath . 'portrait_image_640x480.jpg');
 
-		$Proffer->afterDelete($this->getMock('Cake\Event\Event', null, ['afterDelete']), $entity, new ArrayObject());
+		$Proffer->afterDelete($this->getMock('Cake\Event\Event', null, ['afterDelete']), $entity, new ArrayObject(), $path);
 
 		$this->assertFileNotExists($testUploadPath . 'image_640x480.jpg');
 		$this->assertFileNotExists($testUploadPath . 'square_image_640x480.jpg');
