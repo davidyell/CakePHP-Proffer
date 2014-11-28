@@ -29,6 +29,7 @@ You will need to add the behaviour to your Table class.
 <?php
 $this->addBehavior('Proffer.Proffer', [
 	'photo' => [	// The name of your upload field
+		'root' => WWW_DIR . 'files', // Customise the root upload folder here, or leave blank to use the default
 		'dir' => 'photo_dir',	// The name of the field to store the folder
 		'thumbnailSizes' => [
 			'square' => ['w' => 200, 'h' => 200],	// Define the size and prefix of your thumbnails
