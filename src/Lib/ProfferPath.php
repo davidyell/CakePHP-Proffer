@@ -15,10 +15,15 @@ use Cake\Utility\String;
 class ProfferPath {
 
 	private $__root;
+
 	private $__table;
+
 	private $__field;
+
 	private $__seed;
+
 	private $__filename;
+
 	private $__prefixes = [];
 
 /**
@@ -30,15 +35,17 @@ class ProfferPath {
  * @param array $settings Array of settings for the upload field
  */
 	public function __construct(Table $table, Entity $entity, $field, $settings) {
-		$this->setRoot(WWW_ROOT . 'files');
-		$this->setTable($table->alias());
-		$this->setField($field);
-		$this->setSeed($this->generateSeed($entity->get($settings['dir'])));
-		$this->setPrefixes($settings['thumbnailSizes']);
-		$this->setFilename($entity->get($field));
+		$this->_setRoot(WWW_ROOT . 'files');
+		$this->_setTable($table->alias());
+		$this->_setField($field);
+		$this->_setSeed($this->_generateSeed($entity->get($settings['dir'])));
+		$this->_setPrefixes($settings['thumbnailSizes']);
+		$this->_setFilename($entity->get($field));
 	}
 
 /**
+ * Get the root
+ *
  * @return string
  */
 	public function getRoot() {
@@ -46,13 +53,18 @@ class ProfferPath {
 	}
 
 /**
+ * Set the root
+ *
  * @param string $root The absolute path to the root of your upload folder, all files will be uploaded under this path.
+ * @return void
  */
-	protected function setRoot($root) {
+	protected function _setRoot($root) {
 		$this->__root = $root;
 	}
 
 /**
+ * Get the table
+ *
  * @return string
  */
 	public function getTable() {
@@ -60,13 +72,18 @@ class ProfferPath {
 	}
 
 /**
+ * Set the table
+ *
  * @param string $table The name of the table the behaviour is dealing with.
+ * @return void
  */
-	protected function setTable($table) {
+	protected function _setTable($table) {
 		$this->__table = strtolower($table);
 	}
 
 /**
+ * Get the field
+ *
  * @return string
  */
 	public function getField() {
@@ -74,13 +91,18 @@ class ProfferPath {
 	}
 
 /**
+ * Set the field
+ *
  * @param string $field The name of the upload field
+ * @return void
  */
-	protected function setField($field) {
+	protected function _setField($field) {
 		$this->__field = $field;
 	}
 
 /**
+ * Get the seed
+ *
  * @return string
  */
 	public function getSeed() {
@@ -88,13 +110,18 @@ class ProfferPath {
 	}
 
 /**
+ * Set the seed
+ *
  * @param string $seed The seed string used to create a folder for the uploaded files
+ * @return void
  */
-	protected function setSeed($seed) {
+	protected function _setSeed($seed) {
 		$this->__seed = $seed;
 	}
 
 /**
+ * Get the filename
+ *
  * @return string
  */
 	public function getFilename() {
@@ -102,9 +129,12 @@ class ProfferPath {
 	}
 
 /**
+ * Set the filename or pull it from the upload array
+ *
  * @param string|array $filename The name of the actual file including it's extension
+ * @return void
  */
-	protected function setFilename($filename) {
+	protected function _setFilename($filename) {
 		if (is_array($filename)) {
 			$this->__filename = $filename['name'];
 		} else {
@@ -113,6 +143,8 @@ class ProfferPath {
 	}
 
 /**
+ * Get all the thumbnail size prefixes
+ *
  * @return array
  */
 	public function getPrefixes() {
@@ -123,8 +155,9 @@ class ProfferPath {
  * Take the configured thumbnail sizes and store the prefixes
  *
  * @param array $thumbnailSizes The 'thumbnailSizes' dimension of the behaviour configuration array
+ * @return void
  */
-	protected function setPrefixes($thumbnailSizes) {
+	protected function _setPrefixes($thumbnailSizes) {
 		foreach ($thumbnailSizes as $prefix => $dimensions) {
 			array_push($this->__prefixes, $prefix);
 		}
@@ -136,7 +169,7 @@ class ProfferPath {
  * @param string $seed The current seed if there is one
  * @return string
  */
-	protected function generateSeed($seed = null) {
+	protected function _generateSeed($seed = null) {
 		if ($seed) {
 			return $seed;
 		}
@@ -184,6 +217,7 @@ class ProfferPath {
  *
  * @param string $folder Absolute path to the folder
  * @param bool $rmdir If you want to remove the folder as well
+ * @return void
  */
 	public function deleteFiles($folder, $rmdir = false) {
 		array_map('unlink', glob($folder . DS . '*'));

@@ -168,36 +168,6 @@ class ProfferBehavior extends Behavior {
 	}
 
 /**
- * Build a path to upload a file to. Both parts and full path
- *
- * @deprecated
- *
- * @param Table $table The table
- * @param Entity $entity The entity
- * @param string $field The upload field name
- * @param string $filename The name of the file
- * @return array
- */
-	protected function _buildPath(Table $table, Entity $entity, $field, $filename) {
-		var_dump(debug_backtrace());exit;
-	}
-
-/**
- * Wrapper method for the shell
- *
- * @deprecated
- *
- * @param Table $table The table
- * @param Entity $entity The entity
- * @param string $field The upload field name
- * @param string $filename The name of the file
- * @return array
- */
-	public function getPath(Table $table, Entity $entity, $field, $filename) {
-		var_dump(debug_backtrace());exit;
-	}
-
-/**
  * Wrapper method for is_uploaded_file so that we can test
  *
  * @param string $file The tmp_name path to the uploaded file
