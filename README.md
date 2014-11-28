@@ -1,6 +1,8 @@
 #CakePHP3-Proffer
 An upload plugin for CakePHP 3.
 
+![Proffer definition](http://i.imgur.com/OaAqQ6x.png)
+
 ##What is it?
 So I needed a way to upload images in CakePHP 3, and as I couldn't find anything that I liked I decided to write my own 
 in a similar vein to how [@josegonzalez](https://github.com/josegonzalez) had written his 
