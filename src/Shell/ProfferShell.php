@@ -4,6 +4,7 @@ namespace Proffer\Shell;
 use Cake\Console\Shell;
 use Cake\Core\Exception\Exception;
 use Proffer\Lib\ImageTransform;
+use Proffer\Lib\ProfferPath;
 
 /**
  * Proffer shell command.
@@ -79,7 +80,7 @@ class ProfferShell extends Shell {
 				]);
 
 			foreach ($records as $item) {
-				$path = $this->__Table->behaviors()->Proffer->getPath($this->__Table, $item, $field, $item->get($field));
+				$path = new ProfferPath($this->__Table, $item, $field, $settings);
 				$engine = $settings['thumbnailMethod'];
 
 				foreach ($settings['thumbnailSizes'] as $prefix => $dimensions) {

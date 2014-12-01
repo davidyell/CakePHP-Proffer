@@ -51,7 +51,7 @@ class ProfferBehavior extends Behavior {
  */
 	public function beforeValidate(Event $event, Entity $entity, ArrayObject $options) {
 		foreach ($this->config() as $field => $settings) {
-			if ($this->_table->validator()->isEmptyAllowed($field, false) && $entity->get($field)['error'] === UPLOAD_ERR_NO_FILE) {
+			if ($this->_table->validator()->isEmptyAllowed($field, false) && isset($entity->get($field)['error']) && $entity->get($field)['error'] === UPLOAD_ERR_NO_FILE) {
 				$entity->__unset($field);
 			}
 		}
