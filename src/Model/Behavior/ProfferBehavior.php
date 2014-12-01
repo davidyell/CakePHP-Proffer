@@ -10,13 +10,11 @@ namespace Proffer\Model\Behavior;
 
 use ArrayObject;
 use Cake\Event\Event;
-use Cake\Network\Exception\BadRequestException;
 use Cake\ORM\Behavior;
 use Cake\ORM\Entity;
-use Cake\ORM\Table;
-use Cake\Utility\String;
 use Exception;
 use Proffer\Event\ProfferListener;
+use Proffer\Lib\ProfferPath;
 
 /**
  * Proffer behavior
@@ -65,10 +63,11 @@ class ProfferBehavior extends Behavior {
  * @param Event $event The event
  * @param Entity $entity The entity
  * @param ArrayObject $options Array of options
+ * @param ProfferPath $path Inject an instance of ProfferPath
  * @return true
  * @throws Exception
  */
-	public function beforeSave(Event $event, Entity $entity, ArrayObject $options) {
+	public function beforeSave(Event $event, Entity $entity, ArrayObject $options, ProfferPath $path = null) {
 		foreach ($this->config() as $field => $settings) {
 			if ($entity->has($field) && is_array($entity->get($field)) && $entity->get($field)['error'] === UPLOAD_ERR_OK) {
 
@@ -76,14 +75,17 @@ class ProfferBehavior extends Behavior {
 					throw new Exception('File must be uploaded using HTTP post.');
 				}
 
-				$path = $this->_buildPath($this->_table, $entity, $field, $entity->get($field)['name']);
+				if (!$path) {
+					$path = new ProfferPath($this->_table, $entity, $field, $settings);
+				}
+				$path->createPathFolder();
 
-				if ($this->_moveUploadedFile($entity->get($field)['tmp_name'], $path['full'])) {
+				if ($this->_moveUploadedFile($entity->get($field)['tmp_name'], $path->fullPath())) {
 					$entity->set($field, $entity->get($field)['name']);
-					$entity->set($settings['dir'], $path['parts']['seed']);
+					$entity->set($settings['dir'], $path->getSeed());
 
 					// Don't generate thumbnails for non-images
-					if (getimagesize($path['full']) !== false) {
+					if (getimagesize($path->fullPath()) !== false) {
 						$this->_makeThumbs($field, $path);
 					}
 				} else {
@@ -103,26 +105,28 @@ class ProfferBehavior extends Behavior {
  * @param Event $event The passed event
  * @param Entity $entity The entity
  * @param ArrayObject $options Array of options
+ * @param ProfferPath $path Inject and instance of ProfferPath
  * @return bool
  */
-	public function afterDelete(Event $event, Entity $entity, ArrayObject $options) {
+	public function afterDelete(Event $event, Entity $entity, ArrayObject $options, ProfferPath $path = null) {
 		foreach ($this->config() as $field => $settings) {
 
-			$filename = $entity->get($field);
 			$dir = $entity->get($settings['dir']);
 
 			if (!empty($entity) && !empty($dir)) {
-				$path = $this->_buildPath($this->_table, $entity, $field, $filename);
+				if (!$path) {
+					$path = new ProfferPath($this->_table, $entity, $field, $settings);
+				}
 
 				foreach ($settings['thumbnailSizes'] as $prefix => $dimensions) {
-					$filename = $path['parts']['root'] . DS . $path['parts']['table'] . DS . $path['parts']['seed'] . DS . $prefix . '_' . $entity->get($field);
+					$filename = $path->fullPath($prefix);
 					unlink($filename);
 				}
 
-				$filename = $path['parts']['root'] . DS . $path['parts']['table'] . DS . $path['parts']['seed'] . DS . $entity->get($field);
+				$filename = $path->fullPath();
 				unlink($filename);
 
-				rmdir($path['parts']['root'] . DS . $path['parts']['table'] . DS . $path['parts']['seed'] . DS);
+				rmdir($path->getFolder());
 			}
 		}
 
@@ -133,10 +137,10 @@ class ProfferBehavior extends Behavior {
  * Dispatch events to allow generation of thumbnails
  *
  * @param string $field The name of the upload field
- * @param array $path The path array
+ * @param ProfferPath $path The path array
  * @return void
  */
-	protected function _makeThumbs($field, array $path) {
+	protected function _makeThumbs($field, ProfferPath $path) {
 		foreach ($this->config($field)['thumbnailSizes'] as $prefix => $dimensions) {
 
 			$eventParams = ['path' => $path, 'dimensions' => $dimensions, 'thumbnailMethod' => null];
@@ -164,50 +168,6 @@ class ProfferBehavior extends Behavior {
 				$image = $event->result;
 			}
 		}
-	}
-
-/**
- * Build a path to upload a file to. Both parts and full path
- *
- * @param Table $table The table
- * @param Entity $entity The entity
- * @param string $field The upload field name
- * @param string $filename The name of the file
- * @return array
- */
-	protected function _buildPath(Table $table, Entity $entity, $field, $filename) {
-		$path['root'] = WWW_ROOT . 'files';
-		$path['table'] = strtolower($table->alias());
-
-		$dir = $entity->get((string)$this->config($field)['dir']);
-		if (!empty($dir)) {
-			$path['seed'] = $entity->get($this->config($field)['dir']);
-		} else {
-			$path['seed'] = String::uuid();
-		}
-
-		$path['name'] = $filename;
-
-		$fullPath = implode(DS, $path);
-
-		if (!file_exists($path['root'] . DS . $path['table'] . DS . $path['seed'] . DS)) {
-			mkdir($path['root'] . DS . $path['table'] . DS . $path['seed'] . DS, 0777, true);
-		}
-
-		return ['full' => $fullPath, 'parts' => $path];
-	}
-
-/**
- * Wrapper method for the shell
- *
- * @param Table $table The table
- * @param Entity $entity The entity
- * @param string $field The upload field name
- * @param string $filename The name of the file
- * @return array
- */
-	public function getPath(Table $table, Entity $entity, $field, $filename) {
-		return $this->_buildPath($table, $entity, $field, $filename);
 	}
 
 /**

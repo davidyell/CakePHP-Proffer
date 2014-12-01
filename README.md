@@ -1,6 +1,8 @@
 #CakePHP3-Proffer
 An upload plugin for CakePHP 3.
 
+![Proffer definition](http://i.imgur.com/OaAqQ6x.png)
+
 ##What is it?
 So I needed a way to upload images in CakePHP 3, and as I couldn't find anything that I liked I decided to write my own 
 in a similar vein to how [@josegonzalez](https://github.com/josegonzalez) had written his 
@@ -29,6 +31,7 @@ You will need to add the behaviour to your Table class.
 <?php
 $this->addBehavior('Proffer.Proffer', [
 	'photo' => [	// The name of your upload field
+		'root' => WWW_DIR . 'files', // Customise the root upload folder here, or leave blank to use the default
 		'dir' => 'photo_dir',	// The name of the field to store the folder
 		'thumbnailSizes' => [
 			'square' => ['w' => 200, 'h' => 200],	// Define the size and prefix of your thumbnails
@@ -44,6 +47,16 @@ above my upload field is called `photo` and I pass an array of options, namely t
 directory in.
 
 By default files will be uploaded to `/webroot/files/<table alias>/<uuid>/<filename>`.
+
+In order to upload a file to your application you will need to add the form fields to your view.
+```php
+echo $this-Form->create($entity, ['type' => 'file']); // Dont miss this out or no files will upload
+echo $this->Form->input('image', ['type' => 'file']);
+echo $this->Form->input('image_dir', ['type' => 'hidden']); // Import for edit forms
+echo $this->Form->button(__('Submit'));
+echo $this->Form->end();
+```
+This will turn your form into a multipart form and add the relevant fields.
 
 ##Validation
 Proffer comes with some basic validation rules which you can use to validate your uploads. In order to use these you 

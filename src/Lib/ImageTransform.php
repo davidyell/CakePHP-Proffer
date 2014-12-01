@@ -1,6 +1,7 @@
 <?php
 /**
- * Created by PhpStorm.
+ * ImageTransform class
+ * This class deals with creating thumbnails for image uploads using the Imagine library
  *
  * @author David Yell <neon1024@gmail.com>
  */
@@ -57,15 +58,15 @@ class ImageTransform {
 /**
  * Generate thumbnails
  *
- * @param array $path The path array
+ * @param ProfferPath $path The path array
  * @param array $dimensions Array of thumbnail dimensions
  * @param string $thumbnailMethod Which engine to use to make thumbnails
  * @return ImageInterface
  */
-	public function makeThumbnails(array $path, array $dimensions, $thumbnailMethod = 'gd') {
+	public function makeThumbnails(ProfferPath $path, array $dimensions, $thumbnailMethod = 'gd') {
 		$this->_setImagine($thumbnailMethod);
 
-		$image = $this->_getImagine()->open($path['full']);
+		$image = $this->_getImagine()->open($path->fullPath());
 
 		if (isset($dimensions['crop']) && $dimensions['crop'] === true) {
 			$image = $this->_thumbnailCropScale($image, $dimensions['w'], $dimensions['h']);
@@ -80,12 +81,12 @@ class ImageTransform {
  * Save thumbnail to the file system
  *
  * @param ImageInterface $image The ImageInterface instance from Imagine
- * @param array $path The path array
+ * @param ProfferPath $path The path array
  * @param string $prefix The thumbnail size prefix
  * @return ImageInterface
  */
-	public function saveThumbs(ImageInterface $image, array $path, $prefix) {
-		$filePath = $path['parts']['root'] . DS . $path['parts']['table'] . DS . $path['parts']['seed'] . DS . $prefix . '_' . $path['parts']['name'];
+	public function saveThumbs(ImageInterface $image, ProfferPath $path, $prefix) {
+		$filePath = $path->fullPath($prefix);
 		$image->save($filePath);
 
 		return $image;
@@ -99,7 +100,7 @@ class ImageTransform {
  * @param int $height The height in pixels
  * @return ImageInterface
  */
-	protected function _thumbnailScale($image, $width, $height) {
+	protected function _thumbnailScale(ImageInterface $image, $width, $height) {
 		$transformation = new Transformation();
 		$transformation->thumbnail(new Box($width, $height));
 		return $transformation->apply($image);
@@ -113,7 +114,7 @@ class ImageTransform {
  * @param int $targetHeight The height in pixels
  * @return ImageInterface
  */
-	protected function _thumbnailCropScale($image, $targetWidth, $targetHeight) {
+	protected function _thumbnailCropScale(ImageInterface $image, $targetWidth, $targetHeight) {
 		$target = new Box($targetWidth, $targetHeight);
 		$sourceSize = $image->getSize();
 
