@@ -240,7 +240,24 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase {
 
 		$entity = new Entity($entityData);
 		$path = $this->__getProfferPathMock($table, $entity, 'photo');
-		$Proffer = new ProfferTestPathBehavior($table, $this->__config);
+
+		$Proffer = $this->getMockBuilder('Proffer\Model\Behavior\ProfferBehavior')
+			->setConstructorArgs([$table, $this->__config])
+			->setMethods(['_isUploadedFile', '_moveUploadedFile'])
+			->getMock();
+
+		$Proffer->expects($this->once())
+			->method('_isUploadedFile')
+			->willReturn(true);
+
+		$Proffer->expects($this->once())
+			->method('_moveUploadedFile')
+			->willReturnCallback(function ($source, $destination) {
+				if (!file_exists(pathinfo($destination, PATHINFO_DIRNAME))) {
+					mkdir(pathinfo($destination, PATHINFO_DIRNAME), 0777, true);
+				}
+				return copy($source, $destination);
+			});
 
 		$Proffer->beforeSave($this->getMock('Cake\Event\Event', null, ['beforeSave']), $entity, new ArrayObject(), $path);
 
@@ -264,7 +281,18 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase {
 
 		$path = $this->__getProfferPathMock($table, new Entity(['photo' => 'image_640x480.jpg', 'photo_dir' => 'proffer_test']), 'photo');
 
-		$Proffer = new ProfferBehavior($table, $this->__config);
+		$Proffer = $this->getMockBuilder('Proffer\Model\Behavior\ProfferBehavior')
+			->setConstructorArgs([$table, $this->__config])
+			->setMethods(['_isUploadedFile', '_moveUploadedFile'])
+			->getMock();
+
+		$Proffer->expects($this->once())
+			->method('_isUploadedFile')
+			->willReturn(false);
+
+		$Proffer->expects($this->never())
+			->method('_moveUploadedFile')
+			->willReturn(false);
 
 		$entity = new Entity([
 			'photo' => [
@@ -286,7 +314,18 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase {
 		$table->method('alias')
 			->willReturn('ProfferTest');
 
-		$Proffer = new ProfferTestMoveBehavior($table, $this->__config);
+		$Proffer = $this->getMockBuilder('Proffer\Model\Behavior\ProfferBehavior')
+			->setConstructorArgs([$table, $this->__config])
+			->setMethods(['_isUploadedFile', '_moveUploadedFile'])
+			->getMock();
+
+		$Proffer->expects($this->once())
+			->method('_isUploadedFile')
+			->willReturn(true);
+
+		$Proffer->expects($this->once())
+			->method('_moveUploadedFile')
+			->willReturn(false);
 
 		$entity = new Entity([
 			'photo' => [
