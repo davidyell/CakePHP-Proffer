@@ -14,7 +14,7 @@ class ProfferShell extends Shell {
 /**
  * Store the table instance
  *
- * @var Cake\ORM\Table $table Table instance
+ * @var \Cake\ORM\Table $table Table instance
  */
 	private $__Table;
 
