@@ -48,6 +48,16 @@ directory in.
 
 By default files will be uploaded to `/webroot/files/<table alias>/<uuid>/<filename>`.
 
+In order to upload a file to your application you will need to add the form fields to your view.
+```php
+echo $this-Form->create($entity, ['type' => 'file']); // Dont miss this out or no files will upload
+echo $this->Form->input('image', ['type' => 'file']);
+echo $this->Form->input('image_dir', ['type' => 'hidden']); // Import for edit forms
+echo $this->Form->button(__('Submit'));
+echo $this->Form->end();
+```
+This will turn your form into a multipart form and add the relevant fields.
+
 ##Validation
 Proffer comes with some basic validation rules which you can use to validate your uploads. In order to use these you 
 will need to load the validation rules and apply them to your field.
