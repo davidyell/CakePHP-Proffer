@@ -33,72 +33,72 @@ mb_internal_encoding('UTF-8');
 Configure::write('debug', true);
 
 Configure::write('App', [
-	'namespace' => 'App',
-	'encoding' => 'UTF-8',
-	'base' => false,
-	'baseUrl' => false,
-	'dir' => 'src',
-	'webroot' => 'webroot',
-	'www_root' => APP . 'webroot',
-	'fullBaseUrl' => 'http://localhost',
-	'imageBaseUrl' => 'img/',
-	'jsBaseUrl' => 'js/',
-	'cssBaseUrl' => 'css/',
-	'paths' => [
-		'plugins' => [APP . 'Plugin' . DS],
-		'templates' => [APP . 'Template' . DS]
-	]
+    'namespace' => 'App',
+    'encoding' => 'UTF-8',
+    'base' => false,
+    'baseUrl' => false,
+    'dir' => 'src',
+    'webroot' => 'webroot',
+    'www_root' => APP . 'webroot',
+    'fullBaseUrl' => 'http://localhost',
+    'imageBaseUrl' => 'img/',
+    'jsBaseUrl' => 'js/',
+    'cssBaseUrl' => 'css/',
+    'paths' => [
+        'plugins' => [APP . 'Plugin' . DS],
+        'templates' => [APP . 'Template' . DS]
+    ]
 ]);
 
 Configure::write('Session', [
-	'defaults' => 'php'
+    'defaults' => 'php'
 ]);
 
 Cache::config([
-	'_cake_core_' => [
-		'engine' => 'File',
-		'prefix' => 'cake_core_',
-		'serialize' => true
-	],
-	'_cake_model_' => [
-		'engine' => 'File',
-		'prefix' => 'cake_model_',
-		'serialize' => true
-	],
-	'default' => [
-		'engine' => 'File',
-		'prefix' => 'default_',
-		'serialize' => true
-	]
+    '_cake_core_' => [
+        'engine' => 'File',
+        'prefix' => 'cake_core_',
+        'serialize' => true
+    ],
+    '_cake_model_' => [
+        'engine' => 'File',
+        'prefix' => 'cake_model_',
+        'serialize' => true
+    ],
+    'default' => [
+        'engine' => 'File',
+        'prefix' => 'default_',
+        'serialize' => true
+    ]
 ]);
 
 // Ensure default test connection is defined
 if (!getenv('db_class')) {
-	putenv('db_class=Cake\Database\Driver\Sqlite');
-	putenv('db_dsn=sqlite::memory:');
+    putenv('db_class=Cake\Database\Driver\Sqlite');
+    putenv('db_dsn=sqlite::memory:');
 }
 
 ConnectionManager::config('test', [
-	'className' => 'Cake\Database\Connection',
-	'driver' => getenv('db_class'),
-	'dsn' => getenv('db_dsn'),
-	'database' => getenv('db_database'),
-	'username' => getenv('db_login'),
-	'password' => getenv('db_password'),
-	'timezone' => 'UTC'
+    'className' => 'Cake\Database\Connection',
+    'driver' => getenv('db_class'),
+    'dsn' => getenv('db_dsn'),
+    'database' => getenv('db_database'),
+    'username' => getenv('db_login'),
+    'password' => getenv('db_password'),
+    'timezone' => 'UTC'
 ]);
 
 Log::config([
-	'debug' => [
-		'engine' => 'Cake\Log\Engine\FileLog',
-		'levels' => ['notice', 'info', 'debug'],
-		'file' => 'debug',
-	],
-	'error' => [
-		'engine' => 'Cake\Log\Engine\FileLog',
-		'levels' => ['warning', 'error', 'critical', 'alert', 'emergency'],
-		'file' => 'error',
-	]
+    'debug' => [
+        'engine' => 'Cake\Log\Engine\FileLog',
+        'levels' => ['notice', 'info', 'debug'],
+        'file' => 'debug',
+    ],
+    'error' => [
+        'engine' => 'Cake\Log\Engine\FileLog',
+        'levels' => ['warning', 'error', 'critical', 'alert', 'emergency'],
+        'file' => 'error',
+    ]
 ]);
 
 Plugin::load('Proffer', ['path' => ROOT]);
