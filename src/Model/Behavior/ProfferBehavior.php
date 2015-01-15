@@ -68,7 +68,6 @@ class ProfferBehavior extends Behavior
         foreach ($this->config() as $field => $settings) {
             if ($entity->has($field) && is_array($entity->get($field)) &&
                 $entity->get($field)['error'] === UPLOAD_ERR_OK) {
-
                 if (!$this->isUploadedFile($entity->get($field)['tmp_name'])) {
                     throw new Exception('File must be uploaded using HTTP post.');
                 }
@@ -109,7 +108,6 @@ class ProfferBehavior extends Behavior
     public function afterDelete(Event $event, Entity $entity, ArrayObject $options, ProfferPath $path = null)
     {
         foreach ($this->config() as $field => $settings) {
-
             $dir = $entity->get($settings['dir']);
 
             if (!empty($entity) && !empty($dir)) {
@@ -142,7 +140,6 @@ class ProfferBehavior extends Behavior
     protected function makeThumbs($field, ProfferPath $path)
     {
         foreach ($this->config($field)['thumbnailSizes'] as $prefix => $dimensions) {
-
             $eventParams = ['path' => $path, 'dimensions' => $dimensions, 'thumbnailMethod' => null];
 
             if (isset($this->config($field)['thumbnailMethod'])) {

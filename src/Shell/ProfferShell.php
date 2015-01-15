@@ -162,7 +162,11 @@ class ProfferShell extends Shell
         }
 
         if (!$this->Table->hasBehavior('Proffer')) {
-            $this->out(__("<error>The table '" . $this->Table->alias() . "' does not have the Proffer behavior attached.</error>"));
+            $out = __(
+                "<error>The table '" . $this->Table->alias() .
+                "' does not have the Proffer behavior attached.</error>"
+            );
+            $this->out($out);
             exit;
         }
     }
