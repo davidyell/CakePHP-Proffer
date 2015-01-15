@@ -69,9 +69,12 @@ class ProfferPathTest extends PHPUnit_Framework_TestCase
                     ]
                 ],
                 [
-                    TMP . 'ProfferTest' . DS . 'proffertest' . DS . 'photo' . DS . 'proffer_test' . DS . 'image_640x480.jpg',
-                    TMP . 'ProfferTest' . DS . 'proffertest' . DS . 'photo' . DS . 'proffer_test' . DS . 'square_image_640x480.jpg',
-                    TMP . 'ProfferTest' . DS . 'proffertest' . DS . 'photo' . DS . 'proffer_test' . DS . 'squareCrop_image_640x480.jpg'
+                    TMP . 'ProfferTest' . DS . 'proffertest' . DS . 'photo' . DS . 'proffer_test' .
+                    DS . 'image_640x480.jpg',
+                    TMP . 'ProfferTest' . DS . 'proffertest' . DS . 'photo' . DS . 'proffer_test' .
+                    DS . 'square_image_640x480.jpg',
+                    TMP . 'ProfferTest' . DS . 'proffertest' . DS . 'photo' . DS . 'proffer_test' .
+                    DS . 'squareCrop_image_640x480.jpg'
                 ]
             ],
             [
@@ -93,9 +96,12 @@ class ProfferPathTest extends PHPUnit_Framework_TestCase
                     ]
                 ],
                 [
-                    TMP . 'ProfferTest' . DS . 'proffertest' . DS . 'profile_picture_image' . DS . 'proffer_test' . DS . 'image_640x480.jpg',
-                    TMP . 'ProfferTest' . DS . 'proffertest' . DS . 'profile_picture_image' . DS . 'proffer_test' . DS . 'portrait_image_640x480.jpg',
-                    TMP . 'ProfferTest' . DS . 'proffertest' . DS . 'profile_picture_image' . DS . 'proffer_test' . DS . 'portraitCropped_image_640x480.jpg'
+                    TMP . 'ProfferTest' . DS . 'proffertest' . DS . 'profile_picture_image' . DS . 'proffer_test' .
+                    DS . 'image_640x480.jpg',
+                    TMP . 'ProfferTest' . DS . 'proffertest' . DS . 'profile_picture_image' . DS . 'proffer_test' .
+                    DS . 'portrait_image_640x480.jpg',
+                    TMP . 'ProfferTest' . DS . 'proffertest' . DS . 'profile_picture_image' . DS . 'proffer_test' .
+                    DS . 'portraitCropped_image_640x480.jpg'
                 ]
             ],
         ];
@@ -222,9 +228,21 @@ class ProfferPathTest extends PHPUnit_Framework_TestCase
             mkdir($path->getFolder(), 0777, true);
         }
 
-        copy(Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg', $path->getFolder() . 'image_640x480.jpg');
-        copy(Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg', $path->getFolder() . 'square_image_640x480.jpg');
-        copy(Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg', $path->getFolder() . 'portrait_image_640x480.jpg');
+        copy(
+            Plugin::path('Proffer') . 'tests' . DS . 'Fixture' .
+            DS . 'image_640x480.jpg',
+            $path->getFolder() . 'image_640x480.jpg'
+        );
+        copy(
+            Plugin::path('Proffer') . 'tests' . DS . 'Fixture' .
+            DS . 'image_640x480.jpg',
+            $path->getFolder() . 'square_image_640x480.jpg'
+        );
+        copy(
+            Plugin::path('Proffer') . 'tests' . DS . 'Fixture' .
+            DS . 'image_640x480.jpg',
+            $path->getFolder() . 'portrait_image_640x480.jpg'
+        );
 
         $path->deleteFiles($path->getFolder());
 
