@@ -112,6 +112,8 @@ your own image library if you don't want to use Imagine.
 The thumbnails are generated using the [Imagine library](http://imagine.readthedocs.org/en/latest/index.html). So you can
 use the documentation there to build your own thumbnail generating listeners.
 
+By default generated thumbnail images will be set to the highest image quality in the `ImageTransform` class.
+
 ##Proffer shell tasks
 Proffer comes with a built in shell which can help you achieve certain things when dealing with your uploaded files. To 
 find out more about the shell you can use the `-h` flag on the command line.

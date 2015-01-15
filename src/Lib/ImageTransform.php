@@ -92,7 +92,7 @@ class ImageTransform
     public function saveThumbs(ImageInterface $image, ProfferPath $path, $prefix)
     {
         $filePath = $path->fullPath($prefix);
-        $image->save($filePath);
+        $image->save($filePath, ['jpeg_quality' => 100, 'png_compression_level' => 9]);
 
         return $image;
     }
