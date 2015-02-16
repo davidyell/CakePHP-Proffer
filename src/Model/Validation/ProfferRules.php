@@ -7,8 +7,10 @@
 
 namespace Proffer\Model\Validation;
 
+use Cake\Core\Exception\Exception;
 use Cake\Validation\Validator;
 use finfo;
+use Proffer\Error\DisabledExtension;
 
 class ProfferRules extends Validator
 {
@@ -18,10 +20,9 @@ class ProfferRules extends Validator
      *
      * @param array $value An array of the name and value of the field
      * @param int $size Filesize in bytes
-     * @param array $context The context usually the table
      * @return bool
      */
-    public static function filesize($value, $size, array $context)
+    public static function filesize($value, $size)
     {
         if ($value['size'] <= $size) {
             return true;
@@ -35,10 +36,9 @@ class ProfferRules extends Validator
      *
      * @param array $value An array of the name and value of the field
      * @param array $extensions Array of file extensions to allow
-     * @param array $context The context usually the table
      * @return bool
      */
-    public static function extension($value, array $extensions, array $context)
+    public static function extension($value, array $extensions)
     {
         $extension = pathinfo($value['tmp_name'], PAHTINFO_EXTENSION);
 
@@ -57,19 +57,20 @@ class ProfferRules extends Validator
      *
      * @param array $value An array of the name and value of the field
      * @param array $types An array of mime type strings to match
-     * @param array $context The context usually the table
      * @return bool
+     * @throws DisabledExtension
+     * @see http://php.net/manual/en/fileinfo.installation.php
      */
-    public static function mimetype($value, array $types, array $context)
+    public static function mimetype($value, array $types)
     {
+        if (!class_exists('finfo')) {
+            throw new DisabledExtension('Please enable the File Info extension in your php.ini');
+        }
+
         $finfo = new finfo();
         $type = $finfo->file($value['tmp_name'], FILEINFO_MIME_TYPE);
 
-        if (in_array($type, $types)) {
-            return true;
-        }
-
-        return false;
+        return in_array($type, $types);
     }
 
     /**
@@ -82,10 +83,9 @@ class ProfferRules extends Validator
      *        'max' => ['w' => 500, 'h' => 500]
      * ]]
      * would validate a minimum size of 100x100 pixels and a maximum of 500x500 pixels
-     * @param array $context The context usually the table
      * @return bool
      */
-    public static function dimensions($value, array $dimensions, array $context)
+    public static function dimensions($value, array $dimensions)
     {
         $fileDimensions = getimagesize($value['tmp_name']);
 

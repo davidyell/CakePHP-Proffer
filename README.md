@@ -12,6 +12,7 @@ in a similar vein to how [@josegonzalez](https://github.com/josegonzalez) had wr
 * PHP 5.4+
 * Database
 * CakePHP 3
+* [File Info is enabled](http://php.net/manual/en/book.fileinfo.php) for mimetype validation
 
 ##Status
 This is currently in alpha, but will upload images for you.
