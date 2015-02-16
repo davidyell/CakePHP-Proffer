@@ -129,7 +129,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
      *
      * @return array
      */
-    public function beforeValidateProvider()
+    public function beforeMarshalProvider()
     {
         return [
             [
@@ -156,9 +156,9 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider beforeValidateProvider
+     * @dataProvider beforeMarshalProvider
      */
-    public function testBeforeValidate($entityData, $allowEmpty, $expected)
+    public function testBeforeMarshal(array $data, $allowEmpty, array $expected)
     {
         $table = $this->getMock('Cake\ORM\Table', ['alias']);
         $table->method('alias')
@@ -173,16 +173,16 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             $table->validator()->allowEmpty('photo');
         }
 
-        $entity = new Entity($entityData);
+        $arrayObject = new ArrayObject($data);
 
-        $Proffer->beforeValidate(
+        $Proffer->beforeMarshal(
             $this->getMock('Cake\Event\Event', null, ['beforeValidate']),
-            $entity,
+            $arrayObject,
             new ArrayObject()
         );
-        $result = $entity->toArray();
+        $result = $arrayObject;
 
-        $this->assertEquals($expected, $result);
+        $this->assertEquals(new ArrayObject($expected), $result);
     }
 
     /**
