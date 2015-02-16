@@ -124,17 +124,16 @@ class ImageTransform
     {
         $target = new Box($targetWidth, $targetHeight);
         $sourceSize = $image->getSize();
-
         if ($sourceSize->getWidth() > $sourceSize->getHeight()) {
             $width = $sourceSize->getWidth() * ($target->getHeight() / $sourceSize->getHeight());
+            $height = $targetHeight;
             $cropPoint = new Point((int)(max($width - $target->getWidth(), 0) / 2), 0);
         } else {
             $height = $sourceSize->getHeight() * ($target->getWidth() / $sourceSize->getWidth());
+            $width = $targetWidth;
             $cropPoint = new Point(0, (int)(max($height - $target->getHeight(), 0) / 2));
         }
-
-        $box = new Box($targetWidth, $targetHeight);
-
+        $box = new Box($width, $height);
         return $image->thumbnail($box, ImageInterface::THUMBNAIL_OUTBOUND)
             ->crop($cropPoint, $target);
     }
