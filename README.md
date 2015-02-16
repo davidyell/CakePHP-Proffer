@@ -23,7 +23,9 @@ This is currently in alpha, but will upload images for you.
 ##Installation
 You can find it on Packagist [https://packagist.org/packages/davidyell/proffer](https://packagist.org/packages/davidyell/proffer)
 
-Add it to your `composer.json` in your require section `"davidyell/proffer": "dev-master"`
+Add it to your `composer.json` in your require section `"davidyell/proffer": "dev-master"` and then run `composer update`.
+
+Then you'll need to load the plugin in your `config/bootstrap.php` file. `Plugin::load('Proffer');`
 
 ##Configuration
 You will need to add the behaviour to your Table class.
