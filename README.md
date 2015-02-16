@@ -60,7 +60,6 @@ In order to upload a file to your application you will need to add the form fiel
 ```php
 echo $this-Form->create($entity, ['type' => 'file']); // Dont miss this out or no files will upload
 echo $this->Form->input('image', ['type' => 'file']);
-echo $this->Form->input('image_dir', ['type' => 'hidden']); // Import for edit forms
 echo $this->Form->button(__('Submit'));
 echo $this->Form->end();
 ```
