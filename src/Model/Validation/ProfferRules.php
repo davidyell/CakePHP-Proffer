@@ -7,8 +7,10 @@
 
 namespace Proffer\Model\Validation;
 
+use Cake\Core\Exception\Exception;
 use Cake\Validation\Validator;
 use finfo;
+use Proffer\Error\DisabledExtension;
 
 class ProfferRules extends Validator
 {
@@ -59,11 +61,17 @@ class ProfferRules extends Validator
      * @param array $types An array of mime type strings to match
      * @param array $context The context usually the table
      * @return bool
+     * @throws DisabledExtension
+     * @see http://php.net/manual/en/fileinfo.installation.php
      */
     public static function mimetype($value, array $types, array $context)
     {
-        $finfo = new finfo();
-        $type = $finfo->file($value['tmp_name'], FILEINFO_MIME_TYPE);
+        try {
+            $finfo = new finfo();
+            $type = $finfo->file($value['tmp_name'], FILEINFO_MIME_TYPE);
+        } catch(Exception $e) {
+            throw new DisabledExtension(['extension' => 'File Info', 'message' => $e->getMessage()]);
+        }
 
         if (in_array($type, $types)) {
             return true;
