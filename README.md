@@ -147,8 +147,7 @@ $ bin/cake proffer.proffer cleanup <table>
 ```
 
 ##Contribution
-Please open a pull request or submit an issue is there is anything you would like to contribute. Please write a test for 
-new functionality that you add and be sure to run the tests.
+Please open a pull request or submit an issue if there is anything you would like to contribute. Please write a test for any new functionality that you add and be sure to run the tests before you commit. Also don't forget to run PHPCS with the PSR2 standard to avoid errors in TravisCI.
 
 ##License
 Please see [LICENSE](LICENSE)
