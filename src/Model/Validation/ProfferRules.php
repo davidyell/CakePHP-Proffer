@@ -66,12 +66,12 @@ class ProfferRules extends Validator
      */
     public static function mimetype($value, array $types, array $context)
     {
-        try {
-            $finfo = new finfo();
-            $type = $finfo->file($value['tmp_name'], FILEINFO_MIME_TYPE);
-        } catch(Exception $e) {
+        if (!class_exists('finfo')) {
             throw new DisabledExtension(['extension' => 'File Info', 'message' => $e->getMessage()]);
         }
+
+        $finfo = new finfo();
+        $type = $finfo->file($value['tmp_name'], FILEINFO_MIME_TYPE);
 
         if (in_array($type, $types)) {
             return true;
