@@ -23,9 +23,14 @@ This is currently in alpha, but will upload images for you.
 ##Installation
 You can find it on Packagist [https://packagist.org/packages/davidyell/proffer](https://packagist.org/packages/davidyell/proffer)
 
+### Getting the plugin
 Add it to your `composer.json` in your require section `"davidyell/proffer": "dev-master"` and then run `composer update`.
 
-Then you'll need to load the plugin in your `config/bootstrap.php` file. `Plugin::load('Proffer');`
+### CakePHP
+Then you'll need to load the plugin in your `config/bootstrap.php` file. `Plugin::load('Proffer');`.
+
+### Database
+Next you need to add the fields to your table. You'll want to add your file upload field, this will store the name of the uploaded file such as `example.jpg` and you also need the dir field to store the directory in which the file has been stored. By default this is `dir`.
 
 ##Configuration
 You will need to add the behaviour to your Table class.
