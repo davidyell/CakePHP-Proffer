@@ -34,23 +34,21 @@ class ProfferBehavior extends Behavior
     }
 
     /**
-     * beforeValidate method
+     * beforeMarshal event
      *
-     * @param Event $event The event
-     * @param Entity $entity The current entity
-     * @param ArrayObject $options Array of options
-     * @return true
+     * @param Event $event
+     * @param ArrayObject $data
+     * @param ArrayObject $options
      */
-    public function beforeValidate(Event $event, Entity $entity, ArrayObject $options)
+    public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options)
     {
         foreach ($this->config() as $field => $settings) {
             if ($this->_table->validator()->isEmptyAllowed($field, false) &&
-                isset($entity->get($field)['error']) && $entity->get($field)['error'] === UPLOAD_ERR_NO_FILE) {
-                $entity->__unset($field);
+                isset($data[$field]['error']) && $data[$field]['error'] === UPLOAD_ERR_NO_FILE
+            ) {
+                unset($data[$field]);
             }
         }
-
-        return true;
     }
 
     /**

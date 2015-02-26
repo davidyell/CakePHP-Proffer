@@ -12,17 +12,27 @@ in a similar vein to how [@josegonzalez](https://github.com/josegonzalez) had wr
 * PHP 5.4+
 * Database
 * CakePHP 3
+* [File Info is enabled](http://php.net/manual/en/book.fileinfo.php) for mimetype validation
 
 ##Status
 This is currently in alpha, but will upload images for you.
 
 [![Build Status](https://travis-ci.org/davidyell/CakePHP3-Proffer.svg?branch=master)](https://travis-ci.org/davidyell/CakePHP3-Proffer)
 [![Coverage Status](https://coveralls.io/repos/davidyell/CakePHP3-Proffer/badge.png)](https://coveralls.io/r/davidyell/CakePHP3-Proffer)
+[![Dependency Status](https://www.versioneye.com/user/projects/54eee43931e55e12f9000018/badge.svg?style=flat)](https://www.versioneye.com/user/projects/54eee43931e55e12f9000018)
+[![Latest Stable Version](https://poser.pugx.org/davidyell/proffer/v/stable.svg)](https://packagist.org/packages/davidyell/proffer) [![Total Downloads](https://poser.pugx.org/davidyell/proffer/downloads.svg)](https://packagist.org/packages/davidyell/proffer) [![Latest Unstable Version](https://poser.pugx.org/davidyell/proffer/v/unstable.svg)](https://packagist.org/packages/davidyell/proffer) [![License](https://poser.pugx.org/davidyell/proffer/license.svg)](https://packagist.org/packages/davidyell/proffer)
 
 ##Installation
 You can find it on Packagist [https://packagist.org/packages/davidyell/proffer](https://packagist.org/packages/davidyell/proffer)
 
-Add it to your `composer.json` in your require section `"davidyell/proffer": "dev-master"`
+### Getting the plugin
+Add it to your `composer.json` in your require section `"davidyell/proffer": "dev-master"` and then run `composer update`.
+
+### CakePHP
+Then you'll need to load the plugin in your `config/bootstrap.php` file. `Plugin::load('Proffer');`.
+
+### Database
+Next you need to add the fields to your table. You'll want to add your file upload field, this will store the name of the uploaded file such as `example.jpg` and you also need the dir field to store the directory in which the file has been stored. By default this is `dir`.
 
 ##Configuration
 You will need to add the behaviour to your Table class.
@@ -52,7 +62,6 @@ In order to upload a file to your application you will need to add the form fiel
 ```php
 echo $this-Form->create($entity, ['type' => 'file']); // Dont miss this out or no files will upload
 echo $this->Form->input('image', ['type' => 'file']);
-echo $this->Form->input('image_dir', ['type' => 'hidden']); // Import for edit forms
 echo $this->Form->button(__('Submit'));
 echo $this->Form->end();
 ```
@@ -139,8 +148,7 @@ $ bin/cake proffer.proffer cleanup <table>
 ```
 
 ##Contribution
-Please open a pull request or submit an issue is there is anything you would like to contribute. Please write a test for 
-new functionality that you add and be sure to run the tests.
+Please open a pull request or submit an issue if there is anything you would like to contribute. Please write a test for any new functionality that you add and be sure to run the tests before you commit. Also don't forget to run PHPCS with the PSR2 standard to avoid errors in TravisCI.
 
 ##License
 Please see [LICENSE](LICENSE)
