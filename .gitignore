@@ -7,3 +7,4 @@ app/[Cc]onfig/database.php
 !empty
 
 /vendor/
+composer.lock
