@@ -35,13 +35,21 @@ Then you'll need to load the plugin in your `config/bootstrap.php` file. `Plugin
 Next you need to add the fields to your table. You'll want to add your file upload field, this will store the name of the uploaded file such as `example.jpg` and you also need the dir field to store the directory in which the file has been stored. By default this is `dir`.
 
 ##Configuration
-You will need to add the behaviour to your Table class.
+You will need to add a few things to your Table class.
 
 ```php
 <?php
+// Configure your upload field to use the file datatype
+protected function _initializeSchema(\Cake\Database\Schema\Table $table)
+{
+    $table->columnType('photo', 'file');
+    return $table;
+}
+
+// Add the behaviour and configure any options you want
 $this->addBehavior('Proffer.Proffer', [
 	'photo' => [	// The name of your upload field
-		'root' => WWW_DIR . 'files', // Customise the root upload folder here, or leave blank to use the default
+		'root' => WWW_DIR . 'files', // Customise the root upload folder here, or omit to use the default
 		'dir' => 'photo_dir',	// The name of the field to store the folder
 		'thumbnailSizes' => [
 			'square' => ['w' => 200, 'h' => 200],	// Define the size and prefix of your thumbnails
