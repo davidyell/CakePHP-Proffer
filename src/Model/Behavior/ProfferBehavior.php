@@ -30,7 +30,7 @@ class ProfferBehavior extends Behavior
     public function initialize(array $config)
     {
         $listener = new ProfferListener();
-        $this->_table->eventManager()->attach($listener);
+        $this->_table->eventManager()->on($listener);
     }
 
     /**
