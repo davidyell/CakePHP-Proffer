@@ -42,7 +42,7 @@ You will need to add a few things to your Table class.
 // Configure your upload field to use the file datatype
 protected function _initializeSchema(\Cake\Database\Schema\Table $table)
 {
-    $table->columnType('photo', 'file');
+    $table->columnType('photo', 'proffer.file');
     return $table;
 }
 

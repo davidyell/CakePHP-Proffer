@@ -3,7 +3,7 @@
 /**
  * @category Proffer
  * @package FileType.php
- * 
+ *
  * @author David Yell <neon1024@gmail.com>
  * @when 03/03/15
  *
@@ -31,5 +31,4 @@ class FileType extends Type
     {
         return PDO::PARAM_STR;
     }
-
 }
