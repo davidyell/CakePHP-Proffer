@@ -171,6 +171,10 @@ The example `LogFilenameListener` class used here is [available as a Gist](https
 This listener listens for the `Proffer.beforeThumbs` and `Proffer.afterThumbs` events and write the filename to the logs instead of 
 creating any thumbnails.
 
+##Displaying uploaded images
+You can use the `HtmlHelper` to link the images. Just make sure that you have both upload fields in your data.  
+`echo $this->Html->image('../files/<table>/<field>/' . $data->get('image_dir') . '/<prefix>_' . $data->get('image'));`
+
 ##Proffer shell tasks
 Proffer comes with a built in shell which can help you achieve certain things when dealing with your uploaded files. To 
 find out more about the shell you can use the `-h` flag on the command line.
