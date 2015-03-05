@@ -29,7 +29,7 @@ You can find it on Packagist [https://packagist.org/packages/davidyell/proffer](
 Add it to your `composer.json` in your require section `"davidyell/proffer": "dev-master"` and then run `composer update`.
 
 ### CakePHP
-Then you'll need to load the plugin in your `config/bootstrap.php` file. `Plugin::load('Proffer', ['bootstrap' => true);`.
+Then you'll need to load the plugin in your `config/bootstrap.php` file. `Plugin::load('Proffer', ['bootstrap' => true]);`.
 
 ### Database
 Next you need to add the fields to your table. You'll want to add your file upload field, this will store the name of the uploaded file such as `example.jpg` and you also need the dir field to store the directory in which the file has been stored. By default this is `dir`.
