@@ -40,7 +40,7 @@ class ProfferRules extends Validator
      */
     public static function extension($value, array $extensions)
     {
-        $extension = pathinfo($value['tmp_name'], PAHTINFO_EXTENSION);
+        $extension = pathinfo($value['tmp_name'], PATHINFO_EXTENSION);
 
         if (in_array($extension, $extensions)) {
             return true;
