@@ -29,7 +29,7 @@ You can find it on Packagist [https://packagist.org/packages/davidyell/proffer](
 Add it to your `composer.json` in your require section `"davidyell/proffer": "dev-master"` and then run `composer update`.
 
 ### CakePHP
-Then you'll need to load the plugin in your `config/bootstrap.php` file. `Plugin::load('Proffer', ['bootstrap' => true);`.
+Then you'll need to load the plugin in your `config/bootstrap.php` file. `Plugin::load('Proffer', ['bootstrap' => true]);`.
 
 ### Database
 Next you need to add the fields to your table. You'll want to add your file upload field, this will store the name of the uploaded file such as `example.jpg` and you also need the dir field to store the directory in which the file has been stored. By default this is `dir`.
@@ -75,6 +75,26 @@ echo $this->Form->end();
 ```
 This will turn your form into a multipart form and add the relevant fields.
 
+###Configuration options
+There are a number of configuration options you can pass into the behaviour when you attach it to your table. These options are passed as an array value of the upload field.
+
+####root
+**default:** `WWW_DIR . 'files'`  
+Allows you to customise the root folder in which all the file upload folders and files will be created.
+
+####dir
+**required** `string`  
+The database field which will store the name of the folder in which the files are uploaded.
+
+####thumbnailSizes
+**required** `array`  
+An array of sizes to create thumbnails of an uploaded image. The format is that the image prefix will be the array key and the sizes are the value as an array.  
+Eg, `'square' => ['w' => 200, 'h' => 200]` would create a thumbnail prefixed with `square_` and would be 100px x 100px.
+
+####thumbnailMethod
+**default:** `gd`  
+Which Imagine engine to use to convert the images. Defaults to PHP's GD library. Can also be `imagick` and `gmagick`.
+
 ##Validation
 Proffer comes with some basic validation rules which you can use to validate your uploads. In order to use these you 
 will need to load the validation rules and apply them to your field.
@@ -118,10 +138,11 @@ $validator->add('photo', 'proffer', [
 
 You can [read more about custom validation providers in the book](http://book.cakephp.org/3.0/en/core-libraries/validation.html#adding-validation-providers).
 
-##Customisation
-Proffer uses an event listener to generate thumbnails. If you want to customise your thumbnail generation in any way 
-you can either create your own listener and listen for the `Proffer.beforeThumbs` and `Proffer.afterThumbs` methods, or
-just extend and overload the methods in the default listener located in `src/Event/ProfferListener.php`.
+##Thumbnail customisation
+Proffer uses an [event listener](http://book.cakephp.org/3.0/en/core-libraries/events.html) to generate thumbnails. If you 
+want to customise your thumbnail generation in any way you can either create your own listener and listen for 
+the `Proffer.beforeThumbs` and `Proffer.afterThumbs` methods, or just extend and overload the methods in the default 
+listener located in `src/Event/ProfferListener.php`.
 
 The listener is separated from the thumbnail generation allowing you to hook to your own class which allows you to use
 your own image library if you don't want to use Imagine.
@@ -130,6 +151,25 @@ The thumbnails are generated using the [Imagine library](http://imagine.readthed
 use the documentation there to build your own thumbnail generating listeners.
 
 By default generated thumbnail images will be set to the highest image quality in the `ImageTransform` class.
+
+##How to replace the event listener
+If you want to replace the event listener with your own custom class you can do that by using the `Table::eventManager()`.
+
+```php
+// In your Table class
+
+// Remove ALL the listeners attached to these events
+$this->eventManager()->off('Proffer.beforeThumbs');
+$this->eventManager()->off('Proffer.afterThumbs');
+
+// Add your new custom listener
+$listener = new App\Event\LogFilenameListener();
+$this->eventManager()->on($listener);
+```
+
+The example `LogFilenameListener` class used here is [available as a Gist](https://gist.github.com/davidyell/f6ee8013f06414997504). 
+This listener listens for the `Proffer.beforeThumbs` and `Proffer.afterThumbs` events and write the filename to the logs instead of 
+creating any thumbnails.
 
 ##Proffer shell tasks
 Proffer comes with a built in shell which can help you achieve certain things when dealing with your uploaded files. To 
@@ -149,14 +189,16 @@ $ bin/cake proffer.proffer generate <table>
 
 ###Cleanup task
 The cleanup task will look at a models uploads folder and match the files there with it's matching entry in the 
-database. If a file doesn't have a matching record in the database it will be deleted.
+database. If a file doesn't have a matching record in the database it **will be deleted**.
 
 ```bash
 $ bin/cake proffer.proffer cleanup <table>
 ```
 
 ##Contribution
-Please open a pull request or submit an issue if there is anything you would like to contribute. Please write a test for any new functionality that you add and be sure to run the tests before you commit. Also don't forget to run PHPCS with the PSR2 standard to avoid errors in TravisCI.
+Please open a pull request or submit an issue if there is anything you would like to contribute. Please write a test for 
+any new functionality that you add and be sure to run the tests before you commit. Also don't forget to run PHPCS with 
+the PSR2 standard to avoid errors in TravisCI.
 
 ##License
 Please see [LICENSE](LICENSE)

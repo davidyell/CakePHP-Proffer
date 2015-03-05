@@ -153,8 +153,8 @@ class ProfferBehavior extends Behavior
             }
 
             $event = new Event('Proffer.afterThumbs', $this->_table, [
-                'image' => $image,
                 'path' => $path,
+                'image' => $image,
                 'prefix' => $prefix
             ]);
 
