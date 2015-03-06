@@ -260,11 +260,11 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             ->setMethods(['isUploadedFile', 'moveUploadedFile'])
             ->getMock();
 
-        $Proffer->expects($this->once())
+        $Proffer->expects($this->never())
             ->method('isUploadedFile')
             ->willReturn(true);
 
-        $Proffer->expects($this->once())
+        $Proffer->expects($this->never())
             ->method('moveUploadedFile')
             ->willReturnCallback(function ($source, $destination) {
                 if (!file_exists(pathinfo($destination, PATHINFO_DIRNAME))) {
