@@ -310,7 +310,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             ->setMethods(['isUploadedFile', 'moveUploadedFile'])
             ->getMock();
 
-        $Proffer->expects($this->once())
+        $Proffer->expects($this->never())
             ->method('isUploadedFile')
             ->willReturn(false);
 
