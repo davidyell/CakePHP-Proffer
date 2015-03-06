@@ -167,13 +167,18 @@ $listener = new App\Event\LogFilenameListener();
 $this->eventManager()->on($listener);
 ```
 
-The example `LogFilenameListener` class used here is [available as a Gist](https://gist.github.com/davidyell/f6ee8013f06414997504). 
+The example `LogFilenameListener` class used here is [available as a Gist](https://gist.github.com/davidyell/f6ee8013f06414997504#file-logfilenamelistener-php). 
 This listener listens for the `Proffer.beforeThumbs` and `Proffer.afterThumbs` events and write the filename to the logs instead of 
 creating any thumbnails.
 
 ##Displaying uploaded images
 You can use the `HtmlHelper` to link the images. Just make sure that you have both upload fields in your data.  
 `echo $this->Html->image('../files/<table>/<field>/' . $data->get('image_dir') . '/<prefix>_' . $data->get('image'));`
+
+##Customising upload file names and paths
+Using the `Proffer.afterPath` event you can hook into all the details about the file upload before it is processed. Using 
+this event you can change the name of the file and the upload path to match whatever convention you want. I have created 
+an example listener which is [available as a Gist](https://gist.github.com/davidyell/f6ee8013f06414997504#file-uploadfilenamelistener-php). 
 
 ##Proffer shell tasks
 Proffer comes with a built in shell which can help you achieve certain things when dealing with your uploaded files. To 

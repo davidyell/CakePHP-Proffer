@@ -73,6 +73,13 @@ class ProfferBehavior extends Behavior
                 if (!$path) {
                     $path = new ProfferPath($this->_table, $entity, $field, $settings);
                 }
+
+                $event = new Event('Proffer.afterPath', $entity, ['path' => $path]);
+                $this->_table->eventManager()->dispatch($event);
+                if (!empty($event->result)) {
+                    $path = $event->result;
+                }
+
                 $path->createPathFolder();
 
                 if ($this->moveUploadedFile($entity->get($field)['tmp_name'], $path->fullPath())) {
