@@ -66,9 +66,6 @@ class ProfferBehavior extends Behavior
         foreach ($this->config() as $field => $settings) {
             if ($entity->has($field) && is_array($entity->get($field)) &&
                 $entity->get($field)['error'] === UPLOAD_ERR_OK) {
-                if (!$this->isUploadedFile($entity->get($field)['tmp_name'])) {
-                    throw new Exception('File must be uploaded using HTTP post.');
-                }
 
                 if (!$path) {
                     $path = new ProfferPath($this->_table, $entity, $field, $settings);
@@ -185,6 +182,10 @@ class ProfferBehavior extends Behavior
      */
     protected function moveUploadedFile($file, $destination)
     {
-        return move_uploaded_file($file, $destination);
+        if ($this->isUploadedFile($file)) {
+            return move_uploaded_file($file, $destination);
+        }
+        
+        return rename($file, $destination);
     }
 }
