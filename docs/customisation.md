@@ -38,11 +38,11 @@ $listener = new App\Event\LogFilenameListener();
 $this->eventManager()->on($listener);
 ```
 
-The example `LogFilenameListener` class used here is [available as a Gist](https://gist.github.com/davidyell/f6ee8013f06414997504#file-logfilenamelistener-php). 
+The example `LogFilenameListener` class used here is [available as an example](examples/LogFilenameListener.md). 
 This listener listens for the `Proffer.beforeThumbs` and `Proffer.afterThumbs` events and write the filename to the logs instead of 
 creating any thumbnails.
 
 ##Customising upload file names and paths
 Using the `Proffer.afterPath` event you can hook into all the details about the file upload before it is processed. Using 
 this event you can change the name of the file and the upload path to match whatever convention you want. I have created 
-an example listener which is [available as a Gist](https://gist.github.com/davidyell/f6ee8013f06414997504#file-uploadfilenamelistener-php).
+an example listener which is [available as an example](examples/UploadFilenameListener.md).
