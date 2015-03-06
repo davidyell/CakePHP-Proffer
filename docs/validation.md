@@ -2,6 +2,7 @@
 This manual page deals with how to use the included ProfferRules validation provider to add upload related validation rules to 
 your application.
 
+##Built-in validation provider
 Proffer comes with some basic validation rules which you can use to validate your uploads. In order to use these you 
 will need to load the validation rules and apply them to your field.
 

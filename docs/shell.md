@@ -1,6 +1,7 @@
 #Proffer shell tasks
 This manual page deals with the command line tools which are included with the Proffer plugin.
 
+##Getting available tasks
 Proffer comes with a built in shell which can help you achieve certain things when dealing with your uploaded files. To 
 find out more about the shell you can use the `-h` flag on the command line.
 

@@ -1,7 +1,7 @@
 #Configuration
 This manual page relates to how to configure the Proffer behaviour, what the configuration options do, their defaults and how to change them.
 
-## Condfiguring the behaviour in your table
+## Configuring the behaviour in your table
 You will need to add a few things to your Table class.
 
 Below is an example setup, which also includes some of the defaults so you can see what they look like. You can check the options below to

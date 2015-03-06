@@ -6,6 +6,8 @@ You can find it on Packagist [https://packagist.org/packages/davidyell/proffer](
 
 ## Getting the plugin
 Add it to your `composer.json` in your require section `"davidyell/proffer": "dev-master"` and then run `composer update`.
+It's always advised to lock your dependencies to a specific version number. You can [check the releases](https://github.com/davidyell/CakePHP3-Proffer/releases),
+ or [read more about versioning on Composer.org](https://getcomposer.org/doc/01-basic-usage.md#package-versions).
 
 ## CakePHP
 Then you'll need to load the plugin in your `config/bootstrap.php` file. `Plugin::load('Proffer', ['bootstrap' => true]);`.

@@ -2,6 +2,13 @@
 This manual page deals with customising the behaviour of the Proffer plugin. How to change the upload location and changing
 file names. It also cover how you can use the Proffer events to change the way the plugin behaves.
 
+##Events system
+The primary way of customising the Proffer plugin is through the use of creating Event Listener classes, which can listen for
+specific events and change the data on the way. This technique allows powerful customisation without the need for excessive
+configuration. It also means that if you are happy with the defaults, you don't have to do anything.
+
+[You can read more about Event Listeners in the book.](http://book.cakephp.org/3.0/en/core-libraries/events.html)
+
 ##Thumbnail customisation
 Proffer uses an [event listener](http://book.cakephp.org/3.0/en/core-libraries/events.html) to generate thumbnails. If you 
 want to customise your thumbnail generation in any way you can either create your own listener and listen for 
