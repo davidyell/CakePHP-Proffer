@@ -130,7 +130,7 @@ class ProfferPath
      * @param string $seed The seed string used to create a folder for the uploaded files
      * @return void
      */
-    protected function setSeed($seed)
+    public function setSeed($seed)
     {
         $this->seed = $seed;
     }
@@ -151,7 +151,7 @@ class ProfferPath
      * @param string|array $filename The name of the actual file including it's extension
      * @return void
      */
-    protected function setFilename($filename)
+    public function setFilename($filename)
     {
         if (is_array($filename)) {
             $this->filename = $filename['name'];

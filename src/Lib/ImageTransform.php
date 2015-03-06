@@ -16,7 +16,7 @@ use Imagine\Image\ImageInterface;
 use Imagine\Image\Point;
 use Imagine\Imagick\Imagine as Imagick;
 
-class ImageTransform
+class ImageTransform implements ImageTransformInterface
 {
 
     /**
@@ -42,7 +42,7 @@ class ImageTransform
      * @param string $engine The name of the image engine to use
      * @return void
      */
-    protected function setImagine($engine)
+    protected function setImagine($engine = 'gd')
     {
         switch ($engine) {
             default:
