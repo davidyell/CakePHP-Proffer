@@ -260,7 +260,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             ->setMethods(['isUploadedFile', 'moveUploadedFile'])
             ->getMock();
 
-        $Proffer->expects($this->once())
+        $Proffer->expects($this->never())
             ->method('isUploadedFile')
             ->willReturn(true);
 
@@ -310,11 +310,11 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             ->setMethods(['isUploadedFile', 'moveUploadedFile'])
             ->getMock();
 
-        $Proffer->expects($this->once())
+        $Proffer->expects($this->never())
             ->method('isUploadedFile')
             ->willReturn(false);
 
-        $Proffer->expects($this->never())
+        $Proffer->expects($this->once())
             ->method('moveUploadedFile')
             ->willReturn(false);
 
@@ -349,7 +349,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             ->setMethods(['isUploadedFile', 'moveUploadedFile'])
             ->getMock();
 
-        $Proffer->expects($this->once())
+        $Proffer->expects($this->never())
             ->method('isUploadedFile')
             ->willReturn(true);
 
