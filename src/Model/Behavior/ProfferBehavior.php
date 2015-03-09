@@ -177,6 +177,7 @@ class ProfferBehavior extends Behavior
      *
      * @param string $file The tmp_name path to the uploaded file
      * @return bool
+     * @deprecated
      */
     protected function isUploadedFile($file)
     {
@@ -192,7 +193,7 @@ class ProfferBehavior extends Behavior
      */
     protected function moveUploadedFile($file, $destination)
     {
-        if ($this->isUploadedFile($file)) {
+        if ($this->is_uploaded_file($file)) {
             return move_uploaded_file($file, $destination);
         }
 
