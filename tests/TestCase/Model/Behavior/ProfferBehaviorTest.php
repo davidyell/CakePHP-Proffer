@@ -257,12 +257,8 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
 
         $Proffer = $this->getMockBuilder('Proffer\Model\Behavior\ProfferBehavior')
             ->setConstructorArgs([$table, $this->config])
-            ->setMethods(['isUploadedFile', 'moveUploadedFile'])
+            ->setMethods(['moveUploadedFile'])
             ->getMock();
-
-        $Proffer->expects($this->once())
-            ->method('isUploadedFile')
-            ->willReturn(true);
 
         $Proffer->expects($this->once())
             ->method('moveUploadedFile')
@@ -307,14 +303,10 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
 
         $Proffer = $this->getMockBuilder('Proffer\Model\Behavior\ProfferBehavior')
             ->setConstructorArgs([$table, $this->config])
-            ->setMethods(['isUploadedFile', 'moveUploadedFile'])
+            ->setMethods(['moveUploadedFile'])
             ->getMock();
 
         $Proffer->expects($this->once())
-            ->method('isUploadedFile')
-            ->willReturn(false);
-
-        $Proffer->expects($this->never())
             ->method('moveUploadedFile')
             ->willReturn(false);
 
@@ -346,12 +338,8 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
 
         $Proffer = $this->getMockBuilder('Proffer\Model\Behavior\ProfferBehavior')
             ->setConstructorArgs([$table, $this->config])
-            ->setMethods(['isUploadedFile', 'moveUploadedFile'])
+            ->setMethods(['moveUploadedFile'])
             ->getMock();
-
-        $Proffer->expects($this->once())
-            ->method('isUploadedFile')
-            ->willReturn(true);
 
         $Proffer->expects($this->once())
             ->method('moveUploadedFile')
