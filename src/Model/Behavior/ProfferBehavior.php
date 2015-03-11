@@ -66,7 +66,6 @@ class ProfferBehavior extends Behavior
         foreach ($this->config() as $field => $settings) {
             if ($entity->has($field) && is_array($entity->get($field)) &&
                 $entity->get($field)['error'] === UPLOAD_ERR_OK) {
-
                 if (!$path) {
                     $path = new ProfferPath($this->_table, $entity, $field, $settings);
                 }
