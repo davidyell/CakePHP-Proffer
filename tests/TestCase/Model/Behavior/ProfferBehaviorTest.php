@@ -164,7 +164,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         $table->method('alias')
             ->willReturn('ProfferTest');
 
-        $Proffer = new ProfferBehavior($table, $this->config, ['fanny' => 'flaps']);
+        $Proffer = new ProfferBehavior($table, $this->config);
 
         $validator = $this->getMock('Cake\Validation\Validator', null);
         $table->validator('test', $validator);
