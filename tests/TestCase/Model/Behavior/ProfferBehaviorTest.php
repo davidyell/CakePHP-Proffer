@@ -411,7 +411,8 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         $this->assertFileNotExists($testUploadPath . 'portrait_image_640x480.jpg');
     }
 
-    public function testBeforePathEvent() {
+    public function testBeforePathEvent()
+    {
         $entityData = [
             'photo' => [
                 'name' => 'image_640x480.jpg',
@@ -466,7 +467,8 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    public function testAllEvents() {
+    public function testAllEvents()
+    {
         $entityData = [
             'photo' => [
                 'name' => 'image_640x480.jpg',
