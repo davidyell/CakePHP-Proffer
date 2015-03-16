@@ -283,6 +283,13 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         $this->assertFileExists($testUploadPath . $expected['filename']);
         $this->assertFileExists($testUploadPath . 'portrait_' . $expected['filename']);
         $this->assertFileExists($testUploadPath . 'square_' . $expected['filename']);
+        
+        $portraitSizes = getimagesize($testUploadPath . 'portrait_' . $expected['filename']);
+        $this->assertEquals(100, $portraitSizes[0]);
+        
+        $squareSizes = getimagesize($testUploadPath . 'square_' . $expected['filename']);
+        $this->assertEquals(200, $squareSizes[0]);
+        $this->assertEquals(200, $squareSizes[1]);
     }
 
     /**
