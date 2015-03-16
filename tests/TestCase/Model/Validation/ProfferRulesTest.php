@@ -41,10 +41,10 @@ class ProfferRulesTest extends PHPUnit_Framework_TestCase
      * @dataProvider providerFilesize
      */
     public function testFilesize($value, $check, $expected)
-	{
-		$result = $this->Rules->filesize($value, $check);
+    {
+        $result = $this->Rules->filesize($value, $check);
         $this->assertEquals($expected, $result);
-	}
+    }
     
     public function providerExtension()
     {
