@@ -9,13 +9,12 @@ namespace Proffer\Tests\Model\Behavior;
 
 use ArrayObject;
 use Cake\Core\Plugin;
+use Cake\Event\Event;
 use Cake\ORM\Entity;
 use Cake\ORM\Table;
 use PHPUnit_Framework_TestCase;
-use Proffer\Event\ImageTransform;
+use Proffer\Event\ProfferListener;
 use Proffer\Model\Behavior\ProfferBehavior;
-use Proffer\Tests\Stubs\ProfferTestMoveBehavior;
-use Proffer\Tests\Stubs\ProfferTestPathBehavior;
 
 /**
  * Class ProfferBehaviorTest
@@ -164,7 +163,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         $table->method('alias')
             ->willReturn('ProfferTest');
 
-        $Proffer = new ProfferBehavior($table, $this->config, ['fanny' => 'flaps']);
+        $Proffer = new ProfferBehavior($table, $this->config);
 
         $validator = $this->getMock('Cake\Validation\Validator', null);
         $table->validator('test', $validator);
@@ -284,6 +283,13 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         $this->assertFileExists($testUploadPath . $expected['filename']);
         $this->assertFileExists($testUploadPath . 'portrait_' . $expected['filename']);
         $this->assertFileExists($testUploadPath . 'square_' . $expected['filename']);
+        
+        $portraitSizes = getimagesize($testUploadPath . 'portrait_' . $expected['filename']);
+        $this->assertEquals(100, $portraitSizes[0]);
+        
+        $squareSizes = getimagesize($testUploadPath . 'square_' . $expected['filename']);
+        $this->assertEquals(200, $squareSizes[0]);
+        $this->assertEquals(200, $squareSizes[1]);
     }
 
     /**
@@ -410,5 +416,116 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         $this->assertFileNotExists($testUploadPath . 'image_640x480.jpg');
         $this->assertFileNotExists($testUploadPath . 'square_image_640x480.jpg');
         $this->assertFileNotExists($testUploadPath . 'portrait_image_640x480.jpg');
+    }
+
+    public function testBeforePathEvent()
+    {
+        $entityData = [
+            'photo' => [
+                'name' => 'image_640x480.jpg',
+                'tmp_name' => Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg',
+                'size' => 33000,
+                'error' => UPLOAD_ERR_OK
+            ],
+            'photo_dir' => 'proffer_test'
+        ];
+        $entity = new Entity($entityData);
+
+        $eventManager = $this->getMock('Cake\Event\EventManager');
+
+        $table = $this->getMockBuilder('Cake\ORM\Table')
+            ->setConstructorArgs([['eventManager' => $eventManager]])
+            ->setMethods(['alias'])
+            ->getMock();
+
+        $table->method('alias')
+            ->willReturn('ProfferTest');
+
+        $path = $this->getProfferPathMock($table, $entity, 'photo');
+
+        $event = new Event('Proffer.afterPath', $entity, ['path' => $path]);
+
+        $eventManager->expects($this->once())
+            ->method('dispatch')
+            ->with($this->equalTo($event));
+
+        $Proffer = $this->getMockBuilder('Proffer\Model\Behavior\ProfferBehavior')
+            ->setConstructorArgs([$table, $this->config])
+            ->setMethods(['moveUploadedFile', 'makeThumbs'])
+            ->getMock();
+
+        $Proffer->expects($this->once())
+            ->method('moveUploadedFile')
+            ->will($this->returnCallback(
+                function ($param) use ($entity, $path) {
+                    return copy($entity->get('photo')['tmp_name'], $path->fullPath());
+                }
+            ));
+
+        $Proffer->expects($this->once())
+            ->method('makeThumbs')
+            ->willReturn(null);
+
+        $Proffer->beforeSave(
+            $this->getMock('Cake\Event\Event', null, ['beforeSave']),
+            $entity,
+            new ArrayObject(),
+            $path
+        );
+    }
+
+    public function testAllEvents()
+    {
+        $entityData = [
+            'photo' => [
+                'name' => 'image_640x480.jpg',
+                'tmp_name' => Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg',
+                'size' => 33000,
+                'error' => UPLOAD_ERR_OK
+            ],
+            'photo_dir' => 'proffer_test'
+        ];
+        $entity = new Entity($entityData);
+
+        $table = $this->getMockBuilder('Cake\ORM\Table')
+            ->setMethods(['alias'])
+            ->getMock();
+
+        $table->method('alias')
+            ->willReturn('ProfferTest');
+
+        $path = $this->getProfferPathMock($table, $entity, 'photo');
+
+        $listener = $this->getMockBuilder('Proffer\Event\ProfferListener')
+            ->setMethods(['beforeThumbs', 'afterThumbs'])
+            ->getMock();
+
+        $table->eventManager()->on($listener);
+
+        // Twice because we are generating two sizes of thumbnail
+        $listener->expects($this->exactly(2))
+            ->method('beforeThumbs');
+        $listener->expects($this->exactly(2))
+            ->method('afterThumbs');
+
+        $Proffer = $this->getMockBuilder('Proffer\Model\Behavior\ProfferBehavior')
+            ->setConstructorArgs([$table, $this->config])
+            ->setMethods(['moveUploadedFile'])
+            ->getMock();
+
+        $Proffer->expects($this->once())
+            ->method('moveUploadedFile')
+            ->will($this->returnCallback(
+                function ($param) use ($entity, $path) {
+                    return copy($entity->get('photo')['tmp_name'], $path->fullPath());
+                }
+            ));
+
+        $Proffer->beforeSave(
+            $this->getMock('Cake\Event\Event', null, ['beforeSave']),
+            $entity,
+            new ArrayObject(),
+            $path
+        );
     }
 }

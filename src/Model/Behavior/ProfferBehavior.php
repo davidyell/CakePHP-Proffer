@@ -144,7 +144,7 @@ class ProfferBehavior extends Behavior
             $eventParams = ['path' => $path, 'dimensions' => $dimensions, 'thumbnailMethod' => null];
 
             if (isset($this->config($field)['thumbnailMethod'])) {
-                $params['thumbnailMethod'] = $this->config($field)['thumbnailMethod'];
+                $eventParams['thumbnailMethod'] = $this->config($field)['thumbnailMethod'];
             }
 
             // Event listener handles generation
@@ -153,13 +153,13 @@ class ProfferBehavior extends Behavior
             $this->_table->eventManager()->dispatch($event);
             if (!empty($event->result)) {
                 $image = $event->result;
-            }
 
-            $event = new Event('Proffer.afterThumbs', $this->_table, [
-                'path' => $path,
-                'image' => $image,
-                'prefix' => $prefix
-            ]);
+                $event = new Event('Proffer.afterThumbs', $this->_table, [
+                    'path' => $path,
+                    'image' => $image,
+                    'prefix' => $prefix
+                ]);
+            }
 
             $this->_table->eventManager()->dispatch($event);
             if (!empty($event->result)) {
