@@ -19,5 +19,4 @@ class FileType extends Type
     {
         return $value;
     }
-
 }
