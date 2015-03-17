@@ -83,7 +83,7 @@ class ProfferBehavior extends Behavior
                     $entity->set($settings['dir'], $path->getSeed());
 
                     // Don't generate thumbnails for non-images
-                    if (getimagesize($path->fullPath()) !== false) {
+                    if (getimagesize($path->fullPath()) !== false && isset($settings['thumbnailSizes'])) {
                         $this->makeThumbs($field, $path);
                     }
                 } else {

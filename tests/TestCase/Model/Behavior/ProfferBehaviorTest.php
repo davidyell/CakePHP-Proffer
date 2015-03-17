@@ -565,4 +565,56 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             $path
         );
     }
+
+    public function testThumbsNotCreatedWhenNoSizes()
+    {
+        $table = $this->getMock('Cake\ORM\Table', ['alias']);
+        $table->method('alias')
+            ->willReturn('ProfferTest');
+
+        $config = $this->config;
+        unset($config['photo']['thumbnailSizes']);
+
+        $entityData = [
+            'photo' => [
+                'name' => 'image_640x480.jpg',
+                'tmp_name' => Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg',
+                'size' => 33000,
+                'error' => UPLOAD_ERR_OK
+            ],
+            'photo_dir' => 'proffer_test'
+        ];
+        $entity = new Entity($entityData);
+        $path = $this->getProfferPathMock($table, $entity, 'photo');
+
+        $Proffer = $this->getMockBuilder('Proffer\Model\Behavior\ProfferBehavior')
+            ->setConstructorArgs([$table, $config])
+            ->setMethods(['moveUploadedFile'])
+            ->getMock();
+
+        $Proffer->expects($this->once())
+            ->method('moveUploadedFile')
+            ->willReturnCallback(function ($source, $destination) {
+                if (!file_exists(pathinfo($destination, PATHINFO_DIRNAME))) {
+                    mkdir(pathinfo($destination, PATHINFO_DIRNAME), 0777, true);
+                }
+                return copy($source, $destination);
+            });
+
+        $Proffer->beforeSave(
+            $this->getMock('Cake\Event\Event', null, ['beforeSave']),
+            $entity,
+            new ArrayObject(),
+            $path
+        );
+
+        $this->assertEquals('image_640x480.jpg', $entity->get('photo'));
+        $this->assertEquals('proffer_test', $entity->get('photo_dir'));
+
+        $testUploadPath = $path->getFolder();
+
+        $this->assertFileExists($testUploadPath . 'image_640x480.jpg');
+        $this->assertFileNotExists($testUploadPath . 'portrait_image_640x480.jpg');
+        $this->assertFileNotExists($testUploadPath . 'square_image_640x480.jpg');
+    }
 }
