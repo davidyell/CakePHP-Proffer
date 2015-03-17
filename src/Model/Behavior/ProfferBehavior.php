@@ -30,27 +30,25 @@ class ProfferBehavior extends Behavior
     public function initialize(array $config)
     {
         $listener = new ProfferListener();
-        $this->_table->eventManager()->attach($listener);
+        $this->_table->eventManager()->on($listener);
     }
 
     /**
-     * beforeValidate method
+     * beforeMarshal event
      *
-     * @param Event $event The event
-     * @param Entity $entity The current entity
-     * @param ArrayObject $options Array of options
-     * @return true
+     * @param Event $event
+     * @param ArrayObject $data
+     * @param ArrayObject $options
      */
-    public function beforeValidate(Event $event, Entity $entity, ArrayObject $options)
+    public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options)
     {
         foreach ($this->config() as $field => $settings) {
             if ($this->_table->validator()->isEmptyAllowed($field, false) &&
-                isset($entity->get($field)['error']) && $entity->get($field)['error'] === UPLOAD_ERR_NO_FILE) {
-                $entity->__unset($field);
+                isset($data[$field]['error']) && $data[$field]['error'] === UPLOAD_ERR_NO_FILE
+            ) {
+                unset($data[$field]);
             }
         }
-
-        return true;
     }
 
     /**
@@ -68,13 +66,16 @@ class ProfferBehavior extends Behavior
         foreach ($this->config() as $field => $settings) {
             if ($entity->has($field) && is_array($entity->get($field)) &&
                 $entity->get($field)['error'] === UPLOAD_ERR_OK) {
-                if (!$this->isUploadedFile($entity->get($field)['tmp_name'])) {
-                    throw new Exception('File must be uploaded using HTTP post.');
-                }
-
                 if (!$path) {
                     $path = new ProfferPath($this->_table, $entity, $field, $settings);
                 }
+
+                $event = new Event('Proffer.afterPath', $entity, ['path' => $path]);
+                $this->_table->eventManager()->dispatch($event);
+                if (!empty($event->result)) {
+                    $path = $event->result;
+                }
+
                 $path->createPathFolder();
 
                 if ($this->moveUploadedFile($entity->get($field)['tmp_name'], $path->fullPath())) {
@@ -155,8 +156,8 @@ class ProfferBehavior extends Behavior
             }
 
             $event = new Event('Proffer.afterThumbs', $this->_table, [
-                'image' => $image,
                 'path' => $path,
+                'image' => $image,
                 'prefix' => $prefix
             ]);
 
@@ -168,18 +169,8 @@ class ProfferBehavior extends Behavior
     }
 
     /**
-     * Wrapper method for is_uploaded_file so that we can test
-     *
-     * @param string $file The tmp_name path to the uploaded file
-     * @return bool
-     */
-    protected function isUploadedFile($file)
-    {
-        return is_uploaded_file($file);
-    }
-
-    /**
-     * Wrapper method for move_uploaded_file so that we can test
+     * Wrapper method for move_uploaded_file
+     * This will check if the file has been uploaded or not before picking the correct method to move the file
      *
      * @param string $file Path to the uploaded file
      * @param string $destination The destination file name
@@ -187,6 +178,10 @@ class ProfferBehavior extends Behavior
      */
     protected function moveUploadedFile($file, $destination)
     {
-        return move_uploaded_file($file, $destination);
+        if (is_uploaded_file($file)) {
+            return move_uploaded_file($file, $destination);
+        }
+
+        return rename($file, $destination);
     }
 }

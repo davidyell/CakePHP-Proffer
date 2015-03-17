@@ -50,12 +50,12 @@ class ProfferListener implements EventListenerInterface
      * Event handler for the afterThumbs event
      *
      * @param Event $event The passed event
-     * @param ImageInterface $image An Imagine image instance
      * @param ProfferPath $path Array of path data
+     * @param ImageInterface $image An Imagine image instance
      * @param string $prefix The thumbnail prefix
      * @return ImageInterface
      */
-    public function afterThumbs(Event $event, ImageInterface $image, ProfferPath $path, $prefix)
+    public function afterThumbs(Event $event, ProfferPath $path, ImageInterface $image, $prefix)
     {
         $transform = new ImageTransform();
         return $transform->saveThumbs($image, $path, $prefix);
