@@ -64,3 +64,12 @@ Allows you to customise the root folder in which all the file upload folders and
 ###thumbnailMethod
 **default:** `gd`  
 Which Imagine engine to use to convert the images. Defaults to PHP's GD library. Can also be `imagick` and `gmagick`.
+
+## Configuring your templates
+You will need to make sure that your forms are using the file type so that the files can be uploaded.
+
+```php
+echo $this->Form->create($entity, ['type' => 'file']);
+echo $this->Form->input('photo', ['type' => 'file']);
+// etc
+```
