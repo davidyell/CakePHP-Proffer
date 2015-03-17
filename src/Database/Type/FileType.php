@@ -11,24 +11,12 @@
 
 namespace Proffer\Database\Type;
 
-use Cake\Database\Driver;
 use Cake\Database\Type;
-use PDO;
 
 class FileType extends Type
 {
-    public function toDatabase($value, Driver $driver)
+    public function marshal($value)
     {
         return $value;
-    }
-
-    public function toPHP($value, Driver $driver)
-    {
-        return $value;
-    }
-
-    public function toStatement($value, Driver $driver)
-    {
-        return PDO::PARAM_STR;
     }
 }
