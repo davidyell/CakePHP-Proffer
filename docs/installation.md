@@ -10,7 +10,11 @@ It's always advised to lock your dependencies to a specific version number. You 
  or [read more about versioning on Composer.org](https://getcomposer.org/doc/01-basic-usage.md#package-versions).
 
 ## CakePHP
-Then you'll need to load the plugin in your `config/bootstrap.php` file. `Plugin::load('Proffer', ['bootstrap' => true]);`.
+Then you'll need to load the plugin in your `config/bootstrap.php` file. 
+
+```php
+Plugin::load('Proffer', ['bootstrap' => true]);
+```
 
 ## Database
 Next you need to add the fields to your table. You'll want to add your file upload field, this will store the name of the 

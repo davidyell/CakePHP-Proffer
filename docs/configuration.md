@@ -21,7 +21,7 @@ $this->addBehavior('Proffer.Proffer', [
 	'photo' => [	// The name of your upload field
 		'root' => WWW_DIR . 'files', // Customise the root upload folder here, or omit to use the default
 		'dir' => 'photo_dir',	// The name of the field to store the folder
-		'thumbnailSizes' => [
+		'thumbnailSizes' => [ // Declare your thumbnails
 			'square' => ['w' => 200, 'h' => 200],	// Define the size and prefix of your thumbnails
 			'portrait' => ['w' => 100, 'h' => 300, 'crop' => true],		// Crop will crop the image as well as resize it
 		],
@@ -53,14 +53,24 @@ There are a number of configuration options you can pass into the behaviour when
 The database field which will store the name of the folder in which the files are uploaded.
 
 ###thumbnailSizes
-**required** `array`  
+**optional** `array`  
 An array of sizes to create thumbnails of an uploaded image. The format is that the image prefix will be the array key and the sizes are the value as an array.  
 Eg, `'square' => ['w' => 200, 'h' => 200]` would create a thumbnail prefixed with `square_` and would be 100px x 100px.
+If you do not specify the `thumbnailSizes` configuration option, no thumbnails will be created.
 
 ###root
-**default:** `WWW_DIR . 'files'`  
+**optional:** defaults to, `WWW_DIR . 'files'`  
 Allows you to customise the root folder in which all the file upload folders and files will be created.
 
 ###thumbnailMethod
-**default:** `gd`  
+**optional:** defaults to, `gd`  
 Which Imagine engine to use to convert the images. Defaults to PHP's GD library. Can also be `imagick` and `gmagick`.
+
+## Configuring your templates
+You will need to make sure that your forms are using the file type so that the files can be uploaded.
+
+```php
+echo $this->Form->create($entity, ['type' => 'file']);
+echo $this->Form->input('photo', ['type' => 'file']);
+// etc
+```

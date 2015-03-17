@@ -30,6 +30,7 @@ All the documentation can be found in the [docs](docs) folder.
 * [Customisation](docs/customisation.md)
 * [Shell tasks](docs/shell.md)
 * [Examples](docs/examples.md)
+* [FAQ](docs/faq.md)
 
 ##Contribution
 Please open a pull request or submit an issue if there is anything you would like to contribute. Please write a test for 

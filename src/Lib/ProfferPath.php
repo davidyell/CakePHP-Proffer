@@ -46,7 +46,11 @@ class ProfferPath
         $this->setTable($table->alias());
         $this->setField($field);
         $this->setSeed($this->generateSeed($entity->get($settings['dir'])));
-        $this->setPrefixes($settings['thumbnailSizes']);
+
+        if (isset($settings['thumbnailSizes'])) {
+            $this->setPrefixes($settings['thumbnailSizes']);
+        }
+
         $this->setFilename($entity->get($field));
     }
 
@@ -88,7 +92,7 @@ class ProfferPath
      * @param string $table The name of the table the behaviour is dealing with.
      * @return void
      */
-    protected function setTable($table)
+    public function setTable($table)
     {
         $this->table = strtolower($table);
     }
