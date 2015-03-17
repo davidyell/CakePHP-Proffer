@@ -118,13 +118,19 @@ class ProfferBehavior extends Behavior
 
                 foreach ($settings['thumbnailSizes'] as $prefix => $dimensions) {
                     $filename = $path->fullPath($prefix);
-                    unlink($filename);
+                    if (file_exists($filename)) {
+                        unlink($filename);
+                    }
                 }
 
                 $filename = $path->fullPath();
-                unlink($filename);
+                if (file_exists($filename)) {
+                    unlink($filename);
+                }
 
-                rmdir($path->getFolder());
+                if (file_exists($path->getFolder())) {
+                    rmdir($path->getFolder());
+                }
             }
         }
 

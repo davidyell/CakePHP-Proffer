@@ -418,6 +418,43 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         $this->assertFileNotExists($testUploadPath . 'portrait_image_640x480.jpg');
     }
 
+    public function testAfterDeleteWithMissingFiles()
+    {
+        $table = $this->getMock('Cake\ORM\Table', ['alias']);
+        $table->method('alias')
+            ->willReturn('ProfferTest');
+
+        $Proffer = new ProfferBehavior($table, $this->config);
+
+        $entity = new Entity([
+            'photo' => 'image_640x480.jpg',
+            'photo_dir' => 'proffer_test'
+        ]);
+
+        $path = $this->getProfferPathMock($table, $entity, 'photo');
+        $testUploadPath = $path->getFolder();
+
+        if (!file_exists($testUploadPath)) {
+            mkdir($testUploadPath, 0777, true);
+        }
+
+        copy(
+            Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg',
+            $testUploadPath . 'image_640x480.jpg'
+        );
+
+        $Proffer->afterDelete(
+            $this->getMock('Cake\Event\Event', null, ['afterDelete']),
+            $entity,
+            new ArrayObject(),
+            $path
+        );
+
+        $this->assertFileNotExists($testUploadPath . 'image_640x480.jpg');
+        $this->assertFileNotExists($testUploadPath . 'square_image_640x480.jpg');
+        $this->assertFileNotExists($testUploadPath . 'portrait_image_640x480.jpg');
+    }
+
     public function testBeforePathEvent()
     {
         $entityData = [
