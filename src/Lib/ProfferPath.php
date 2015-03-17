@@ -92,7 +92,7 @@ class ProfferPath
      * @param string $table The name of the table the behaviour is dealing with.
      * @return void
      */
-    protected function setTable($table)
+    public function setTable($table)
     {
         $this->table = strtolower($table);
     }

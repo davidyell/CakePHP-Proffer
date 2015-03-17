@@ -46,3 +46,5 @@ creating any thumbnails.
 Using the `Proffer.afterPath` event you can hook into all the details about the file upload before it is processed. Using 
 this event you can change the name of the file and the upload path to match whatever convention you want. I have created 
 an example listener which is [available as an example](examples/UploadFilenameListener.md).
+
+You would attach this listener in the same way as above, but there is no need to remove the existing listeners first.
