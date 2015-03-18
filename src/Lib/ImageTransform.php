@@ -16,7 +16,7 @@ use Imagine\Image\ImageInterface;
 use Imagine\Image\Point;
 use Imagine\Imagick\Imagine as Imagick;
 
-class ImageTransform implements ImageTransformInterface
+class ImageTransform
 {
 
     /**
