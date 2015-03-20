@@ -211,12 +211,16 @@ class ProfferPath
      */
     public function fullPath($prefix = null)
     {
+        $table = $this->getTable();
+        
+        $table = (!empty($table)) ? DS . $table : '';    
+        
         if ($prefix) {
-            return $this->getRoot() . DS . $this->getTable() . DS . $this->getField()
+            return $this->getRoot() . $table . DS . $this->getField()
                 . DS . $this->getSeed() . DS . $prefix . '_' . $this->getFilename();
         }
 
-        return $this->getRoot() . DS . $this->getTable() . DS . $this->getField()
+        return $this->getRoot() . $table . DS . $this->getField()
             . DS . $this->getSeed() . DS . $this->getFilename();
     }
 
