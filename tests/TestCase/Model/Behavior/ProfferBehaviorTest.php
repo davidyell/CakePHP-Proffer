@@ -628,7 +628,8 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
                     'seed' => 'proffer_event_test',
                     'filename' => 'event_image_640x480.jpg'
                 ],
-                TMP . 'ProfferTests' . DS . 'proffer_path_event_test' . DS . 'photo' . DS . 'proffer_event_test' . DS . 'event_image_640x480.jpg'
+                TMP . 'ProfferTests' . DS . 'proffer_path_event_test' . DS . 'photo' . DS . 'proffer_event_test' .
+                DS . 'event_image_640x480.jpg'
             ],
             [
                 [
