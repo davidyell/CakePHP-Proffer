@@ -157,7 +157,7 @@ class ProfferPath
      */
     public function setFilename($filename)
     {
-        if (is_array($filename)) {
+        if (is_array($filename) && isset($filename['name'])) {
             $this->filename = $filename['name'];
         } else {
             $this->filename = $filename;
@@ -211,13 +211,19 @@ class ProfferPath
      */
     public function fullPath($prefix = null)
     {
+        $table = $this->getTable();
+        $table = (!empty($table)) ? $table . DS : null;
+
+        $seed  = $this->getSeed();
+        $seed = (!empty($seed)) ? $seed . DS : null;
+
         if ($prefix) {
-            return $this->getRoot() . DS . $this->getTable() . DS . $this->getField()
+            return $this->getRoot() . DS . $table . $this->getField()
                 . DS . $this->getSeed() . DS . $prefix . '_' . $this->getFilename();
         }
 
-        return $this->getRoot() . DS . $this->getTable() . DS . $this->getField()
-            . DS . $this->getSeed() . DS . $this->getFilename();
+        return $this->getRoot() . DS . $table . $this->getField()
+            . DS . $seed . $this->getFilename();
     }
 
     /**
@@ -227,7 +233,13 @@ class ProfferPath
      */
     public function getFolder()
     {
-        return $this->getRoot() . DS . $this->getTable() . DS . $this->getField() . DS . $this->getSeed() . DS;
+        $table = $this->getTable();
+        $table = (!empty($table)) ? $table . DS : null;
+
+        $seed  = $this->getSeed();
+        $seed = (!empty($seed)) ? $seed . DS : null;
+
+        return $this->getRoot() . DS . $table . $this->getField() . DS . $seed;
     }
 
     /**

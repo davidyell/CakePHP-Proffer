@@ -14,6 +14,7 @@ use Cake\ORM\Entity;
 use Cake\ORM\Table;
 use PHPUnit_Framework_TestCase;
 use Proffer\Event\ProfferListener;
+use Proffer\Lib\ProfferPath;
 use Proffer\Model\Behavior\ProfferBehavior;
 
 /**
@@ -618,7 +619,58 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         $this->assertFileNotExists($testUploadPath . 'square_image_640x480.jpg');
     }
 
-    public function testChangingThePathUsingEvents()
+    public function providerPathEvents()
+    {
+        return [
+            [
+                [
+                    'table' => 'proffer_path_event_test',
+                    'seed' => 'proffer_event_test',
+                    'filename' => 'event_image_640x480.jpg'
+                ],
+                TMP . 'ProfferTests' . DS . 'proffer_path_event_test' . DS . 'photo' . DS . 'proffer_event_test' .
+                DS . 'event_image_640x480.jpg'
+            ],
+            [
+                [
+                    'table' => null,
+                    'seed' => 'proffer_event_test',
+                    'filename' => 'event_image_640x480.jpg'
+                ],
+                TMP . 'ProfferTests' . DS . 'photo' . DS . 'proffer_event_test' . DS . 'event_image_640x480.jpg'
+            ],
+            [
+                [
+                    'table' => '',
+                    'seed' => 'proffer_event_test',
+                    'filename' => 'event_image_640x480.jpg'
+                ],
+                TMP . 'ProfferTests' . DS . 'photo' . DS . 'proffer_event_test' . DS . 'event_image_640x480.jpg'
+            ],
+            [
+                [
+                    'table' => '',
+                    'seed' => '',
+                    'filename' => 'event_image_640x480.jpg'
+                ],
+                TMP . 'ProfferTests' . DS . 'photo' . DS . 'event_image_640x480.jpg'
+            ],
+            [
+                [
+                    'table' => 'proffer_path_event_test',
+                    'seed' => '',
+                    'filename' => 'event_image_640x480.jpg'
+                ],
+                TMP . 'ProfferTests' . DS . 'proffer_path_event_test' . DS . 'photo' . DS . 'event_image_640x480.jpg'
+            ],
+        ];
+    }
+
+    /**
+     * @param array $pathData An array of data to pass into the path customisation
+     * @dataProvider providerPathEvents
+     */
+    public function testChangingThePathUsingEvents(array $pathData, $expected)
     {
         $table = $this->getMock('Cake\ORM\Table', ['alias']);
         $table->method('alias')
@@ -634,12 +686,12 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
 
         $listener->expects($this->once())
             ->method('filename')
-            ->willReturnCallback(function ($event, $path) {
-                $path->setTable('proffer_path_event_test');
-                $path->setSeed('proffer_event_test');
-                $path->setFilename('event_image_640x480.jpg');
+            ->willReturnCallback(function ($event, $path) use ($pathData) {
+                $path->setTable($pathData['table']);
+                $path->setSeed($pathData['seed']);
+                $path->setFilename($pathData['filename']);
 
-                $event->subject()['photo']['name'] = 'event_image_640x480.jpg';
+                $event->subject()['photo']['name'] = $pathData['filename'];
 
                 return $path;
             });
@@ -656,7 +708,9 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             'photo_dir' => 'proffer_test'
         ];
         $entity = new Entity($entityData);
-        $path = $this->getProfferPathMock($table, $entity, 'photo');
+
+        $this->config['photo']['root'] = TMP . 'ProfferTests';
+        $path = new ProfferPath($table, $entity, 'photo', $this->config['photo']);
 
         $Proffer = $this->getMockBuilder('Proffer\Model\Behavior\ProfferBehavior')
             ->setConstructorArgs([$table, $this->config])
@@ -679,13 +733,10 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             $path
         );
 
-        $this->assertEquals('event_image_640x480.jpg', $entity->get('photo'));
-        $this->assertEquals('proffer_event_test', $entity->get('photo_dir'));
+        $this->assertEquals($pathData['filename'], $entity->get('photo'));
+        $this->assertEquals($pathData['seed'], $entity->get('photo_dir'));
 
-        $testUploadPath = $path->getFolder();
-
-        $this->assertFileExists($testUploadPath . 'event_image_640x480.jpg');
-        $this->assertFileExists($testUploadPath . 'portrait_event_image_640x480.jpg');
-        $this->assertFileExists($testUploadPath . 'square_event_image_640x480.jpg');
+        $this->assertFileExists($path->fullPath());
+        $this->assertEquals($expected, $path->fullPath());
     }
 }
