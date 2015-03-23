@@ -688,4 +688,32 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         $this->assertFileExists($testUploadPath . 'portrait_event_image_640x480.jpg');
         $this->assertFileExists($testUploadPath . 'square_event_image_640x480.jpg');
     }
+
+    public function testDeletingARecordWithNoThumbnailConfig()
+    {
+        $table = $this->getMock('Cake\ORM\Table', ['alias']);
+        $table->method('alias')
+            ->willReturn('ProfferTest');
+
+        $config = $this->config;
+        unset($config['photo']['thumbnailSizes']);
+
+        $entityData = [
+            'photo' => 'image_640x480.jpg',
+            'photo_dir' => 'proffer_test'
+        ];
+        $entity = new Entity($entityData);
+        $path = $this->getProfferPathMock($table, $entity, 'photo');
+
+        $Proffer = $this->getMockBuilder('Proffer\Model\Behavior\ProfferBehavior')
+            ->setConstructorArgs([$table, $config])
+            ->setMethods(['afterDelete'])
+            ->getMock();
+
+        $Proffer->expects($this->once())
+            ->method('afterDelete');
+
+        $Proffer->afterDelete($this->getMock('Cake\Event\Event', [], ['afterDelete']), $entity, new ArrayObject(), $path);
+
+    }
 }
