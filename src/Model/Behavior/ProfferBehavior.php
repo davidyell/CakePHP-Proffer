@@ -116,23 +116,7 @@ class ProfferBehavior extends Behavior
                     $path = new ProfferPath($this->_table, $entity, $field, $settings);
                 }
 
-                if (!empty($settings['thumbnailSizes'])) {
-                    foreach ($settings['thumbnailSizes'] as $prefix => $dimensions) {
-                        $filename = $path->fullPath($prefix);
-                        if (file_exists($filename)) {
-                            unlink($filename);
-                        }
-                    }
-                }
-
-                $filename = $path->fullPath();
-                if (file_exists($filename)) {
-                    unlink($filename);
-                }
-
-                if (file_exists($path->getFolder())) {
-                    rmdir($path->getFolder());
-                }
+                $path->deleteFiles($path->getFolder(), true);
             }
         }
 
