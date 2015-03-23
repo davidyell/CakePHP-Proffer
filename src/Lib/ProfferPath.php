@@ -240,6 +240,8 @@ class ProfferPath
         if (!file_exists($this->getFolder())) {
             return mkdir($this->getFolder(), 0777, true);
         }
+
+        return true;
     }
 
     /**

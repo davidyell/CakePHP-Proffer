@@ -254,4 +254,34 @@ class ProfferPathTest extends PHPUnit_Framework_TestCase
 
         $this->assertFileNotExists($path->getFolder());
     }
+
+    public function testCreatingPathFolderWhichExists()
+    {
+        $table = $this->getMockBuilder('Cake\ORM\Table')
+            ->setMethods(['alias'])
+            ->getMock();
+        $table->method('alias')
+            ->willReturn('ProfferTest');
+
+        $entity = new Entity([
+            'photo' => 'image_640x480.jpg',
+            'photo_dir' => 'proffer_test'
+        ]);
+
+        $settings = [
+            'root' => TMP . 'ProfferTests',
+            'dir' => 'photo_dir',
+            'thumbnailSizes' => [
+                'square' => ['w' => 100, 'h' => 100],
+                'squareCrop' => ['w' => 100, 'h' => 100, 'crop' => true]
+            ]
+        ];
+
+        $path = new ProfferPath($table, $entity, 'photo', $settings);
+
+        mkdir(TMP . 'ProfferTests' . DS . 'proffertest' . DS . 'photo' . DS . 'proffer_test' . DS, 0777, true);
+
+        $result = $path->createPathFolder();
+        $this->assertEquals(true, $result);
+    }
 }
