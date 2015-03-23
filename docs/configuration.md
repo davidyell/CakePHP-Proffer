@@ -66,6 +66,16 @@ Allows you to customise the root folder in which all the file upload folders and
 **optional:** defaults to, `gd`  
 Which Imagine engine to use to convert the images. Defaults to PHP's GD library. Can also be `imagick` and `gmagick`.
 
+###pathClass
+**optional**  
+If you want to inject your own class for dealing with paths you can specify it here as a fully qualified namespace.
+Eg, `'App\Lib\Proffer\AvatarPath'`.
+
+###transformClass  
+**optional**  
+If you want to replace the creation of thumbnails you can specify your own class here, it must be a fully qualified namespace.
+EG, `'App\Lib\Proffer\WatermarkThumbnail'`.
+
 ## Configuring your templates
 You will need to make sure that your forms are using the file type so that the files can be uploaded.
 

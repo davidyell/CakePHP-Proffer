@@ -35,7 +35,7 @@ class ProfferPath implements ProfferPathInterface
      * @param string $field The name of the upload field
      * @param array $settings Array of settings for the upload field
      */
-    public function __construct(Table $table, Entity $entity, $field, $settings)
+    public function __construct(Table $table, Entity $entity, $field, array $settings)
     {
         if (isset($settings['root'])) {
             $this->setRoot($settings['root']);

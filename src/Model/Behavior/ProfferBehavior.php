@@ -15,6 +15,7 @@ use Cake\ORM\Entity;
 use Exception;
 use Proffer\Lib\ImageTransform;
 use Proffer\Lib\ProfferPath;
+use Proffer\Lib\ProfferPathInterface;
 
 /**
  * Proffer behavior
@@ -45,16 +46,20 @@ class ProfferBehavior extends Behavior
      * @param Event $event The event
      * @param Entity $entity The entity
      * @param ArrayObject $options Array of options
-     * @param ProfferPath $path Inject an instance of ProfferPath
+     * @param ProfferPathInterface $path Inject an instance of ProfferPath
      * @return true
      * @throws Exception
      */
-    public function beforeSave(Event $event, Entity $entity, ArrayObject $options, ProfferPath $path = null)
+    public function beforeSave(Event $event, Entity $entity, ArrayObject $options, ProfferPathInterface $path = null)
     {
         foreach ($this->config() as $field => $settings) {
             if ($entity->has($field) && is_array($entity->get($field)) &&
                 $entity->get($field)['error'] === UPLOAD_ERR_OK) {
-                if (!$path) {
+
+                // Allow path to be injected or set in config
+                if (!empty($settings['pathClass'])) {
+                    $path = new $settings['PathClass']($this->_table, $entity, $field, $settings);
+                } else if (!$path) {
                     $path = new ProfferPath($this->_table, $entity, $field, $settings);
                 }
 
@@ -73,7 +78,13 @@ class ProfferBehavior extends Behavior
                     // Only generate thumbnails for image uploads
                     if (getimagesize($path->fullPath()) !== false && isset($settings['thumbnailSizes'])) {
                         foreach ($settings['thumbnailSizes'] as $prefix => $dimensions) {
-                            $imageTransform = new ImageTransform($this->_table);
+
+                            // Allow the transformation class to be injected
+                            if (!empty($settings['transformClass'])) {
+                                $imageTransform = new $settings['transformClass']($this->_table);
+                            } else {
+                                $imageTransform = new ImageTransform($this->_table);
+                            }
 
                             if (!empty($settings['thumbnailMethod'])) {
                                 $method = $settings['thumbnailMethod'];
@@ -102,10 +113,10 @@ class ProfferBehavior extends Behavior
      * @param Event $event The passed event
      * @param Entity $entity The entity
      * @param ArrayObject $options Array of options
-     * @param ProfferPath $path Inject and instance of ProfferPath
+     * @param ProfferPathInterface $path Inject and instance of ProfferPath
      * @return bool
      */
-    public function afterDelete(Event $event, Entity $entity, ArrayObject $options, ProfferPath $path = null)
+    public function afterDelete(Event $event, Entity $entity, ArrayObject $options, ProfferPathInterface $path = null)
     {
         foreach ($this->config() as $field => $settings) {
             $dir = $entity->get($settings['dir']);
