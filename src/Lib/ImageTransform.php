@@ -8,6 +8,8 @@
 
 namespace Proffer\Lib;
 
+use Cake\Event\Event;
+use Cake\ORM\Table;
 use Imagine\Filter\Transformation;
 use Imagine\Gd\Imagine as Gd;
 use Imagine\Gmagick\Imagine as Gmagick;
@@ -16,7 +18,7 @@ use Imagine\Image\ImageInterface;
 use Imagine\Image\Point;
 use Imagine\Imagick\Imagine as Imagick;
 
-class ImageTransform
+class ImageTransform implements ImageTransformInterface
 {
 
     /**
@@ -25,6 +27,21 @@ class ImageTransform
      * @var ImagineInterface $Imagine
      */
     private $Imagine;
+
+    /**
+     * @var Table $table Instance of the table being used
+     */
+    protected $Table;
+
+    /**
+     * Construct the transformation class
+     *
+     * @param Table $table The table instance
+     */
+    public function __construct(Table $table)
+    {
+        $this->Table = $table;
+    }
 
     /**
      * Get the specified Imagine engine class
@@ -59,16 +76,23 @@ class ImageTransform
     }
 
     /**
-     * Generate thumbnails
+     * Generate thumbnail
      *
-     * @param ProfferPath $path The path array
+     * @param ProfferPathInterface $path The path array
      * @param array $dimensions Array of thumbnail dimensions
      * @param string $thumbnailMethod Which engine to use to make thumbnails
      * @return ImageInterface
      */
-    public function makeThumbnails(ProfferPath $path, array $dimensions, $thumbnailMethod = 'gd')
+    public function makeThumbnail(ProfferPathInterface $path, array $dimensions, $thumbnailMethod = 'gd')
     {
         $this->setImagine($thumbnailMethod);
+
+        $event = new Event('Proffer.beforeThumbs', $this, [
+            'path' => $path,
+            'dimensions' => $dimensions,
+            'thumbnailMethod' => $thumbnailMethod
+        ]);
+        $this->Table->eventManager()->dispatch($event);
 
         $image = $this->getImagine()->open($path->fullPath());
 
@@ -78,6 +102,12 @@ class ImageTransform
             $image = $this->thumbnailScale($image, $dimensions['w'], $dimensions['h']);
         }
 
+        $event = new Event('Proffer.afterThumbs', $this, [
+            'path' => $path,
+            'image' => $image
+        ]);
+        $this->Table->eventManager()->dispatch($event);
+
         return $image;
     }
 
@@ -85,11 +115,11 @@ class ImageTransform
      * Save thumbnail to the file system
      *
      * @param ImageInterface $image The ImageInterface instance from Imagine
-     * @param ProfferPath $path The path array
+     * @param ProfferPathInterface $path The path array
      * @param string $prefix The thumbnail size prefix
      * @return ImageInterface
      */
-    public function saveThumbs(ImageInterface $image, ProfferPath $path, $prefix)
+    public function saveThumbnail(ImageInterface $image, ProfferPathInterface $path, $prefix)
     {
         $filePath = $path->fullPath($prefix);
         $image->save($filePath, ['jpeg_quality' => 100, 'png_compression_level' => 9]);

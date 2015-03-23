@@ -456,7 +456,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         $this->assertFileNotExists($testUploadPath . 'portrait_image_640x480.jpg');
     }
 
-    public function testBeforePathEvent()
+    public function testAfterPathEvent()
     {
         $entityData = [
             'photo' => [
@@ -483,68 +483,9 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
 
         $event = new Event('Proffer.afterPath', $entity, ['path' => $path]);
 
-        $eventManager->expects($this->once())
+        $eventManager->expects($this->at(0))
             ->method('dispatch')
             ->with($this->equalTo($event));
-
-        $Proffer = $this->getMockBuilder('Proffer\Model\Behavior\ProfferBehavior')
-            ->setConstructorArgs([$table, $this->config])
-            ->setMethods(['moveUploadedFile', 'makeThumbs'])
-            ->getMock();
-
-        $Proffer->expects($this->once())
-            ->method('moveUploadedFile')
-            ->will($this->returnCallback(
-                function ($param) use ($entity, $path) {
-                    return copy($entity->get('photo')['tmp_name'], $path->fullPath());
-                }
-            ));
-
-        $Proffer->expects($this->once())
-            ->method('makeThumbs')
-            ->willReturn(null);
-
-        $Proffer->beforeSave(
-            $this->getMock('Cake\Event\Event', null, ['beforeSave']),
-            $entity,
-            new ArrayObject(),
-            $path
-        );
-    }
-
-    public function testAllEvents()
-    {
-        $entityData = [
-            'photo' => [
-                'name' => 'image_640x480.jpg',
-                'tmp_name' => Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg',
-                'size' => 33000,
-                'error' => UPLOAD_ERR_OK
-            ],
-            'photo_dir' => 'proffer_test'
-        ];
-        $entity = new Entity($entityData);
-
-        $table = $this->getMockBuilder('Cake\ORM\Table')
-            ->setMethods(['alias'])
-            ->getMock();
-
-        $table->method('alias')
-            ->willReturn('ProfferTest');
-
-        $path = $this->getProfferPathMock($table, $entity, 'photo');
-
-        $listener = $this->getMockBuilder('Proffer\Event\ProfferListener')
-            ->setMethods(['beforeThumbs', 'afterThumbs'])
-            ->getMock();
-
-        $table->eventManager()->on($listener);
-
-        // Twice because we are generating two sizes of thumbnail
-        $listener->expects($this->exactly(2))
-            ->method('beforeThumbs');
-        $listener->expects($this->exactly(2))
-            ->method('afterThumbs');
 
         $Proffer = $this->getMockBuilder('Proffer\Model\Behavior\ProfferBehavior')
             ->setConstructorArgs([$table, $this->config])

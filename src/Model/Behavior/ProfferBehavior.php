@@ -13,7 +13,7 @@ use Cake\Event\Event;
 use Cake\ORM\Behavior;
 use Cake\ORM\Entity;
 use Exception;
-use Proffer\Event\ProfferListener;
+use Proffer\Lib\ImageTransform;
 use Proffer\Lib\ProfferPath;
 
 /**
@@ -21,18 +21,6 @@ use Proffer\Lib\ProfferPath;
  */
 class ProfferBehavior extends Behavior
 {
-    /**
-     * Initialize the behavior
-     *
-     * @param array $config Array of pass configuration
-     * @return void
-     */
-    public function initialize(array $config)
-    {
-        $listener = new ProfferListener();
-        $this->_table->eventManager()->on($listener);
-    }
-
     /**
      * beforeMarshal event
      *
@@ -82,12 +70,23 @@ class ProfferBehavior extends Behavior
                     $entity->set($field, $entity->get($field)['name']);
                     $entity->set($settings['dir'], $path->getSeed());
 
-                    // Don't generate thumbnails for non-images
+                    // Only generate thumbnails for image uploads
                     if (getimagesize($path->fullPath()) !== false && isset($settings['thumbnailSizes'])) {
-                        $this->makeThumbs($field, $path);
+                        foreach ($settings['thumbnailSizes'] as $prefix => $dimensions) {
+                            $imageTransform = new ImageTransform($this->_table);
+
+                            if (!empty($settings['thumbnailMethod'])) {
+                                $method = $settings['thumbnailMethod'];
+                            } else {
+                                $method = null;
+                            }
+
+                            $image = $imageTransform->makeThumbnail($path, $dimensions, $method);
+                            $imageTransform->saveThumbnail($image, $path, $prefix);
+                        }
                     }
                 } else {
-                    throw new Exception('Cannot move file');
+                    throw new Exception('Cannot upload file');
                 }
             }
         }
@@ -121,43 +120,6 @@ class ProfferBehavior extends Behavior
         }
 
         return true;
-    }
-
-    /**
-     * Dispatch events to allow generation of thumbnails
-     *
-     * @param string $field The name of the upload field
-     * @param ProfferPath $path The path array
-     * @return void
-     */
-    protected function makeThumbs($field, ProfferPath $path)
-    {
-        foreach ($this->config($field)['thumbnailSizes'] as $prefix => $dimensions) {
-            $eventParams = ['path' => $path, 'dimensions' => $dimensions, 'thumbnailMethod' => null];
-
-            if (isset($this->config($field)['thumbnailMethod'])) {
-                $eventParams['thumbnailMethod'] = $this->config($field)['thumbnailMethod'];
-            }
-
-            // Event listener handles generation
-            $event = new Event('Proffer.beforeThumbs', $this->_table, $eventParams);
-
-            $this->_table->eventManager()->dispatch($event);
-            if (!empty($event->result)) {
-                $image = $event->result;
-
-                $event = new Event('Proffer.afterThumbs', $this->_table, [
-                    'path' => $path,
-                    'image' => $image,
-                    'prefix' => $prefix
-                ]);
-            }
-
-            $this->_table->eventManager()->dispatch($event);
-            if (!empty($event->result)) {
-                $image = $event->result;
-            }
-        }
     }
 
     /**
