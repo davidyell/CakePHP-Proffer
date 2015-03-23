@@ -85,7 +85,11 @@ class ProfferShell extends Shell
 
             foreach ($records as $item) {
                 $path = new ProfferPath($this->Table, $item, $field, $settings);
-                $engine = $settings['thumbnailMethod'];
+                if (empty($settings['thumbnailMethod'])) {
+                    $engine = 'gd';
+                } else {
+                    $engine = $settings['thumbnailMethod'];
+                }
 
                 foreach ($settings['thumbnailSizes'] as $prefix => $dimensions) {
                     $image = $transform->makeThumbnails($path, $dimensions, $engine);
@@ -168,6 +172,27 @@ class ProfferShell extends Shell
             );
             $this->out($out);
             exit;
+        }
+
+        $config = $this->Table->behaviors()->Proffer->config();
+        foreach ($config as $field => $settings) {
+            if (!$this->Table->hasField($field)) {
+                $out = __(
+                    "<error>The table '" . $this->Table->alias() .
+                    "' does not have the configured upload field in it's schema.</error>"
+                );
+                $this->out($out);
+                exit;
+            }
+            if (!$this->Table->hasField($settings['dir'])) {
+                $out = __(
+                    "<error>The table '" . $this->Table->alias() .
+                    "' does not have the configured dir field in it's schema.</error>"
+                );
+                $this->out($out);
+                exit;
+            }
+
         }
     }
 }
