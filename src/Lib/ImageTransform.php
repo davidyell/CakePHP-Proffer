@@ -34,13 +34,20 @@ class ImageTransform implements ImageTransformInterface
     protected $Table;
 
     /**
+     * @var ProfferPathInterface $Path Instance of the path class
+     */
+    protected $Path;
+
+    /**
      * Construct the transformation class
      *
      * @param Table $table The table instance
+     * @param ProfferPathInterface $path Instance of the path class
      */
-    public function __construct(Table $table)
+    public function __construct(Table $table, ProfferPathInterface $path)
     {
         $this->Table = $table;
+        $this->Path = $path;
     }
 
     /**
@@ -76,37 +83,57 @@ class ImageTransform implements ImageTransformInterface
     }
 
     /**
+     * Take an upload fields configuration and create all the thumbnails
+     *
+     * @param array $config The upload fields configuration
+     * @return void
+     */
+    public function processThumbnails(array $config)
+    {
+        foreach ($config['thumbnailSizes'] as $prefix => $dimensions) {
+
+            $method = null;
+            if (!empty($config['thumbnailMethod'])) {
+                $method = $config['thumbnailMethod'];
+            }
+
+            $event = new Event('Proffer.beforeThumb', $this, [
+                'path' => $this->Path,
+                'prefix' => $prefix,
+                'dimensions' => $dimensions,
+                'thumbnailMethod' => $method
+            ]);
+            $this->Table->eventManager()->dispatch($event);
+
+            $image = $this->makeThumbnail($dimensions, $method);
+            $this->saveThumbnail($image, $prefix);
+
+            $event = new Event('Proffer.afterThumb', $this, [
+                'path' => $this->Path,
+                'image' => $image
+            ]);
+            $this->Table->eventManager()->dispatch($event);
+        }
+    }
+
+    /**
      * Generate thumbnail
      *
-     * @param ProfferPathInterface $path The path array
      * @param array $dimensions Array of thumbnail dimensions
      * @param string $thumbnailMethod Which engine to use to make thumbnails
      * @return ImageInterface
      */
-    public function makeThumbnail(ProfferPathInterface $path, array $dimensions, $thumbnailMethod = 'gd')
+    public function makeThumbnail(array $dimensions, $thumbnailMethod = 'gd')
     {
         $this->setImagine($thumbnailMethod);
 
-        $event = new Event('Proffer.beforeThumbs', $this, [
-            'path' => $path,
-            'dimensions' => $dimensions,
-            'thumbnailMethod' => $thumbnailMethod
-        ]);
-        $this->Table->eventManager()->dispatch($event);
-
-        $image = $this->getImagine()->open($path->fullPath());
+        $image = $this->getImagine()->open($this->Path->fullPath());
 
         if (isset($dimensions['crop']) && $dimensions['crop'] === true) {
             $image = $this->thumbnailCropScale($image, $dimensions['w'], $dimensions['h']);
         } else {
             $image = $this->thumbnailScale($image, $dimensions['w'], $dimensions['h']);
         }
-
-        $event = new Event('Proffer.afterThumbs', $this, [
-            'path' => $path,
-            'image' => $image
-        ]);
-        $this->Table->eventManager()->dispatch($event);
 
         return $image;
     }
@@ -115,13 +142,12 @@ class ImageTransform implements ImageTransformInterface
      * Save thumbnail to the file system
      *
      * @param ImageInterface $image The ImageInterface instance from Imagine
-     * @param ProfferPathInterface $path The path array
      * @param string $prefix The thumbnail size prefix
      * @return ImageInterface
      */
-    public function saveThumbnail(ImageInterface $image, ProfferPathInterface $path, $prefix)
+    public function saveThumbnail(ImageInterface $image, $prefix)
     {
-        $filePath = $path->fullPath($prefix);
+        $filePath = $this->Path->fullPath($prefix);
         $image->save($filePath, ['jpeg_quality' => 100, 'png_compression_level' => 9]);
 
         return $image;

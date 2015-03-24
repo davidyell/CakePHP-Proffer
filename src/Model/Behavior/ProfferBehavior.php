@@ -58,7 +58,7 @@ class ProfferBehavior extends Behavior
 
                 // Allow path to be injected or set in config
                 if (!empty($settings['pathClass'])) {
-                    $path = new $settings['PathClass']($this->_table, $entity, $field, $settings);
+                    $path = new $settings['pathClass']($this->_table, $entity, $field, $settings);
                 } else if (!$path) {
                     $path = new ProfferPath($this->_table, $entity, $field, $settings);
                 }
@@ -77,24 +77,14 @@ class ProfferBehavior extends Behavior
 
                     // Only generate thumbnails for image uploads
                     if (getimagesize($path->fullPath()) !== false && isset($settings['thumbnailSizes'])) {
-                        foreach ($settings['thumbnailSizes'] as $prefix => $dimensions) {
-
-                            // Allow the transformation class to be injected
-                            if (!empty($settings['transformClass'])) {
-                                $imageTransform = new $settings['transformClass']($this->_table);
-                            } else {
-                                $imageTransform = new ImageTransform($this->_table);
-                            }
-
-                            if (!empty($settings['thumbnailMethod'])) {
-                                $method = $settings['thumbnailMethod'];
-                            } else {
-                                $method = null;
-                            }
-
-                            $image = $imageTransform->makeThumbnail($path, $dimensions, $method);
-                            $imageTransform->saveThumbnail($image, $path, $prefix);
+                        // Allow the transformation class to be injected
+                        if (!empty($settings['transformClass'])) {
+                            $imageTransform = new $settings['transformClass']($this->_table, $path);
+                        } else {
+                            $imageTransform = new ImageTransform($this->_table, $path);
                         }
+
+                        $imageTransform->processThumbnails($settings);
                     }
                 } else {
                     throw new Exception('Cannot upload file');
