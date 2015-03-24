@@ -12,7 +12,6 @@
 namespace Proffer\Lib;
 
 use Cake\ORM\Table;
-use Imagine\Image\ImageInterface;
 
 interface ImageTransformInterface {
 
@@ -23,7 +22,7 @@ interface ImageTransformInterface {
     function __construct(Table $table, ProfferPathInterface $path);
 
     /**
-     * Take an upload fields configuration and create all the thumbnails
+     * Take an upload fields configuration and process each configured thumbnail
      *
      * @param array $config The upload fields configuration
      * @return void
@@ -31,21 +30,12 @@ interface ImageTransformInterface {
     function processThumbnails(array $config);
 
     /**
-     * Create a thumbnail from a file
+     * Create a thumbnail from a source file
      *
+     * @param string $prefix The prefix name for the thumbnail
      * @param array $dimensions The thumbnail dimensions
      * @param string $thumbnailMethod Which method to use to create the thumbnail
-     * @return \Imagine\Image\ImageInterface
+     * @return void
      */
-    function makeThumbnail(array $dimensions, $thumbnailMethod = 'gd');
-
-    /**
-     * Save the thumbnail to the file system
-     *
-     * @param ImageInterface $image An instance of the Imagine image
-     * @param $prefix The prefix to use when saving
-     * @return \Imagine\Image\ImageInterface
-     */
-    function saveThumbnail(ImageInterface $image, $prefix);
-
+    function makeThumbnail($prefix, array $dimensions, $thumbnailMethod = 'gd');
 }

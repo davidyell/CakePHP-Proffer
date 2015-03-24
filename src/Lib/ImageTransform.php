@@ -97,33 +97,19 @@ class ImageTransform implements ImageTransformInterface
                 $method = $config['thumbnailMethod'];
             }
 
-            $event = new Event('Proffer.beforeThumb', $this, [
-                'path' => $this->Path,
-                'prefix' => $prefix,
-                'dimensions' => $dimensions,
-                'thumbnailMethod' => $method
-            ]);
-            $this->Table->eventManager()->dispatch($event);
-
-            $image = $this->makeThumbnail($dimensions, $method);
-            $this->saveThumbnail($image, $prefix);
-
-            $event = new Event('Proffer.afterThumb', $this, [
-                'path' => $this->Path,
-                'image' => $image
-            ]);
-            $this->Table->eventManager()->dispatch($event);
+            $this->makeThumbnail($prefix, $dimensions, $method);
         }
     }
 
     /**
-     * Generate thumbnail
+     * Generate and save the thumbnail
      *
+     * @param string $prefix The thumbnail prefix
      * @param array $dimensions Array of thumbnail dimensions
      * @param string $thumbnailMethod Which engine to use to make thumbnails
-     * @return ImageInterface
+     * @return void
      */
-    public function makeThumbnail(array $dimensions, $thumbnailMethod = 'gd')
+    public function makeThumbnail($prefix, array $dimensions, $thumbnailMethod = 'gd')
     {
         $this->setImagine($thumbnailMethod);
 
@@ -135,22 +121,7 @@ class ImageTransform implements ImageTransformInterface
             $image = $this->thumbnailScale($image, $dimensions['w'], $dimensions['h']);
         }
 
-        return $image;
-    }
-
-    /**
-     * Save thumbnail to the file system
-     *
-     * @param ImageInterface $image The ImageInterface instance from Imagine
-     * @param string $prefix The thumbnail size prefix
-     * @return ImageInterface
-     */
-    public function saveThumbnail(ImageInterface $image, $prefix)
-    {
-        $filePath = $this->Path->fullPath($prefix);
-        $image->save($filePath, ['jpeg_quality' => 100, 'png_compression_level' => 9]);
-
-        return $image;
+        $image->save($this->Path->fullPath($prefix), ['jpeg_quality' => 100, 'png_compression_level' => 9]);
     }
 
     /**
