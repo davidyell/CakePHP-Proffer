@@ -3,7 +3,7 @@
 /**
  * @category Proffer
  * @package ProfferPathInterface.php
- * 
+ *
  * @author David Yell <neon1024@gmail.com>
  * @when 23/03/15
  *
@@ -14,7 +14,8 @@ namespace Proffer\Lib;
 use Cake\ORM\Entity;
 use Cake\ORM\Table;
 
-interface ProfferPathInterface {
+interface ProfferPathInterface
+{
 
     /**
      * Construct the path class
@@ -24,14 +25,14 @@ interface ProfferPathInterface {
      * @param string $field The name of the upload field
      * @param array $settings The settings for this field
      */
-    function __construct(Table $table, Entity $entity, $field, array $settings);
+    public function __construct(Table $table, Entity $entity, $field, array $settings);
 
     /**
      * Returns the root folder in which all uploads should be placed.
      *
      * @return string
      */
-    function getRoot();
+    public function getRoot();
 
     /**
      * Set the root folder for all uploads.
@@ -40,14 +41,14 @@ interface ProfferPathInterface {
      * @param string $root The root folder into which all uploads will be placed
      * @return void
      */
-    function setRoot($root);
+    public function setRoot($root);
 
     /**
      * Returns the name of the table the upload is associated with.
      *
      * @return string
      */
-    function getTable();
+    public function getTable();
 
     /**
      * Set the table name
@@ -55,14 +56,14 @@ interface ProfferPathInterface {
      * @param string $table The name of the table
      * @return void
      */
-    function setTable($table);
+    public function setTable($table);
 
     /**
      * Returns the name of the upload field as configured in the table.
      *
      * @return string
      */
-    function getField();
+    public function getField();
 
     /**
      * The name of the upload field
@@ -70,7 +71,7 @@ interface ProfferPathInterface {
      * @param string $field The upload field
      * @return void
      */
-    function setField($field);
+    public function setField($field);
 
     /**
      * Returns the seed used to generate a folder to hold all the associated uploads.
@@ -78,7 +79,7 @@ interface ProfferPathInterface {
      *
      * @return string
      */
-    function getSeed();
+    public function getSeed();
 
     /**
      * The path seed used to create a folder into which files can be uploaded
@@ -86,14 +87,14 @@ interface ProfferPathInterface {
      * @param string $seed The seed value
      * @return void
      */
-    function setSeed($seed);
+    public function setSeed($seed);
 
     /**
      * Return the name of the uploaded file.
      *
      * @return string
      */
-    function getFilename();
+    public function getFilename();
 
     /**
      * The filename for the uploaded file
@@ -101,14 +102,14 @@ interface ProfferPathInterface {
      * @param string $filename The name of the file
      * @return void
      */
-    function setFilename($filename);
+    public function setFilename($filename);
 
     /**
      * Returns an array of all the configured prefixes.
      *
      * @return array
      */
-    function getPrefixes();
+    public function getPrefixes();
 
     /**
      * Set the thumbnail prefixes from the configured thumbnail sizes.
@@ -116,7 +117,7 @@ interface ProfferPathInterface {
      * @param array $thumbnailSizes Array of different thumbnail sizes, keyed with the thumbnail prefix
      * @return void
      */
-    function setPrefixes(array $thumbnailSizes);
+    public function setPrefixes(array $thumbnailSizes);
 
     /**
      * Will create a new seed for new uploads. Should also pass back existing seed for new uploads to the same record.
@@ -125,7 +126,7 @@ interface ProfferPathInterface {
      * @param string $seed The existing seed if one exists
      * @return string
      */
-    function generateSeed($seed);
+    public function generateSeed($seed);
 
     /**
      * Return the complete absolute path to an upload. If it's an image with thumbnails you can pass the prefix to
@@ -134,21 +135,21 @@ interface ProfferPathInterface {
      * @param string $prefix The specific prefix to get the path for
      * @return string
      */
-    function fullPath($prefix = null);
+    public function fullPath($prefix = null);
 
     /**
      * Return the absolute path to the containing parent folder where all the files will be uploaded
      *
      * @return string
      */
-    function getFolder();
+    public function getFolder();
 
     /**
      * Check if the upload folder has already been created and if not create it
      *
      * @return bool
      */
-    function createPathFolder();
+    public function createPathFolder();
 
     /**
      * Remove all images from a folder and optionally remove the folder as well
@@ -157,5 +158,5 @@ interface ProfferPathInterface {
      * @param bool $rmdir If you want to remove the folder as well as the files.
      * @return bool
      */
-    function deleteFiles($folder, $rmdir = false);
+    public function deleteFiles($folder, $rmdir = false);
 }

@@ -3,7 +3,7 @@
 /**
  * @category Proffer
  * @package ImageTransformInterface.php
- * 
+ *
  * @author David Yell <neon1024@gmail.com>
  * @when 23/03/15
  *
@@ -13,13 +13,14 @@ namespace Proffer\Lib;
 
 use Cake\ORM\Table;
 
-interface ImageTransformInterface {
+interface ImageTransformInterface
+{
 
     /**
      * @param Table $table Instance of the current table
      * @param ProfferPathInterface $path Instance of the current path class
      */
-    function __construct(Table $table, ProfferPathInterface $path);
+    public function __construct(Table $table, ProfferPathInterface $path);
 
     /**
      * Take an upload fields configuration and process each configured thumbnail
@@ -27,7 +28,7 @@ interface ImageTransformInterface {
      * @param array $config The upload fields configuration
      * @return void
      */
-    function processThumbnails(array $config);
+    public function processThumbnails(array $config);
 
     /**
      * Create a thumbnail from a source file
@@ -37,5 +38,5 @@ interface ImageTransformInterface {
      * @param string $thumbnailMethod Which method to use to create the thumbnail
      * @return void
      */
-    function makeThumbnail($prefix, array $dimensions, $thumbnailMethod = 'gd');
+    public function makeThumbnail($prefix, array $dimensions, $thumbnailMethod = 'gd');
 }

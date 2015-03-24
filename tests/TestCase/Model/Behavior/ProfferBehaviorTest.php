@@ -705,7 +705,11 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         $Proffer->expects($this->once())
             ->method('afterDelete');
 
-        $Proffer->afterDelete($this->getMock('Cake\Event\Event', [], ['afterDelete']), $entity, new ArrayObject(), $path);
-
+        $Proffer->afterDelete(
+            $this->getMock('Cake\Event\Event', [], ['afterDelete']),
+            $entity,
+            new ArrayObject(),
+            $path
+        );
     }
 }
