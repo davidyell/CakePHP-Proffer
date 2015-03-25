@@ -44,7 +44,10 @@ class ProfferShell extends Shell
                     'table' => ['help' => __('The table to regenerate thumbs for'), 'required' => true]
                 ],
                 'options' => [
-                    'dry-run' => ['short' => 'd', 'help' => __('Do a dry run and dont delete any files.'), 'boolean' => true]
+                    'dry-run' => [
+                        'short' => 'd',
+                        'help' => __('Do a dry run and dont delete any files.'),
+                        'boolean' => true]
                 ]
             ],
         ]);
@@ -86,7 +89,9 @@ class ProfferShell extends Shell
 
             foreach ($records as $item) {
                 if ($this->param('verbose')) {
-                    $this->out(__('Processing ' . $this->Table->alias() . ' ' . $item->get($this->Table->primaryKey())));
+                    $this->out(
+                        __('Processing ' . $this->Table->alias() . ' ' . $item->get($this->Table->primaryKey()))
+                    );
                 }
 
                 $path = new ProfferPath($this->Table, $item, $field, $settings);
