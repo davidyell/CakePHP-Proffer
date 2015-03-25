@@ -15,13 +15,6 @@ use Cake\ORM\Table;
 
 interface ImageTransformInterface
 {
-
-    /**
-     * @param Table $table Instance of the current table
-     * @param ProfferPathInterface $path Instance of the current path class
-     */
-    public function __construct(Table $table, ProfferPathInterface $path);
-
     /**
      * Take an upload fields configuration and process each configured thumbnail
      *
