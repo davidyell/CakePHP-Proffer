@@ -32,7 +32,7 @@ class ProfferShell extends Shell
             'parser' => [
                 'description' => [__('Use this command to regenerate the thumbnails for a specific table.')],
                 'arguments' => [
-                    'table' => ['help' => __('The table to regenerate thumbs for'), 'required' => true]
+                    'table' => ['help' => __('The table to regenerate thumbs for') , 'required' => true]
                 ]
             ]
         ]);
@@ -42,6 +42,9 @@ class ProfferShell extends Shell
                 'description' => [__('This command will delete images which are not part of the model configuration.')],
                 'arguments' => [
                     'table' => ['help' => __('The table to regenerate thumbs for'), 'required' => true]
+                ],
+                'options' => [
+                    'dry-run' => ['short' => 'd', 'help' => __('Do a dry run and dont delete any files.'), 'boolean' => true]
                 ]
             ],
         ]);
@@ -74,75 +77,144 @@ class ProfferShell extends Shell
         $config = $this->Table->behaviors()->Proffer->config();
 
         foreach ($config as $field => $settings) {
-            $transform = new ImageTransform();
-
             $records = $this->{$this->Table->alias()}->find()
-                ->select([$field, $settings['dir']])
+                ->select([$this->Table->primaryKey(), $field, $settings['dir']])
                 ->where([
                     "$field IS NOT NULL",
                     "$field != ''"
                 ]);
 
             foreach ($records as $item) {
-                $path = new ProfferPath($this->Table, $item, $field, $settings);
-                if (empty($settings['thumbnailMethod'])) {
-                    $engine = 'gd';
-                } else {
-                    $engine = $settings['thumbnailMethod'];
+                if ($this->param('verbose')) {
+                    $this->out(__('Processing ' . $this->Table->alias() . ' ' . $item->get($this->Table->primaryKey())));
                 }
 
-                foreach ($settings['thumbnailSizes'] as $prefix => $dimensions) {
-                    $image = $transform->makeThumbnails($path, $dimensions, $engine);
-                    $transform->saveThumbs($image, $path, $prefix);
+                $path = new ProfferPath($this->Table, $item, $field, $settings);
+                $transform = new ImageTransform($this->Table, $path);
 
-                    $this->out(__('Thumbnails regenerated ' . $prefix . '_' . $item->get($field)));
+                $transform->processThumbnails($settings);
+
+                if ($this->param('verbose')) {
+                    $this->out(__('Thumbnails regenerated for ' . $path->fullPath()));
+                } else {
+                    $this->out(__('Thumbnails regenerated for ' . $this->Table->alias() . ' ' . $item->get($field)));
                 }
             }
         }
+
+        $this->out($this->nl(0));
+        $this->out(__('<info>Completed</info>'));
     }
 
     /**
-     * Clean up files associated with a table which don't have an entry in the db
+     * Clean up files associated with a table which doesn't have an entry in the db
      *
-     * @param string $table The name of the table
+     * @param string $table The name  of the table
      * @return void
      */
     public function cleanup($table)
     {
         $this->checkTable($table);
 
-        $okayToDestroy = $this->in(__('Are you sure? This will irreversibly delete files'), ['y', 'n'], 'n');
-        if ($okayToDestroy === 'N') {
-            $this->out(__('Aborted, no files deleted.'));
-            exit;
+        if (!$this->param('dry-run')) {
+            $okayToDestroy = $this->in(__('Are you sure? This will irreversibly delete files'), ['y', 'n'], 'n');
+            if ($okayToDestroy === 'N') {
+                $this->out(__('Aborted, no files deleted.'));
+                exit;
+            }
+        } else {
+            $this->out(__('<info>Performing dry run cleanup.</info>'));
+            $this->out($this->nl(0));
         }
 
-        $folders = glob(WWW_ROOT . 'files' . DS . strtolower($table) . DS . '*');
-        foreach ($folders as $folder) {
-            $config = $this->Table->behaviors()->Proffer->config();
-            $seed = pathinfo($folder, PATHINFO_BASENAME);
+        $config = $this->Table->behaviors()->Proffer->config();
 
-            foreach ($config as $field => $settings) {
-                $dir = $settings['dir'];
+        // Get the root upload folder for this table
+        $uploadFieldFolders = glob(WWW_ROOT . 'files' . DS . strtolower($table) . DS . '*');
 
-                $record = $this->Table->exists([$dir => $seed]);
+        // Loop through each upload field configured for this table (field)
+        foreach ($uploadFieldFolders as $fieldFolder) {
+            // Loop through each instance of an upload for this field (seed)
+            $uploadFolders = glob($fieldFolder . DS . '*');
+            foreach ($uploadFolders as $seedFolder) {
+                // Does the seed exist in the db?
+                $seed = pathinfo($seedFolder, PATHINFO_BASENAME);
 
-                if (!$record) {
-                    $files = glob($folder . DS . '*');
-                    foreach ($files as $file) {
-                        unlink($file);
-                        $this->out(__("Deleted file '$file'"));
+                foreach ($config as $field => $settings) {
+                    $targets = [];
+
+                    $record = $this->{$this->Table->alias()}->find()
+                        ->select([
+                            $field,
+                            $settings['dir']
+                        ])
+                        ->where([
+                            $settings['dir'] => $seed
+                        ])
+                        ->first();
+
+                    if ($record) {
+                        $record = $record->toArray();
+                    } else {
+                        $record = [];
+                    }
+
+                    if (!in_array($seed, $record)) {
+                        // No it doesn't - remove the folder and it's contents - probably with a user prompt
+                        if ($this->param('dry-run')) {
+                            if ($this->param('verbose')) {
+                                $this->out(__("Would remove folder `$seedFolder`"));
+                            } else {
+                                $this->out(__("Would remove folder `$seed`"));
+                            }
+                        } else {
+                            array_map('unlink', glob($seedFolder . DS . '*'));
+                            rmdir($seedFolder);
+
+                            if ($this->param('verbose')) {
+                                $this->out(__("Remove `$seedFolder` folder and contents"));
+                            } else {
+                                $this->out(__("Removed `$seed` folder and contents"));
+                            }
+                        }
+
+                    } else {
+                        $files = glob($seedFolder . DS . '*');
+
+                        $filenames = array_map(function ($p) {
+                            return pathinfo($p, PATHINFO_BASENAME);
+                        }, $files);
+
+                        $targets[] = $record[$field];
+                        if (!empty($settings['thumbnailSizes'])) {
+                            foreach ($settings['thumbnailSizes'] as $prefix => $dimensions) {
+                                $targets[] = $prefix . '_' . $record[$field];
+                            }
+                        }
+
+                        $filesToRemove = array_diff($filenames, $targets);
+
+                        foreach ($filesToRemove as $file) {
+                            if ($this->param('dry-run') && $this->param('verbose')) {
+                                $this->out(__("Would delete `$seedFolder" .DS ."$file`"));
+                            } elseif ($this->param('dry-run')) {
+                                $this->out(__("Would delete `$file`"));
+                            } else {
+                                unlink($seedFolder . DS . $file);
+                                if ($this->param('verbose')) {
+                                    $this->out(__("Deleted `$seedFolder" .DS ."$file`"));
+                                } else {
+                                    $this->out(__("Deleted `$file`"));
+                                }
+                            }
+                        }
                     }
                 }
             }
-
-            if (!$record) {
-                rmdir($folder);
-                $this->out(__("Deleted folder '$folder'"));
-            }
         }
 
-        $this->out(__('Completed'));
+        $this->out($this->nl(0));
+        $this->out(__('<info>Completed</info>'));
     }
 
     /**
