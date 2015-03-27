@@ -19,7 +19,7 @@ protected function _initializeSchema(\Cake\Database\Schema\Table $table)
 // Add the behaviour and configure any options you want
 $this->addBehavior('Proffer.Proffer', [
 	'photo' => [	// The name of your upload field
-		'root' => WWW_DIR . 'files', // Customise the root upload folder here, or omit to use the default
+		'root' => WWW_ROOT . 'files', // Customise the root upload folder here, or omit to use the default
 		'dir' => 'photo_dir',	// The name of the field to store the folder
 		'thumbnailSizes' => [ // Declare your thumbnails
 			'square' => ['w' => 200, 'h' => 200],	// Define the size and prefix of your thumbnails
@@ -38,7 +38,7 @@ By default files will be uploaded to `/webroot/files/<table alias>/<uuid>/<filen
 
 In order to upload a file to your application you will need to add the form fields to your view.
 ```php
-echo $this-Form->create($entity, ['type' => 'file']); // Dont miss this out or no files will upload
+echo $this->Form->create($entity, ['type' => 'file']); // Dont miss this out or no files will upload
 echo $this->Form->input('image', ['type' => 'file']);
 echo $this->Form->button(__('Submit'));
 echo $this->Form->end();
