@@ -12,20 +12,20 @@ use Cake\ORM\Entity;
 use Cake\ORM\Table;
 use Cake\Utility\String;
 
-class ProfferPath
+class ProfferPath implements ProfferPathInterface
 {
 
-    private $root;
+    protected $root;
 
-    private $table;
+    protected $table;
 
-    private $field;
+    protected $field;
 
-    private $seed;
+    protected $seed;
 
-    private $filename;
+    protected $filename;
 
-    private $prefixes = [];
+    protected $prefixes = [];
 
     /**
      * Construct the class and setup the defaults
@@ -35,7 +35,7 @@ class ProfferPath
      * @param string $field The name of the upload field
      * @param array $settings Array of settings for the upload field
      */
-    public function __construct(Table $table, Entity $entity, $field, $settings)
+    public function __construct(Table $table, Entity $entity, $field, array $settings)
     {
         if (isset($settings['root'])) {
             $this->setRoot($settings['root']);
@@ -71,7 +71,7 @@ class ProfferPath
      * files will be uploaded under this path.
      * @return void
      */
-    protected function setRoot($root)
+    public function setRoot($root)
     {
         $this->root = $root;
     }
@@ -113,7 +113,7 @@ class ProfferPath
      * @param string $field The name of the upload field
      * @return void
      */
-    protected function setField($field)
+    public function setField($field)
     {
         $this->field = $field;
     }
@@ -180,7 +180,7 @@ class ProfferPath
      * @param array $thumbnailSizes The 'thumbnailSizes' dimension of the behaviour configuration array
      * @return void
      */
-    protected function setPrefixes($thumbnailSizes)
+    public function setPrefixes(array $thumbnailSizes)
     {
         foreach ($thumbnailSizes as $prefix => $dimensions) {
             array_push($this->prefixes, $prefix);
@@ -193,7 +193,7 @@ class ProfferPath
      * @param string $seed The current seed if there is one
      * @return string
      */
-    protected function generateSeed($seed = null)
+    public function generateSeed($seed = null)
     {
         if ($seed) {
             return $seed;
