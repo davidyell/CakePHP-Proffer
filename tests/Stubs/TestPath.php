@@ -17,7 +17,6 @@ use Proffer\Lib\ProfferPath;
 
 class TestPath extends ProfferPath
 {
-
     public function __construct(Table $table, Entity $entity, $field, array $settings)
     {
         $this->setRoot(TMP . 'ProfferTests');
