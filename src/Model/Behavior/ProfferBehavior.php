@@ -58,7 +58,7 @@ class ProfferBehavior extends Behavior
                 // Allow path to be injected or set in config
                 if (!empty($settings['pathClass'])) {
                     $path = new $settings['pathClass']($this->_table, $entity, $field, $settings);
-                } elseif (!$path) {
+                } elseif (!isset($path)) {
                     $path = new ProfferPath($this->_table, $entity, $field, $settings);
                 }
 
@@ -89,6 +89,7 @@ class ProfferBehavior extends Behavior
                     throw new Exception('Cannot upload file');
                 }
             }
+            unset($path);
         }
 
         return true;

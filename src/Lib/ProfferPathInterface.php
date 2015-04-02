@@ -18,16 +18,6 @@ interface ProfferPathInterface
 {
 
     /**
-     * Construct the path class
-     *
-     * @param Table $table The table instance
-     * @param Entity $entity Entity instance
-     * @param string $field The name of the upload field
-     * @param array $settings The settings for this field
-     */
-    public function __construct(Table $table, Entity $entity, $field, array $settings);
-
-    /**
      * Returns the root folder in which all uploads should be placed.
      *
      * @return string
