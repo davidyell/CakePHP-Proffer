@@ -780,4 +780,75 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(200, $squareSizes[0]);
         $this->assertEquals(200, $squareSizes[1]);
     }
+
+    public function testMultipleFieldUpload()
+    {
+        $table = $this->getMock('Cake\ORM\Table', ['alias']);
+        $table->method('alias')
+            ->willReturn('ProfferTest');
+
+        $entityData = [
+            'photo' => [
+                'name' => 'image_640x480.jpg',
+                'tmp_name' => Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg',
+                'size' => 33000,
+                'error' => UPLOAD_ERR_OK
+            ],
+            'photo_dir' => 'proffer_test',
+            'avatar' => [
+                'name' => 'image_480x640.jpg',
+                'tmp_name' => Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_480x640.jpg',
+                'size' => 45704,
+                'error' => UPLOAD_ERR_OK
+            ],
+            'avatar_dir' => 'proffer_test'
+        ];
+        $entity = new Entity($entityData);
+
+        $config = [
+            'photo' => [
+                'dir' => 'photo_dir',
+                'thumbnailSizes' => [
+                    'square' => ['w' => 200, 'h' => 200, 'crop' => true],
+                ],
+                'pathClass' => '\Proffer\Tests\Stubs\TestPath'
+            ],
+            'avatar' => [
+                'dir' => 'avatar_dir',
+                'thumbnailSizes' => [
+                    'square' => ['w' => 200, 'h' => 200, 'crop' => true],
+                ],
+                'pathClass' => '\Proffer\Tests\Stubs\TestPath'
+            ]
+        ];
+
+        $Proffer = $this->getMockBuilder('Proffer\Model\Behavior\ProfferBehavior')
+            ->setConstructorArgs([$table, $config])
+            ->setMethods(['moveUploadedFile'])
+            ->getMock();
+
+        $Proffer->expects($this->exactly(2))
+            ->method('moveUploadedFile')
+            ->willReturnCallback(function ($source, $destination) {
+                if (!file_exists(pathinfo($destination, PATHINFO_DIRNAME))) {
+                    mkdir(pathinfo($destination, PATHINFO_DIRNAME), 0777, true);
+                }
+                return copy($source, $destination);
+            });
+
+        $Proffer->beforeSave(
+            $this->getMock('Cake\Event\Event', null, ['beforeSave']),
+            $entity,
+            new ArrayObject()
+        );
+
+        $this->assertFileExists(TMP . 'ProfferTests' . DS . 'proffertest' . DS . 'photo' . DS . 'proffer_test' . DS . 'image_640x480.jpg');
+        $this->assertFileExists(TMP . 'ProfferTests' . DS . 'proffertest' . DS . 'avatar' . DS . 'proffer_test' . DS . 'image_480x640.jpg');
+
+        $this->assertEquals('image_640x480.jpg', $entity->get('photo'));
+        $this->assertEquals('proffer_test', $entity->get('photo_dir'));
+
+        $this->assertEquals('image_480x640.jpg', $entity->get('avatar'));
+        $this->assertEquals('proffer_test', $entity->get('avatar_dir'));
+    }
 }
