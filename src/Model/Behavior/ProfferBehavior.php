@@ -13,26 +13,15 @@ use Cake\Event\Event;
 use Cake\ORM\Behavior;
 use Cake\ORM\Entity;
 use Exception;
-use Proffer\Event\ProfferListener;
+use Proffer\Lib\ImageTransform;
 use Proffer\Lib\ProfferPath;
+use Proffer\Lib\ProfferPathInterface;
 
 /**
  * Proffer behavior
  */
 class ProfferBehavior extends Behavior
 {
-    /**
-     * Initialize the behavior
-     *
-     * @param array $config Array of pass configuration
-     * @return void
-     */
-    public function initialize(array $config)
-    {
-        $listener = new ProfferListener();
-        $this->_table->eventManager()->on($listener);
-    }
-
     /**
      * beforeMarshal event
      *
@@ -57,16 +46,19 @@ class ProfferBehavior extends Behavior
      * @param Event $event The event
      * @param Entity $entity The entity
      * @param ArrayObject $options Array of options
-     * @param ProfferPath $path Inject an instance of ProfferPath
+     * @param ProfferPathInterface $path Inject an instance of ProfferPath
      * @return true
      * @throws Exception
      */
-    public function beforeSave(Event $event, Entity $entity, ArrayObject $options, ProfferPath $path = null)
+    public function beforeSave(Event $event, Entity $entity, ArrayObject $options, ProfferPathInterface $path = null)
     {
         foreach ($this->config() as $field => $settings) {
             if ($entity->has($field) && is_array($entity->get($field)) &&
                 $entity->get($field)['error'] === UPLOAD_ERR_OK) {
-                if (!$path) {
+                // Allow path to be injected or set in config
+                if (!empty($settings['pathClass'])) {
+                    $path = new $settings['pathClass']($this->_table, $entity, $field, $settings);
+                } elseif (!isset($path)) {
                     $path = new ProfferPath($this->_table, $entity, $field, $settings);
                 }
 
@@ -82,14 +74,22 @@ class ProfferBehavior extends Behavior
                     $entity->set($field, $entity->get($field)['name']);
                     $entity->set($settings['dir'], $path->getSeed());
 
-                    // Don't generate thumbnails for non-images
+                    // Only generate thumbnails for image uploads
                     if (getimagesize($path->fullPath()) !== false && isset($settings['thumbnailSizes'])) {
-                        $this->makeThumbs($field, $path);
+                        // Allow the transformation class to be injected
+                        if (!empty($settings['transformClass'])) {
+                            $imageTransform = new $settings['transformClass']($this->_table, $path);
+                        } else {
+                            $imageTransform = new ImageTransform($this->_table, $path);
+                        }
+
+                        $imageTransform->processThumbnails($settings);
                     }
                 } else {
-                    throw new Exception('Cannot move file');
+                    throw new Exception('Cannot upload file');
                 }
             }
+            unset($path);
         }
 
         return true;
@@ -103,10 +103,10 @@ class ProfferBehavior extends Behavior
      * @param Event $event The passed event
      * @param Entity $entity The entity
      * @param ArrayObject $options Array of options
-     * @param ProfferPath $path Inject and instance of ProfferPath
+     * @param ProfferPathInterface $path Inject and instance of ProfferPath
      * @return bool
      */
-    public function afterDelete(Event $event, Entity $entity, ArrayObject $options, ProfferPath $path = null)
+    public function afterDelete(Event $event, Entity $entity, ArrayObject $options, ProfferPathInterface $path = null)
     {
         foreach ($this->config() as $field => $settings) {
             $dir = $entity->get($settings['dir']);
@@ -116,62 +116,11 @@ class ProfferBehavior extends Behavior
                     $path = new ProfferPath($this->_table, $entity, $field, $settings);
                 }
 
-                foreach ($settings['thumbnailSizes'] as $prefix => $dimensions) {
-                    $filename = $path->fullPath($prefix);
-                    if (file_exists($filename)) {
-                        unlink($filename);
-                    }
-                }
-
-                $filename = $path->fullPath();
-                if (file_exists($filename)) {
-                    unlink($filename);
-                }
-
-                if (file_exists($path->getFolder())) {
-                    rmdir($path->getFolder());
-                }
+                $path->deleteFiles($path->getFolder(), true);
             }
         }
 
         return true;
-    }
-
-    /**
-     * Dispatch events to allow generation of thumbnails
-     *
-     * @param string $field The name of the upload field
-     * @param ProfferPath $path The path array
-     * @return void
-     */
-    protected function makeThumbs($field, ProfferPath $path)
-    {
-        foreach ($this->config($field)['thumbnailSizes'] as $prefix => $dimensions) {
-            $eventParams = ['path' => $path, 'dimensions' => $dimensions, 'thumbnailMethod' => null];
-
-            if (isset($this->config($field)['thumbnailMethod'])) {
-                $eventParams['thumbnailMethod'] = $this->config($field)['thumbnailMethod'];
-            }
-
-            // Event listener handles generation
-            $event = new Event('Proffer.beforeThumbs', $this->_table, $eventParams);
-
-            $this->_table->eventManager()->dispatch($event);
-            if (!empty($event->result)) {
-                $image = $event->result;
-
-                $event = new Event('Proffer.afterThumbs', $this->_table, [
-                    'path' => $path,
-                    'image' => $image,
-                    'prefix' => $prefix
-                ]);
-            }
-
-            $this->_table->eventManager()->dispatch($event);
-            if (!empty($event->result)) {
-                $image = $event->result;
-            }
-        }
     }
 
     /**

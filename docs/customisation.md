@@ -48,3 +48,66 @@ this event you can change the name of the file and the upload path to match what
 an example listener which is [available as an example](examples/UploadFilenameListener.md).
 
 You would attach this listener in the same way as above, but there is no need to remove the existing listeners first.
+
+The advantages of customisation using a listener is that you can encapsulate the file naming functionality into a single 
+file and also attach this listener to multiple tables, if you wanted the same naming convention in multiple places.
+
+##Advanced customisation
+If you do not want to create an event listener or just want more control over how the plugin is handling paths or creating thumbnails
+you can replace these components with your own by creating a class using the provided interfaces and injecting them into the plugin.
+
+In your table classes configuration you can add the `pathClass` and `transformClass` configuration options and specify a 
+fully namespaced class name as a string. When the plugin runs it will look for and instantiate these classes.
+
+An example might look like this.
+
+```php
+// src/Model/Table/ExamplesTable.php
+    $this->addBehavior('Proffer.Proffer', [
+        'image' => [
+            'dir' => 'image_dir',
+            'thumbnailSizes' => [
+                'square' => ['w' => 100, 'h' => 100]
+            ],
+            'pathClass' => '\App\Lib\Proffer\UserProfilePath',
+            'transformClass' => '\App\Lib\Proffer\UserProfileAvatar'
+        ]
+    ]);
+```
+ 
+### Using the interfaces
+Using the configuration above, you can completely change the implementation of these core classes if you want to, by 
+creating your own. Make sure that they implement the correct interface so that the plugin will still work.
+
+```php
+// src/Lib/Proffer/UserProfilePath.php
+class UserProfilePath implements Proffer\Lib\ProfferPathInterface
+{
+    // Create the stub methods and implement your code here
+}
+
+// src/Lib/Proffer/UserProfileAvatar.php
+class UserProfileAvatar implements Proffer\Lib\ImageTransformInterface
+{
+    // Create the stub methods and implement your code here
+}
+```
+
+### Extending the plugin classes
+Using the configuration above you can also customise specific methods by extending the plugin classes and overriding 
+their methods.
+
+```php
+// src/Lib/Proffer/UserProfilePath.php
+class UserProfilePath extends Proffer\Lib\ProfferPath
+{
+    public function generateSeed($seed)
+    {
+        if ($seed) {
+            return $seed;
+        }
+        
+        return date('Y-m-d-H-i-s');
+    }
+}
+```

@@ -8,6 +8,8 @@
 
 namespace Proffer\Lib;
 
+use Cake\Event\Event;
+use Cake\ORM\Table;
 use Imagine\Filter\Transformation;
 use Imagine\Gd\Imagine as Gd;
 use Imagine\Gmagick\Imagine as Gmagick;
@@ -25,6 +27,28 @@ class ImageTransform implements ImageTransformInterface
      * @var ImagineInterface $Imagine
      */
     private $Imagine;
+
+    /**
+     * @var Table $table Instance of the table being used
+     */
+    protected $Table;
+
+    /**
+     * @var ProfferPathInterface $Path Instance of the path class
+     */
+    protected $Path;
+
+    /**
+     * Construct the transformation class
+     *
+     * @param Table $table The table instance
+     * @param ProfferPathInterface $path Instance of the path class
+     */
+    public function __construct(Table $table, ProfferPathInterface $path)
+    {
+        $this->Table = $table;
+        $this->Path = $path;
+    }
 
     /**
      * Get the specified Imagine engine class
@@ -59,18 +83,36 @@ class ImageTransform implements ImageTransformInterface
     }
 
     /**
-     * Generate thumbnails
+     * Take an upload fields configuration and create all the thumbnails
      *
-     * @param ProfferPath $path The path array
+     * @param array $config The upload fields configuration
+     * @return void
+     */
+    public function processThumbnails(array $config)
+    {
+        foreach ($config['thumbnailSizes'] as $prefix => $dimensions) {
+            $method = null;
+            if (!empty($config['thumbnailMethod'])) {
+                $method = $config['thumbnailMethod'];
+            }
+
+            $this->makeThumbnail($prefix, $dimensions, $method);
+        }
+    }
+
+    /**
+     * Generate and save the thumbnail
+     *
+     * @param string $prefix The thumbnail prefix
      * @param array $dimensions Array of thumbnail dimensions
      * @param string $thumbnailMethod Which engine to use to make thumbnails
-     * @return ImageInterface
+     * @return void
      */
-    public function makeThumbnails(ProfferPath $path, array $dimensions, $thumbnailMethod = 'gd')
+    public function makeThumbnail($prefix, array $dimensions, $thumbnailMethod = 'gd')
     {
         $this->setImagine($thumbnailMethod);
 
-        $image = $this->getImagine()->open($path->fullPath());
+        $image = $this->getImagine()->open($this->Path->fullPath());
 
         if (isset($dimensions['crop']) && $dimensions['crop'] === true) {
             $image = $this->thumbnailCropScale($image, $dimensions['w'], $dimensions['h']);
@@ -78,23 +120,7 @@ class ImageTransform implements ImageTransformInterface
             $image = $this->thumbnailScale($image, $dimensions['w'], $dimensions['h']);
         }
 
-        return $image;
-    }
-
-    /**
-     * Save thumbnail to the file system
-     *
-     * @param ImageInterface $image The ImageInterface instance from Imagine
-     * @param ProfferPath $path The path array
-     * @param string $prefix The thumbnail size prefix
-     * @return ImageInterface
-     */
-    public function saveThumbs(ImageInterface $image, ProfferPath $path, $prefix)
-    {
-        $filePath = $path->fullPath($prefix);
-        $image->save($filePath, ['jpeg_quality' => 100, 'png_compression_level' => 9]);
-
-        return $image;
+        $image->save($this->Path->fullPath($prefix), ['jpeg_quality' => 100, 'png_compression_level' => 9]);
     }
 
     /**
