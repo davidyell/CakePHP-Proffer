@@ -3,7 +3,7 @@
 /**
  * @category Proffer
  * @package TestPath.php
- * 
+ *
  * @author David Yell <neon1024@gmail.com>
  * @when 02/04/15
  *
@@ -15,7 +15,8 @@ use Cake\ORM\Entity;
 use Cake\ORM\Table;
 use Proffer\Lib\ProfferPath;
 
-class TestPath extends ProfferPath {
+class TestPath extends ProfferPath
+{
 
     public function __construct(Table $table, Entity $entity, $field, array $settings)
     {
@@ -31,5 +32,4 @@ class TestPath extends ProfferPath {
 
         $this->setFilename($entity->get($field));
     }
-
 }

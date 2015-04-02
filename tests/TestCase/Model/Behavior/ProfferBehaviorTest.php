@@ -842,8 +842,10 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             new ArrayObject()
         );
 
-        $this->assertFileExists(TMP . 'ProfferTests' . DS . 'proffertest' . DS . 'photo' . DS . 'proffer_test' . DS . 'image_640x480.jpg');
-        $this->assertFileExists(TMP . 'ProfferTests' . DS . 'proffertest' . DS . 'avatar' . DS . 'proffer_test' . DS . 'image_480x640.jpg');
+        $this->assertFileExists(TMP . 'ProfferTests' . DS . 'proffertest' . DS . 'photo' .
+            DS . 'proffer_test' . DS . 'image_640x480.jpg');
+        $this->assertFileExists(TMP . 'ProfferTests' . DS . 'proffertest' . DS . 'avatar' .
+            DS . 'proffer_test' . DS . 'image_480x640.jpg');
 
         $this->assertEquals('image_640x480.jpg', $entity->get('photo'));
         $this->assertEquals('proffer_test', $entity->get('photo_dir'));
