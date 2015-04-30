@@ -63,8 +63,9 @@ class ProfferShell extends Shell
     public function main()
     {
         $this->out('Welcome to the Proffer shell.');
-        $this->out('This shell can be used to regenerate thumbnails.');
-        $this->out("Please use 'bin/cake proffer.proffer -h' flag to get further help.");
+        $this->out('This shell can be used to regenerate thumbnails and cleanup unlinked images.');
+        $this->hr();
+        $this->out($this->OptionParser->help());
     }
 
     /**
