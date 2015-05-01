@@ -17,16 +17,20 @@
 	  "source": "https://github.com/davidyell/CakePHP3-Proffer"
 	},
 	"require": {
-      "php": ">=5.4.16",
-	  "imagine/imagine": "0.6.2",
-      "cakephp/cakephp": "3.0.*-dev"
+		"php": ">=5.4.16",
+		"imagine/imagine": "0.6.2",
+		"cakephp/cakephp": "~3.0"
 	},
   	"require-dev": {
 	  "phpunit/phpunit": "*"
 	},
 	"autoload": {
 	  "psr-4": {
-		"Proffer\\": "src",
+		"Proffer\\": "src"
+	  }
+	},
+	"autoload-dev": {
+	  "psr-4": {
 		"Proffer\\Tests\\": "tests/TestCase",
 		"Proffer\\Tests\\Fixture\\": "tests/Fixture",
 		"Proffer\\Tests\\Stubs\\": "tests/Stubs"
