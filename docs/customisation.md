@@ -20,6 +20,9 @@ file and also attach this listener to multiple tables, if you wanted the same na
 
 [You can read more about Event Listeners in the book.](http://book.cakephp.org/3.0/en/core-libraries/events.html)
 
+:warning: The listener will overwrite any settings that are configured in the path class. This includes if you are using
+your own path class.
+
 ##Advanced customisation
 If you want more control over how the plugin is handling paths or creating thumbnails you can replace these components
 with your own by creating a class using the provided interfaces and injecting them into the plugin.

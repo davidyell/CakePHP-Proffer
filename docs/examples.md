@@ -3,7 +3,9 @@ This manual page shows some examples of how to customise the behaviour of the pl
 as well as event listeners and image display.
 
 ##Displaying uploaded images
-You can use the `HtmlHelper` to link the images. Just make sure that you have both upload fields in your data.
+You can use the `HtmlHelper` to link the images. Just make sure that you have both upload fields in the data set to the view.
+This is what it would look like if you're using the defaults, if you've implemented your own path class, you will need
+to update the paths accordingly.
 ```php
 echo $this->Html->image('../files/<table>/<field>/' . $data->get('image_dir') . '/<prefix>_' . $data->get('image'));
 ```

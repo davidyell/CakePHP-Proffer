@@ -1,4 +1,3 @@
-```php
 <?php
 
 /**
@@ -73,4 +72,3 @@ class UploadFilenameListener implements EventListenerInterface
         return $path;
     }
 }
-```
