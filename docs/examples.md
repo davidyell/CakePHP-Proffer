@@ -47,7 +47,7 @@ protected function _initializeSchema(\Cake\Database\Schema\Table $table)
 
 ###Entities
 Your entity must allow the associated field in it's `$_accessible` array. So in our
-example we need to check that the `'user_id' => true` is included.
+example we need to check that the `'user_images' => true` is included in our `User` entity.
 
 ###Controller
 No changes need to be made to standard controller code as Cake will automatically save any
