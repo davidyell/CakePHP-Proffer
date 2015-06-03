@@ -26,4 +26,4 @@ $ bin/cake proffer.proffer cleanup <table>
 ```
 
 
-[< Customisation](customisation.md) | [FAQ >](faq.md)
+[< Customisation](customisation.md) | [Examples >](examples.md)
