@@ -34,7 +34,8 @@ Each upload field should have an array of settings which control the options for
 above my upload field is called `photo` and I pass an array of options, namely the name of the field to store the 
 directory in.
 
-By default files will be uploaded to `/webroot/files/<table alias>/<uuid>/<filename>`.
+* By default generated thumbnail images will be set to the highest image quality in the `ImageTransform` class.
+* By default files will be uploaded to `/webroot/files/<table alias>/<uuid>/<filename>`.
 
 In order to upload a file to your application you will need to add the form fields to your view.
 ```php
