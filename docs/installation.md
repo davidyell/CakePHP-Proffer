@@ -38,5 +38,6 @@ ADD COLUMN `photo` VARCHAR(255),
 ADD COLUMN `photo_dir` VARCHAR(255)
 ```
 
+Don't forget to ensure that the fields are present in your entities `$_accessible` array.
 
 [< Readme](../README.md) | [Configuration >](configuration.md)
