@@ -33,6 +33,16 @@ class ProfferShell extends Shell
                 'description' => [__('Use this command to regenerate the thumbnails for a specific table.')],
                 'arguments' => [
                     'table' => ['help' => __('The table to regenerate thumbs for') , 'required' => true]
+                ],
+                'options' => [
+                    'path-class' => [
+                        'short' => 'p',
+                        'help' => __('Fully name spaced custom path class, you must use double backslash.')
+                    ],
+                    'image-class' => [
+                        'short' => 'i',
+                        'help' => __('Fully name spaced custom image transform class, you must use double backslash.')
+                    ]
                 ]
             ]
         ]);
@@ -46,8 +56,9 @@ class ProfferShell extends Shell
                 'options' => [
                     'dry-run' => [
                         'short' => 'd',
-                        'help' => __('Do a dry run and dont delete any files.'),
-                        'boolean' => true]
+                        'help' => __('Do a dry run and don\'t delete any files.'),
+                        'boolean' => true
+                    ]
                 ]
             ],
         ]);
@@ -95,8 +106,19 @@ class ProfferShell extends Shell
                     );
                 }
 
-                $path = new ProfferPath($this->Table, $item, $field, $settings);
-                $transform = new ImageTransform($this->Table, $path);
+                if (!empty($this->param('path-class'))) {
+                    $class = (string)$this->param('path-class');
+                    $path = new $class($this->Table, $item, $field, $settings);
+                } else {
+                    $path = new ProfferPath($this->Table, $item, $field, $settings);
+                }
+
+                if (!empty($this->param('image-class'))) {
+                    $class = (string)$this->param('image_class');
+                    $transform = new $class($this->Table, $path);
+                } else {
+                    $transform = new ImageTransform($this->Table, $path);
+                }
 
                 $transform->processThumbnails($settings);
 
@@ -113,7 +135,7 @@ class ProfferShell extends Shell
     }
 
     /**
-     * Clean up files associated with a table which doesn't have an entry in the db
+     * Clean up files associated with a table which don't have an entry in the db
      *
      * @param string $table The name  of the table
      * @return void
