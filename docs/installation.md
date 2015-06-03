@@ -5,12 +5,21 @@ This manual page deals with the installation of the Proffer plugin. Where you ca
 You can find it on Packagist [https://packagist.org/packages/davidyell/proffer](https://packagist.org/packages/davidyell/proffer)
 
 ## Getting the plugin
-Add it to your `composer.json` in your require section `"davidyell/proffer": "dev-master"` and then run `composer update`.
+In your terminal you can use
+
+```bash
+$ composer require 'davidyell/proffer:~0.4' 
+```
+
+If you would rather edit your `composer.json` you can add it to your `composer.json` in your require section `"davidyell/proffer": "dev-master"` and then run `composer update`.
+
 It's always advised to lock your dependencies to a specific version number. You can [check the releases](https://github.com/davidyell/CakePHP3-Proffer/releases),
- or [read more about versioning on Composer.org](https://getcomposer.org/doc/01-basic-usage.md#package-versions).
+ or [read more about versions on Composer.org](https://getcomposer.org/doc/01-basic-usage.md#package-versions). For more information about [installing plugins with CakePHP](http://book.cakephp.org/3.0/en/plugins.html#installing-a-plugin-with-composer), check the book.
+
+:warning: Installing the plugin without the use of Composer is unsupported, you do so at your own risk.
 
 ## CakePHP
-Then you'll need to load the plugin in your `config/bootstrap.php` file. 
+Then you'll need to load the plugin in your `config/bootstrap.php` file.
 
 ```php
 Plugin::load('Proffer', ['bootstrap' => true]);

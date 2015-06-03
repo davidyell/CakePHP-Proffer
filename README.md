@@ -4,7 +4,7 @@ An upload plugin for CakePHP 3.
 ![Proffer definition](http://i.imgur.com/OaAqQ6x.png)
 
 ##What is it?
-So I needed a way to upload images in CakePHP 3, and as I couldn't find anything that I liked I decided to write my own 
+So I needed a way to upload images in [CakePHP 3](http://github.com/cakephp/cakephp), and as I couldn't find anything that I liked I decided to write my own 
 in a similar vein to how [@josegonzalez](https://github.com/josegonzalez) had written his 
 [CakePHP-Upload](https://github.com/josegonzalez/cakephp-upload) plugin for CakePHP 2.
 
@@ -12,10 +12,11 @@ in a similar vein to how [@josegonzalez](https://github.com/josegonzalez) had wr
 * PHP 5.4+
 * Database
 * CakePHP 3
+* [Composer](http://getcomposer.org/)
 * [File Info is enabled](http://php.net/manual/en/book.fileinfo.php) for mimetype validation
 
 ##Status
-This is currently in alpha, but will upload images for you.
+This is currently in beta, the api is stable and the plugin is functionally complete.
 
 [![Build Status](https://travis-ci.org/davidyell/CakePHP3-Proffer.svg?branch=master)](https://travis-ci.org/davidyell/CakePHP3-Proffer)
 [![Coverage Status](https://coveralls.io/repos/davidyell/CakePHP3-Proffer/badge.png)](https://coveralls.io/r/davidyell/CakePHP3-Proffer)
@@ -37,7 +38,7 @@ Please open a pull request or submit an issue if there is anything you would lik
 any new functionality that you add and be sure to run the tests before you commit. Also don't forget to run PHPCS with 
 the PSR2 standard to avoid errors in TravisCI.
 
-NB, All new PRs should be targeted at the `develop` branch.
+:warning: Please target all new PRs at the `develop` branch.
 
 ##License
 Please see [LICENSE](LICENSE)
