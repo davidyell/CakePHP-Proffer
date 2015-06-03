@@ -118,6 +118,8 @@ class ProfferBehavior extends Behavior
 
                 $path->deleteFiles($path->getFolder(), true);
             }
+
+            unset($path);
         }
 
         return true;
