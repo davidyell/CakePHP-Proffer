@@ -30,8 +30,8 @@ $this->addBehavior('Proffer.Proffer', [
 ]);
 ```
 
-Each upload field should have an array of settings which control the options for that upload field. In the example 
-above my upload field is called `photo` and I pass an array of options, namely the name of the field to store the 
+Each upload field should have an array of settings which control the options for that upload field. In the example
+above my upload field is called `photo` and I pass an array of options, namely the name of the field to store the
 directory in.
 
 * By default generated thumbnail images will be set to the highest image quality in the `ImageTransform` class.
@@ -50,30 +50,30 @@ This will turn your form into a multipart form and add the relevant fields.
 There are a number of configuration options you can pass into the behaviour when you attach it to your table. These options are passed as an array value of the upload field.
 
 ###dir
-**required** `string`  
+**required** `string`
 The database field which will store the name of the folder in which the files are uploaded.
 
 ###thumbnailSizes
-**optional** `array`  
-An array of sizes to create thumbnails of an uploaded image. The format is that the image prefix will be the array key and the sizes are the value as an array.  
+**optional** `array`
+An array of sizes to create thumbnails of an uploaded image. The format is that the image prefix will be the array key and the sizes are the value as an array.
 Eg, `'square' => ['w' => 200, 'h' => 200]` would create a thumbnail prefixed with `square_` and would be 100px x 100px.
 If you do not specify the `thumbnailSizes` configuration option, no thumbnails will be created.
 
 ###root
-**optional:** defaults to, `WWW_DIR . 'files'`  
+**optional:** defaults to, `WWW_DIR . 'files'`
 Allows you to customise the root folder in which all the file upload folders and files will be created.
 
 ###thumbnailMethod
-**optional:** defaults to, `gd`  
+**optional:** defaults to, `gd`
 Which Imagine engine to use to convert the images. Defaults to PHP's GD library. Can also be `imagick` and `gmagick`.
 
 ###pathClass
-**optional**  
+**optional**
 If you want to inject your own class for dealing with paths you can specify it here as a fully qualified namespace.
 Eg, `'App\Lib\Proffer\AvatarPath'`.
 
-###transformClass  
-**optional**  
+###transformClass
+**optional**
 If you want to replace the creation of thumbnails you can specify your own class here, it must be a fully qualified namespace.
 EG, `'App\Lib\Proffer\WatermarkThumbnail'`.
 
@@ -85,3 +85,5 @@ echo $this->Form->create($entity, ['type' => 'file']);
 echo $this->Form->input('photo', ['type' => 'file']);
 // etc
 ```
+
+[< Installation](installation.md) | [Validation >](validation.md)

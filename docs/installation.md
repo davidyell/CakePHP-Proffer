@@ -8,7 +8,7 @@ You can find it on Packagist [https://packagist.org/packages/davidyell/proffer](
 In your terminal you can use
 
 ```bash
-$ composer require 'davidyell/proffer:~0.4' 
+$ composer require 'davidyell/proffer:~0.4'
 ```
 
 If you would rather edit your `composer.json` you can add it to your `composer.json` in your require section `"davidyell/proffer": "dev-master"` and then run `composer update`.
@@ -26,8 +26,8 @@ Plugin::load('Proffer', ['bootstrap' => true]);
 ```
 
 ## Database
-Next you need to add the fields to your table. You'll want to add your file upload field, this will store the name of the 
-uploaded file such as `example.jpg` and you also need the dir field to store the directory in which the file has been 
+Next you need to add the fields to your table. You'll want to add your file upload field, this will store the name of the
+uploaded file such as `example.jpg` and you also need the dir field to store the directory in which the file has been
 stored. By default this is `dir`.
 
 An example query to add columns might look like this for MySQL.
@@ -37,3 +37,6 @@ ALTER TABLE `teams`
 ADD COLUMN `photo` VARCHAR(255),
 ADD COLUMN `photo_dir` VARCHAR(255)
 ```
+
+
+[< Readme](../README.md) | [Configuration >](configuration.md)

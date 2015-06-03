@@ -1,9 +1,9 @@
 #Validation
-This manual page deals with how to use the included ProfferRules validation provider to add upload related validation rules to 
+This manual page deals with how to use the included ProfferRules validation provider to add upload related validation rules to
 your application.
 
 ##Built-in validation provider
-Proffer comes with some basic validation rules which you can use to validate your uploads. In order to use these you 
+Proffer comes with some basic validation rules which you can use to validate your uploads. In order to use these you
 will need to load the validation rules and apply them to your field.
 
 In your validation function in your table class you'll need to add the validator as a provider and then apply the rules.
@@ -44,3 +44,6 @@ $validator->add('photo', 'proffer', [
 ```
 
 You can [read more about custom validation providers in the book](http://book.cakephp.org/3.0/en/core-libraries/validation.html#adding-validation-providers).
+
+
+[< Configuration](configuration.md) | [Customisation >](customisation.md)
