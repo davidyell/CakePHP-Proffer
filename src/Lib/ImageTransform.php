@@ -90,6 +90,10 @@ class ImageTransform implements ImageTransformInterface
      */
     public function processThumbnails(array $config)
     {
+        if (!isset($config['thumbnailSizes'])) {
+            return;
+        }
+
         foreach ($config['thumbnailSizes'] as $prefix => $dimensions) {
             $method = null;
             if (!empty($config['thumbnailMethod'])) {
