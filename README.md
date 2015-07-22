@@ -9,7 +9,7 @@ in a similar vein to how [@josegonzalez](https://github.com/josegonzalez) had wr
 [CakePHP-Upload](https://github.com/josegonzalez/cakephp-upload) plugin for CakePHP 2.
 
 ##Requirements
-* PHP 5.4+
+* PHP 5.4.16+
 * Database
 * CakePHP 3
 * [Composer](http://getcomposer.org/)
