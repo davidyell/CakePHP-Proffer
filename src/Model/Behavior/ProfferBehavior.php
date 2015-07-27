@@ -71,7 +71,7 @@ class ProfferBehavior extends Behavior
                 $path->createPathFolder();
 
                 if ($this->moveUploadedFile($entity->get($field)['tmp_name'], $path->fullPath())) {
-                    $entity->set($field, $entity->get($field)['name']);
+                    $entity->set($field, $path->getFilename());
                     $entity->set($settings['dir'], $path->getSeed());
 
                     // Only generate thumbnails for image uploads
@@ -119,7 +119,7 @@ class ProfferBehavior extends Behavior
                 $path->deleteFiles($path->getFolder(), true);
             }
 
-            unset($path);
+            $path = null;
         }
 
         return true;
