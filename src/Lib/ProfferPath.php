@@ -10,7 +10,7 @@ namespace Proffer\Lib;
 
 use Cake\ORM\Entity;
 use Cake\ORM\Table;
-use Cake\Utility\String;
+use Cake\Utility\Text;
 
 class ProfferPath implements ProfferPathInterface
 {
@@ -199,7 +199,7 @@ class ProfferPath implements ProfferPathInterface
             return $seed;
         }
 
-        return String::uuid();
+        return Text::uuid();
     }
 
     /**
