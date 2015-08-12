@@ -56,6 +56,8 @@ echo $this->Form->input($entity, ['type' => 'file']);
 echo $this->Form->input('file_upload', ['type' => 'file']);
 // etc
 ```
+### No database changes and no file system changes
+If the form is submitting without issue, yet no file upload is tacking place, ensure that your form is multipart. In your template, make sure your form is type file. `$this->Form->create($example, ['type' => 'file'])`.
 
 ## Still having trouble?
 If you're still having trouble, head to `#cakephp` on Freenode.net and ask for help. A web chat client is available
