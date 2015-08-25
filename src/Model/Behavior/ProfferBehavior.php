@@ -42,9 +42,10 @@ class ProfferBehavior extends Behavior
     /**
      * beforeMarshal event
      *
-     * @param Event $event
-     * @param ArrayObject $data
-     * @param ArrayObject $options
+     * @param Event $event Event instance
+     * @param ArrayObject $data Data to process
+     * @param ArrayObject $options Array of options for event
+     * @return void
      */
     public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options)
     {

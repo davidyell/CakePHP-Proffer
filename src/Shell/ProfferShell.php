@@ -32,7 +32,7 @@ class ProfferShell extends Shell
             'parser' => [
                 'description' => [__('Use this command to regenerate the thumbnails for a specific table.')],
                 'arguments' => [
-                    'table' => ['help' => __('The table to regenerate thumbs for') , 'required' => true]
+                    'table' => ['help' => __('The table to regenerate thumbs for'), 'required' => true]
                 ],
                 'options' => [
                     'path-class' => [
@@ -224,13 +224,13 @@ class ProfferShell extends Shell
 
                         foreach ($filesToRemove as $file) {
                             if ($this->param('dry-run') && $this->param('verbose')) {
-                                $this->out(__("Would delete `$seedFolder" .DS ."$file`"));
+                                $this->out(__("Would delete `$seedFolder" . DS . "$file`"));
                             } elseif ($this->param('dry-run')) {
                                 $this->out(__("Would delete `$file`"));
                             } else {
                                 unlink($seedFolder . DS . $file);
                                 if ($this->param('verbose')) {
-                                    $this->out(__("Deleted `$seedFolder" .DS ."$file`"));
+                                    $this->out(__("Deleted `$seedFolder" . DS . "$file`"));
                                 } else {
                                     $this->out(__("Deleted `$file`"));
                                 }
