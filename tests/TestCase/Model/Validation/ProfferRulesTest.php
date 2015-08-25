@@ -2,9 +2,9 @@
 
 namespace Proffer\Tests\Model\Validation;
 
-use Proffer\Model\Validation\ProfferRules;
-use PHPUnit_Framework_TestCase;
 use Cake\Core\Plugin;
+use PHPUnit_Framework_TestCase;
+use Proffer\Model\Validation\ProfferRules;
 
 class ProfferRulesTest extends PHPUnit_Framework_TestCase
 {
