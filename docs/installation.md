@@ -22,7 +22,7 @@ It's always advised to lock your dependencies to a specific version number. You 
 Then you'll need to load the plugin in your `config/bootstrap.php` file.
 
 ```php
-Plugin::load('Proffer', ['bootstrap' => true]);
+Plugin::load('Proffer');
 ```
 
 ## Database

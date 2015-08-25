@@ -9,6 +9,7 @@
 namespace Proffer\Model\Behavior;
 
 use ArrayObject;
+use Cake\Database\Type;
 use Cake\Event\Event;
 use Cake\ORM\Behavior;
 use Cake\ORM\Entity;
@@ -22,6 +23,22 @@ use Proffer\Lib\ProfferPathInterface;
  */
 class ProfferBehavior extends Behavior
 {
+    /**
+     * Build the behaviour
+     *
+     * @param array $config Passed configuration
+     * @return void
+     */
+    public function initialize(array $config)
+    {
+        Type::map('proffer.file', '\Proffer\Database\Type\FileType');
+        $schema = $this->_table->schema();
+        foreach (array_keys($this->config()) as $field) {
+            $schema->columnType($field, 'proffer.file');
+        }
+        $this->_table->schema($schema);
+    }
+
     /**
      * beforeMarshal event
      *
