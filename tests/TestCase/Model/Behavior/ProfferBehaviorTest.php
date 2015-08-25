@@ -48,14 +48,14 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
      *
      * @param $dir
      */
-    private function rrmdir($dir)
+    protected function _rrmdir($dir)
     {
         if (is_dir($dir)) {
             $objects = scandir($dir);
             foreach ($objects as $object) {
                 if ($object != "." && $object != "..") {
                     if (filetype($dir . "/" . $object) == "dir") {
-                        $this->rrmdir($dir . "/" . $object);
+                        $this->_rrmdir($dir . "/" . $object);
                     } else {
                         unlink($dir . "/" . $object);
                     }
@@ -73,7 +73,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
      */
     public function tearDown()
     {
-        $this->rrmdir(TMP . 'ProfferTests' . DS);
+        $this->_rrmdir(TMP . 'ProfferTests' . DS);
     }
 
     /**
@@ -83,7 +83,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
      * @param Entity $entity Instance of the entity
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    private function getProfferPathMock(Table $table, Entity $entity)
+    protected function _getProfferPathMock(Table $table, Entity $entity)
     {
         $path = $this->getMockBuilder('Proffer\Lib\ProfferPath')
             ->setConstructorArgs([$table, $entity, 'photo', $this->config['photo']])
@@ -160,7 +160,8 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
      */
     public function testBeforeMarshal(array $data, $allowEmpty, array $expected)
     {
-        $table = $this->getMock('Cake\ORM\Table', ['alias']);
+        $schema = $this->getMock('Cake\Database\Schema\Table', null, ['examples']);
+        $table = $this->getMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
         $table->method('alias')
             ->willReturn('ProfferTest');
 
@@ -248,12 +249,13 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
      */
     public function testBeforeSaveWithValidFile(array $entityData, array $expected)
     {
-        $table = $this->getMock('Cake\ORM\Table', ['alias']);
+        $schema = $this->getMock('Cake\Database\Schema\Table', null, ['examples']);
+        $table = $this->getMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
         $table->method('alias')
             ->willReturn('ProfferTest');
 
         $entity = new Entity($entityData);
-        $path = $this->getProfferPathMock($table, $entity, 'photo');
+        $path = $this->_getProfferPathMock($table, $entity, 'photo');
 
         $Proffer = $this->getMockBuilder('Proffer\Model\Behavior\ProfferBehavior')
             ->setConstructorArgs([$table, $this->config])
@@ -298,11 +300,12 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
      */
     public function testBeforeSaveWithoutUploadingAFile()
     {
-        $table = $this->getMock('Cake\ORM\Table', ['alias']);
+        $schema = $this->getMock('Cake\Database\Schema\Table', null, ['examples']);
+        $table = $this->getMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
         $table->method('alias')
             ->willReturn('ProfferTest');
 
-        $path = $this->getProfferPathMock(
+        $path = $this->_getProfferPathMock(
             $table,
             new Entity(['photo' => 'image_640x480.jpg', 'photo_dir' => 'proffer_test']),
             'photo'
@@ -339,7 +342,8 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
      */
     public function testFailedToMoveFile()
     {
-        $table = $this->getMock('Cake\ORM\Table', ['alias']);
+        $schema = $this->getMock('Cake\Database\Schema\Table', null, ['examples']);
+        $table = $this->getMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
         $table->method('alias')
             ->willReturn('ProfferTest');
 
@@ -361,7 +365,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             ]
         ]);
 
-        $path = $this->getProfferPathMock($table, $entity, 'photo');
+        $path = $this->_getProfferPathMock($table, $entity, 'photo');
 
         $Proffer->beforeSave(
             $this->getMock('Cake\Event\Event', null, ['beforeSave']),
@@ -376,7 +380,8 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
      */
     public function testAfterDelete()
     {
-        $table = $this->getMock('Cake\ORM\Table', ['alias']);
+        $schema = $this->getMock('Cake\Database\Schema\Table', null, ['examples']);
+        $table = $this->getMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
         $table->method('alias')
             ->willReturn('ProfferTest');
 
@@ -387,7 +392,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             'photo_dir' => 'proffer_test'
         ]);
 
-        $path = $this->getProfferPathMock($table, $entity, 'photo');
+        $path = $this->_getProfferPathMock($table, $entity, 'photo');
         $testUploadPath = $path->getFolder();
 
         if (!file_exists($testUploadPath)) {
@@ -421,7 +426,8 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
 
     public function testAfterDeleteWithMissingFiles()
     {
-        $table = $this->getMock('Cake\ORM\Table', ['alias']);
+        $schema = $this->getMock('Cake\Database\Schema\Table', null, ['examples']);
+        $table = $this->getMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
         $table->method('alias')
             ->willReturn('ProfferTest');
 
@@ -432,7 +438,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             'photo_dir' => 'proffer_test'
         ]);
 
-        $path = $this->getProfferPathMock($table, $entity, 'photo');
+        $path = $this->_getProfferPathMock($table, $entity, 'photo');
         $testUploadPath = $path->getFolder();
 
         if (!file_exists($testUploadPath)) {
@@ -471,15 +477,16 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
 
         $eventManager = $this->getMock('Cake\Event\EventManager');
 
+        $schema = $this->getMock('Cake\Database\Schema\Table', null, ['examples']);
         $table = $this->getMockBuilder('Cake\ORM\Table')
-            ->setConstructorArgs([['eventManager' => $eventManager]])
+            ->setConstructorArgs([['eventManager' => $eventManager, 'schema' => $schema]])
             ->setMethods(['alias'])
             ->getMock();
 
         $table->method('alias')
             ->willReturn('ProfferTest');
 
-        $path = $this->getProfferPathMock($table, $entity, 'photo');
+        $path = $this->_getProfferPathMock($table, $entity, 'photo');
 
         $event = new Event('Proffer.afterPath', $entity, ['path' => $path]);
 
@@ -510,7 +517,8 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
 
     public function testThumbsNotCreatedWhenNoSizes()
     {
-        $table = $this->getMock('Cake\ORM\Table', ['alias']);
+        $schema = $this->getMock('Cake\Database\Schema\Table', null, ['examples']);
+        $table = $this->getMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
         $table->method('alias')
             ->willReturn('ProfferTest');
 
@@ -527,7 +535,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             'photo_dir' => 'proffer_test'
         ];
         $entity = new Entity($entityData);
-        $path = $this->getProfferPathMock($table, $entity, 'photo');
+        $path = $this->_getProfferPathMock($table, $entity, 'photo');
 
         $Proffer = $this->getMockBuilder('Proffer\Model\Behavior\ProfferBehavior')
             ->setConstructorArgs([$table, $config])
@@ -613,7 +621,8 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
      */
     public function testChangingThePathUsingEvents(array $pathData, $expected)
     {
-        $table = $this->getMock('Cake\ORM\Table', ['alias']);
+        $schema = $this->getMock('Cake\Database\Schema\Table', null, ['examples']);
+        $table = $this->getMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
         $table->method('alias')
             ->willReturn('ProfferTest');
 
@@ -683,7 +692,8 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
 
     public function testDeletingARecordWithNoThumbnailConfig()
     {
-        $table = $this->getMock('Cake\ORM\Table', ['alias']);
+        $schema = $this->getMock('Cake\Database\Schema\Table', null, ['examples']);
+        $table = $this->getMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
         $table->method('alias')
             ->willReturn('ProfferTest');
 
@@ -695,7 +705,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             'photo_dir' => 'proffer_test'
         ];
         $entity = new Entity($entityData);
-        $path = $this->getProfferPathMock($table, $entity, 'photo');
+        $path = $this->_getProfferPathMock($table, $entity, 'photo');
 
         $Proffer = $this->getMockBuilder('Proffer\Model\Behavior\ProfferBehavior')
             ->setConstructorArgs([$table, $config])
@@ -715,7 +725,8 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
 
     public function testReplacingComponents()
     {
-        $table = $this->getMock('Cake\ORM\Table', ['alias']);
+        $schema = $this->getMock('Cake\Database\Schema\Table', null, ['examples']);
+        $table = $this->getMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
         $table->method('alias')
             ->willReturn('ProfferTest');
 
@@ -783,7 +794,8 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
 
     public function testMultipleFieldUpload()
     {
-        $table = $this->getMock('Cake\ORM\Table', ['alias']);
+        $schema = $this->getMock('Cake\Database\Schema\Table', null, ['examples']);
+        $table = $this->getMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
         $table->method('alias')
             ->willReturn('ProfferTest');
 

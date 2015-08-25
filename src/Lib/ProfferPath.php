@@ -214,16 +214,14 @@ class ProfferPath implements ProfferPathInterface
         $table = $this->getTable();
         $table = (!empty($table)) ? $table . DS : null;
 
-        $seed  = $this->getSeed();
+        $seed = $this->getSeed();
         $seed = (!empty($seed)) ? $seed . DS : null;
 
         if ($prefix) {
-            return $this->getRoot() . DS . $table . $this->getField()
-                . DS . $this->getSeed() . DS . $prefix . '_' . $this->getFilename();
+            return $this->getRoot() . DS . $table . $this->getField() . DS . $this->getSeed() . DS . $prefix . '_' . $this->getFilename();
         }
 
-        return $this->getRoot() . DS . $table . $this->getField()
-            . DS . $seed . $this->getFilename();
+        return $this->getRoot() . DS . $table . $this->getField() . DS . $seed . $this->getFilename();
     }
 
     /**
@@ -236,7 +234,7 @@ class ProfferPath implements ProfferPathInterface
         $table = $this->getTable();
         $table = (!empty($table)) ? $table . DS : null;
 
-        $seed  = $this->getSeed();
+        $seed = $this->getSeed();
         $seed = (!empty($seed)) ? $seed . DS : null;
 
         return $this->getRoot() . DS . $table . $this->getField() . DS . $seed;

@@ -9,13 +9,6 @@ see which ones you must define and which ones can be ignored to use the defaults
 
 ```php
 <?php
-// Configure your upload field to use the file datatype
-protected function _initializeSchema(\Cake\Database\Schema\Table $table)
-{
-    $table->columnType('photo', 'proffer.file');
-    return $table;
-}
-
 // Add the behaviour and configure any options you want
 $this->addBehavior('Proffer.Proffer', [
 	'photo' => [	// The name of your upload field

@@ -19,14 +19,14 @@ class ProfferPathTest extends PHPUnit_Framework_TestCase
      *
      * @param $dir
      */
-    private function __rrmdir($dir)
+    protected function _rrmdir($dir)
     {
         if (is_dir($dir)) {
             $objects = scandir($dir);
             foreach ($objects as $object) {
                 if ($object != "." && $object != "..") {
                     if (filetype($dir . "/" . $object) == "dir") {
-                        $this->__rrmdir($dir . "/" . $object);
+                        $this->_rrmdir($dir . "/" . $object);
                     } else {
                         unlink($dir . "/" . $object);
                     }
@@ -44,7 +44,7 @@ class ProfferPathTest extends PHPUnit_Framework_TestCase
      */
     public function tearDown()
     {
-        $this->__rrmdir(TMP . 'ProfferTests' . DS);
+        $this->_rrmdir(TMP . 'ProfferTests' . DS);
     }
 
     public function pathDataProvider()
