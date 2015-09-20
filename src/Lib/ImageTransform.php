@@ -94,13 +94,13 @@ class ImageTransform implements ImageTransformInterface
             return;
         }
 
-        foreach ($config['thumbnailSizes'] as $prefix => $dimensions) {
+        foreach ($config['thumbnailSizes'] as $prefix => $thumbnailConfig) {
             $method = null;
             if (!empty($config['thumbnailMethod'])) {
                 $method = $config['thumbnailMethod'];
             }
 
-            $this->makeThumbnail($prefix, $dimensions, $method);
+            $this->makeThumbnail($prefix, $thumbnailConfig, $method);
         }
     }
 
@@ -108,23 +108,29 @@ class ImageTransform implements ImageTransformInterface
      * Generate and save the thumbnail
      *
      * @param string $prefix The thumbnail prefix
-     * @param array $dimensions Array of thumbnail dimensions
+     * @param array $config Array of thumbnail config
      * @param string $thumbnailMethod Which engine to use to make thumbnails
      * @return void
      */
-    public function makeThumbnail($prefix, array $dimensions, $thumbnailMethod = 'gd')
+    public function makeThumbnail($prefix, array $config, $thumbnailMethod = 'gd')
     {
+        $defaultConfig = [
+            'jpeg_quality' => 100,
+            'png_compression_level' => 9
+        ];
+        $config = array_merge($defaultConfig, $config);
         $this->setImagine($thumbnailMethod);
 
         $image = $this->getImagine()->open($this->Path->fullPath());
 
-        if (isset($dimensions['crop']) && $dimensions['crop'] === true) {
-            $image = $this->thumbnailCropScale($image, $dimensions['w'], $dimensions['h']);
+        if (isset($config['crop']) && $config['crop'] === true) {
+            $image = $this->thumbnailCropScale($image, $config['w'], $config['h']);
         } else {
-            $image = $this->thumbnailScale($image, $dimensions['w'], $dimensions['h']);
+            $image = $this->thumbnailScale($image, $config['w'], $config['h']);
         }
+        unset($config['crop'], $config['w'], $config['h']);
 
-        $image->save($this->Path->fullPath($prefix), ['jpeg_quality' => 100, 'png_compression_level' => 9]);
+        $image->save($this->Path->fullPath($prefix), $config);
     }
 
     /**
