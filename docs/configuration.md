@@ -14,6 +14,7 @@ $this->addBehavior('Proffer.Proffer', [
 	'photo' => [	// The name of your upload field
 		'root' => WWW_ROOT . 'files', // Customise the root upload folder here, or omit to use the default
 		'dir' => 'photo_dir',	// The name of the field to store the folder
+		'keepOriginalFile' => true,	// Keep or delete original file after thumbnails are generated
 		'thumbnailSizes' => [ // Declare your thumbnails
 			'square' => [	// Define the prefix of your thumbnail
 				'w' => 200,	// Width
@@ -78,6 +79,10 @@ Eg, `'App\Lib\Proffer\AvatarPath'`.
 **optional**
 If you want to replace the creation of thumbnails you can specify your own class here, it must be a fully qualified namespace.
 EG, `'App\Lib\Proffer\WatermarkThumbnail'`.
+
+###keepOriginalFile
+**optional** defaults to: `true`
+You can decide if original file should be removed or kept after thumbnails are generated.
 
 ## Configuring your templates
 You will need to make sure that your forms are using the file type so that the files can be uploaded.
