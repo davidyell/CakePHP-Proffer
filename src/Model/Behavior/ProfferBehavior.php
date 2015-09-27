@@ -86,6 +86,11 @@ class ProfferBehavior extends Behavior
                     $path = new ProfferPath($this->_table, $entity, $field, $settings);
                 }
 
+                // Delete old files after record changed
+                if (!$entity->isNew() && $entity->dirty($field)) {
+                    $path->deleteFiles($path->getFolder(), false);
+                }
+
                 $event = new Event('Proffer.afterPath', $entity, ['path' => $path]);
                 $this->_table->eventManager()->dispatch($event);
                 if (!empty($event->result)) {
