@@ -27,6 +27,10 @@ your customised thumbnails.
 If you are experiencing any of these errors, here are your solutions.
 
 ### Unknown type "proffer.file"
+
+:warning: *Since Proffer 0.5.0 introduced configuring schema settings automatically,
+the following instructions are no longer needed when you use Proffer >= 0.5.*
+
 This has two primary causes.
 
 The first is that in your `config/boostrap.php` you might have forgotten to include the
