@@ -66,7 +66,12 @@ class UploadFilenameListener implements EventListenerInterface
 
         // Change the filename in both the path to be saved, and in the entity data for saving to the db
         $path->setFilename($newFilename);
-        $event->subject()['image']['name'] = $newFilename;
+        
+        $photo = $event->subject()->get('photo');
+        $photo['name'] = $newFilename;
+        $event->subject()->set('photo',$photo);
+
+        //$event->subject()['image']['name'] = $newFilename;
 
         // Must return the modified path instance, so that things are saved in the right place
         return $path;
