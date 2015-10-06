@@ -8,11 +8,10 @@
 namespace Proffer\Model\Validation;
 
 use Cake\Core\Exception\Exception;
-use Cake\Validation\Validator;
 use finfo;
 use Proffer\Error\DisabledExtension;
 
-class ProfferRules extends Validator
+class ProfferRules
 {
 
     /**
