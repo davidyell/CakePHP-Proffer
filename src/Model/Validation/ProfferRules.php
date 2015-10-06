@@ -7,71 +7,10 @@
 
 namespace Proffer\Model\Validation;
 
-use Cake\Core\Exception\Exception;
-use Cake\Validation\Validator;
-use finfo;
-use Proffer\Error\DisabledExtension;
+use Cake\Validation\Validation;
 
-class ProfferRules extends Validator
+class ProfferRules extends Validation
 {
-
-    /**
-     * Check the size of the image
-     *
-     * @param array $value An array of the name and value of the field
-     * @param int $size Filesize in bytes
-     * @return bool
-     */
-    public static function filesize($value, $size)
-    {
-        if ($value['size'] <= $size) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Make sure the extension matches the allowed
-     *
-     * @param array $value An array of the name and value of the field
-     * @param array $extensions Array of file extensions to allow
-     * @return bool
-     */
-    public static function extension($value, array $extensions)
-    {
-        $extension = pathinfo($value['name'], PATHINFO_EXTENSION);
-
-        if (in_array($extension, $extensions)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Check the mimetype of the file
-     *
-     * For a full list of mime types
-     * http://www.sitepoint.com/web-foundations/mime-types-complete-list/
-     *
-     * @param array $value An array of the name and value of the field
-     * @param array $types An array of mime type strings to match
-     * @return bool
-     * @throws DisabledExtension
-     * @see http://php.net/manual/en/fileinfo.installation.php
-     */
-    public static function mimetype($value, array $types)
-    {
-        if (!class_exists('finfo')) {
-            throw new DisabledExtension('Please enable the File Info extension in your php.ini');
-        }
-
-        $finfo = new finfo();
-        $type = $finfo->file($value['tmp_name'], FILEINFO_MIME_TYPE);
-
-        return in_array($type, $types);
-    }
 
     /**
      * Validate the dimensions of an image. If the file isn't an image then validation will fail
