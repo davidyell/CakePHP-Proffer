@@ -26,31 +26,9 @@ your customised thumbnails.
 ## Errors
 If you are experiencing any of these errors, here are your solutions.
 
-### Unknown type "proffer.file"
-
-:warning: *Since Proffer 0.5.0 introduced configuring schema settings automatically,
-the following instructions are no longer needed when you use Proffer >= 0.5.*
-
-This has two primary causes.
-
-The first is that in your `config/boostrap.php` you might have forgotten to include the
-`'bootstrap' => true` when loading the plugin, which means the datatype isn't loaded.
-
-```php
-// config/bootstrap.php
-Plugin::load('Proffer', ['bootstrap' => true]);
-```
-
-The second thing is that you might have forgotten to include the `_initializeSchema` method in your table class. This
-method bind the data type class to the field.
-
-```php
-// src/Model/Table/Examples.php
-protected function _initializeSchema(\Cake\Database\Schema\Table $table) {
-    $table->columnType('file','proffer.file');
-    return $table;
-}
-```
+### Bootstrap file is missing
+Proffer `0.5.0` introduced configuring schema settings automatically, so you no longer need to include the the
+`['bootstrap' => true]` when loading the plugin.
 
 ### File name is written to the database as "Array"
 The thing to check is your form is using the file type, and your input is also a file type.

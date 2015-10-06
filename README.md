@@ -33,6 +33,9 @@ All the documentation can be found in the [docs](docs) folder.
 * [Examples](docs/examples.md)
 * [FAQ](docs/faq.md)
 
+**NB** Please be aware of the change of configuration between versions `0.4.2` and `0.5.0`.
+[See the FAQ](/docs/faq.md#bootstrap-file-is-missing).
+
 ##Contribution
 Please open a pull request or submit an issue if there is anything you would like to contribute. Please write a test for 
 any new functionality that you add and be sure to run the tests before you commit. Also don't forget to run PHPCS with 
