@@ -16,10 +16,10 @@ matrix:
   fast_finish: true
 
   include:
-  - php: 5.5
+    php: 5.5
     env: PHPCS=1 DEFAULT=0
 
-  - php: 5.5
+    php: 5.5
     env: COVERALLS=1 DEFAULT=0
 
 install:

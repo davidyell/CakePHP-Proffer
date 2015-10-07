@@ -16,12 +16,11 @@ in a similar vein to how [@josegonzalez](https://github.com/josegonzalez) had wr
 * [File Info is enabled](http://php.net/manual/en/book.fileinfo.php) for mimetype validation
 
 ##Status
-This is currently in beta, the api is stable and the plugin is functionally complete.
-
 [![Build Status](https://travis-ci.org/davidyell/CakePHP3-Proffer.svg?branch=master)](https://travis-ci.org/davidyell/CakePHP3-Proffer)
 [![Coverage Status](https://coveralls.io/repos/davidyell/CakePHP3-Proffer/badge.png)](https://coveralls.io/r/davidyell/CakePHP3-Proffer)
 [![Dependency Status](https://www.versioneye.com/user/projects/54eee43931e55e12f9000018/badge.svg?style=flat)](https://www.versioneye.com/user/projects/54eee43931e55e12f9000018)
 [![Latest Stable Version](https://poser.pugx.org/davidyell/proffer/v/stable.svg)](https://packagist.org/packages/davidyell/proffer) [![Total Downloads](https://poser.pugx.org/davidyell/proffer/downloads.svg)](https://packagist.org/packages/davidyell/proffer) [![Latest Unstable Version](https://poser.pugx.org/davidyell/proffer/v/unstable.svg)](https://packagist.org/packages/davidyell/proffer) [![License](https://poser.pugx.org/davidyell/proffer/license.svg)](https://packagist.org/packages/davidyell/proffer)
+[![SensioLabsInsight](https://insight.sensiolabs.com/projects/65daa950-3128-44ef-b388-d4370efd853c/mini.png)](https://insight.sensiolabs.com/projects/65daa950-3128-44ef-b388-d4370efd853c)
 
 ##Documentation
 All the documentation can be found in the [docs](docs) folder.

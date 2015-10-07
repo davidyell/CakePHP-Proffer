@@ -8,7 +8,6 @@
 
 namespace Proffer\Lib;
 
-use Cake\Event\Event;
 use Cake\ORM\Table;
 use Imagine\Filter\Transformation;
 use Imagine\Gd\Imagine as Gd;
