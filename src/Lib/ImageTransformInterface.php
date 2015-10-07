@@ -11,8 +11,6 @@
 
 namespace Proffer\Lib;
 
-use Cake\ORM\Table;
-
 interface ImageTransformInterface
 {
     /**

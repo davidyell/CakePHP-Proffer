@@ -11,9 +11,6 @@
 
 namespace Proffer\Lib;
 
-use Cake\ORM\Entity;
-use Cake\ORM\Table;
-
 interface ProfferPathInterface
 {
 

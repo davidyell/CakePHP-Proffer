@@ -148,7 +148,7 @@ class ProfferShell extends Shell
             $okayToDestroy = $this->in(__('Are you sure? This will irreversibly delete files'), ['y', 'n'], 'n');
             if ($okayToDestroy === 'N') {
                 $this->out(__('Aborted, no files deleted.'));
-                exit;
+                $this->_stop();
             }
         } else {
             $this->out(__('<info>Performing dry run cleanup.</info>'));
@@ -257,12 +257,12 @@ class ProfferShell extends Shell
             $this->Table = $this->loadModel($table);
         } catch (Exception $e) {
             $this->out(__('<error>' . $e->getMessage() . '</error>'));
-            exit;
+            $this->_stop();
         }
 
         if (get_class($this->Table) === 'AppModel') {
             $this->out(__('<error>The table could not be found, instance of AppModel loaded.</error>'));
-            exit;
+            $this->_stop();
         }
 
         if (!$this->Table->hasBehavior('Proffer')) {
@@ -271,7 +271,7 @@ class ProfferShell extends Shell
                 "' does not have the Proffer behavior attached.</error>"
             );
             $this->out($out);
-            exit;
+            $this->_stop();
         }
 
         $config = $this->Table->behaviors()->Proffer->config();
@@ -282,7 +282,7 @@ class ProfferShell extends Shell
                     "' does not have the configured upload field in it's schema.</error>"
                 );
                 $this->out($out);
-                exit;
+                $this->_stop();
             }
             if (!$this->Table->hasField($settings['dir'])) {
                 $out = __(
@@ -290,7 +290,7 @@ class ProfferShell extends Shell
                     "' does not have the configured dir field in it's schema.</error>"
                 );
                 $this->out($out);
-                exit;
+                $this->_stop();
             }
 
         }
