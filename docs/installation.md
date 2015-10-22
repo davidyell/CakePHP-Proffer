@@ -11,8 +11,6 @@ In your terminal you can use
 $ composer require 'davidyell/proffer:~0.4'
 ```
 
-If you would rather edit your `composer.json` you can add it to your `composer.json` in your require section `"davidyell/proffer": "dev-master"` and then run `composer update`.
-
 It's always advised to lock your dependencies to a specific version number. You can [check the releases](https://github.com/davidyell/CakePHP3-Proffer/releases),
  or [read more about versions on Composer.org](https://getcomposer.org/doc/01-basic-usage.md#package-versions). For more information about [installing plugins with CakePHP](http://book.cakephp.org/3.0/en/plugins.html#installing-a-plugin-with-composer), check the book.
 

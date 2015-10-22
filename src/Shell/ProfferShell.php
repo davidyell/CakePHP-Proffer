@@ -114,7 +114,7 @@ class ProfferShell extends Shell
                 }
 
                 if (!empty($this->param('image-class'))) {
-                    $class = (string)$this->param('image_class');
+                    $class = (string)$this->param('image-class');
                     $transform = new $class($this->Table, $path);
                 } else {
                     $transform = new ImageTransform($this->Table, $path);
