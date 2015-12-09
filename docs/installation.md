@@ -8,7 +8,7 @@ You can find it on Packagist [https://packagist.org/packages/davidyell/proffer](
 In your terminal you can use
 
 ```bash
-$ composer require 'davidyell/proffer:~0.4'
+$ composer require 'davidyell/proffer:~0.6'
 ```
 
 It's always advised to lock your dependencies to a specific version number. You can [check the releases](https://github.com/davidyell/CakePHP3-Proffer/releases),
