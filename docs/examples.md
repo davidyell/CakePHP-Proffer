@@ -39,12 +39,6 @@ $this->addBehavior('Proffer.Proffer', [
 ]);
 
 $this->belongsTo('Users', ['foreignKey' => 'user_id', 'joinType' => 'INNER']);
-
-protected function _initializeSchema(\Cake\Database\Schema\Table $table)
-{
-    $table->columnType('image', 'proffer.file');
-    return $table;
-}
 ```
 
 ###Entities
