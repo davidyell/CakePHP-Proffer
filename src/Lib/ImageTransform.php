@@ -85,12 +85,13 @@ class ImageTransform implements ImageTransformInterface
      * Take an upload fields configuration and create all the thumbnails
      *
      * @param array $config The upload fields configuration
-     * @return void
+     * @return array
      */
     public function processThumbnails(array $config)
     {
+        $thumbnailPaths = [];
         if (!isset($config['thumbnailSizes'])) {
-            return;
+            return $thumbnailPaths;
         }
 
         foreach ($config['thumbnailSizes'] as $prefix => $thumbnailConfig) {
@@ -99,8 +100,10 @@ class ImageTransform implements ImageTransformInterface
                 $method = $config['thumbnailMethod'];
             }
 
-            $this->makeThumbnail($prefix, $thumbnailConfig, $method);
+            $thumbnailPath = $this->makeThumbnail($prefix, $thumbnailConfig, $method);
+            $thumbnailPaths[] = $thumbnailPath;
         }
+        return $thumbnailPaths;
     }
 
     /**
@@ -109,7 +112,7 @@ class ImageTransform implements ImageTransformInterface
      * @param string $prefix The thumbnail prefix
      * @param array $config Array of thumbnail config
      * @param string $thumbnailMethod Which engine to use to make thumbnails
-     * @return void
+     * @return string
      */
     public function makeThumbnail($prefix, array $config, $thumbnailMethod = 'gd')
     {
@@ -130,6 +133,7 @@ class ImageTransform implements ImageTransformInterface
         unset($config['crop'], $config['w'], $config['h']);
 
         $image->save($this->Path->fullPath($prefix), $config);
+        return $this->Path->fullPath($prefix);
     }
 
     /**
