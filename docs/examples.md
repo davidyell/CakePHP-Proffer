@@ -13,6 +13,7 @@ echo $this->Html->image('../files/<table>/<field>/' . $data->get('image_dir') . 
 ## Example event listener
 Here are some basic event listener example classes
 * [Customize the upload folder and filename](examples/UploadFilenameListener.md)
+* [Customize behavior of file creation/deletion](examples/UploadAndDeleteImageListener.md)
 
 ##Uploading multiple related images
 This example will show you how to upload many images which are related to your
