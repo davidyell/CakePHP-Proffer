@@ -2,7 +2,9 @@
 This manual page deals with customising the behaviour of the Proffer plugin. How to change the upload location and changing
 file names. It also cover how you can use the Proffer events to change the way the plugin behaves.
 
-##Customising upload file names and paths using an event listener
+##Customising using an event listener
+
+###Customising upload file names and paths
 Using the `Proffer.afterPath` event you can hook into all the details about the file upload before it is processed. Using
 this event you can change the name of the file and the upload path to match whatever convention you want. I have created
 an example listener which is [available as an example](examples/UploadFilenameListener.md).
@@ -22,6 +24,11 @@ file and also attach this listener to multiple tables, if you wanted the same na
 
 :warning: The listener will overwrite any settings that are configured in the path class. This includes if you are using
 your own path class.
+
+###Customising behavior of file creation/deletion
+Proffer’s image creation can be hooked by using `Proffer.afterCreateImage` event, and by using `Proffer.beforeDeleteImage` event, Proffer’s image deletion can be hooked.
+These events can be used to copy files to external services (e.g. Amazon S3), or deleting files from external services at the same time of Proffer creating/deleting images.
+I have created an example listener which is [available as an example](examples/UploadAndDeleteImageListener.md).
 
 ##Advanced customisation
 If you want more control over how the plugin is handling paths or creating thumbnails you can replace these components
