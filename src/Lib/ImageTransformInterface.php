@@ -17,7 +17,7 @@ interface ImageTransformInterface
      * Take an upload fields configuration and process each configured thumbnail
      *
      * @param array $config The upload fields configuration
-     * @return void
+     * @return array
      */
     public function processThumbnails(array $config);
 
@@ -27,7 +27,7 @@ interface ImageTransformInterface
      * @param string $prefix The prefix name for the thumbnail
      * @param array $dimensions The thumbnail dimensions
      * @param string $thumbnailMethod Which method to use to create the thumbnail
-     * @return void
+     * @return string
      */
     public function makeThumbnail($prefix, array $dimensions, $thumbnailMethod = 'gd');
 }
