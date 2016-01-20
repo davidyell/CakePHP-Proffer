@@ -2,7 +2,7 @@
     "name": "davidyell/proffer",
     "description": "An upload plugin for CakePHP 3",
 	"type": "cakephp-plugin",
-  	"keywords": ["cakephp", "cakephp3", "upload", "file", "image"],
+  	"keywords": ["cakephp", "cakephp3", "upload", "file", "image", "orm"],
   	"homepage": "https://github.com/davidyell/CakePHP3-Proffer",
   	"license": "MIT",
   	"authors": [
