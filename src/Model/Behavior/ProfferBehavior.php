@@ -70,14 +70,25 @@ class ProfferBehavior extends Behavior
      */
     public function beforeSave(Event $event, Entity $entity, ArrayObject $options, ProfferPathInterface $path = null)
     {
+        $defaultSettings = [
+            'keepOriginalFile' => true
+        ];
         foreach ($this->config() as $field => $settings) {
-            if ($entity->has($field) && is_array($entity->get($field)) &&
-                $entity->get($field)['error'] === UPLOAD_ERR_OK) {
+            $settings = array_merge($defaultSettings, $settings);
+            if ($entity->has($field)
+                && is_array($entity->get($field))
+                && $entity->get($field)['error'] === UPLOAD_ERR_OK
+            ) {
                 // Allow path to be injected or set in config
                 if (!empty($settings['pathClass'])) {
                     $path = new $settings['pathClass']($this->_table, $entity, $field, $settings);
                 } elseif (!isset($path)) {
                     $path = new ProfferPath($this->_table, $entity, $field, $settings);
+                }
+
+                // Delete old files after record changed
+                if (!$entity->isNew() && $entity->dirty($field)) {
+                    $path->deleteFiles($path->getFolder(), false);
                 }
 
                 $event = new Event('Proffer.afterPath', $entity, ['path' => $path]);
@@ -113,6 +124,9 @@ class ProfferBehavior extends Behavior
                                 $this->_table->eventManager()->dispatch($event);
                             }
                         }
+                    }
+                    if ($settings['keepOriginalFile'] == false) {
+                        unlink($path->fullPath());
                     }
                 } else {
                     throw new Exception('Cannot upload file');
