@@ -494,29 +494,22 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
 
         $path = $this->_getProfferPathMock($table, $entity, 'photo');
 
-        $event0 = new Event('Proffer.afterPath', $entity, ['path' => $path]);
+        $eventAfterPath = new Event('Proffer.afterPath', $entity, ['path' => $path]);
 
         $eventManager->expects($this->at(0))
             ->method('dispatch')
-            ->with($this->equalTo($event0));
+            ->with($this->equalTo($eventAfterPath));
 
-        $event1 = new Event('Proffer.afterCreateImage', $entity, ['path' => $path, 'image' => $path->getFolder() . 'image_640x480.jpg']);
+        $images = [
+            $path->getFolder() . 'image_640x480.jpg',
+            $path->getFolder() . 'square_image_640x480.jpg',
+            $path->getFolder() . 'portrait_image_640x480.jpg',
+        ];
+        $eventAfterCreateImage = new Event('Proffer.afterCreateImage', $entity, ['path' => $path, 'images' => $images]);
 
         $eventManager->expects($this->at(1))
             ->method('dispatch')
-            ->with($this->equalTo($event1));
-
-        $event2 = new Event('Proffer.afterCreateImage', $entity, ['path' => $path, 'image' => $path->getFolder() . 'square_image_640x480.jpg']);
-
-        $eventManager->expects($this->at(2))
-            ->method('dispatch')
-            ->with($this->equalTo($event2));
-
-        $event3 = new Event('Proffer.afterCreateImage', $entity, ['path' => $path, 'image' => $path->getFolder() . 'portrait_image_640x480.jpg']);
-
-        $eventManager->expects($this->at(3))
-            ->method('dispatch')
-            ->with($this->equalTo($event3));
+            ->with($this->equalTo($eventAfterCreateImage));
 
         $Proffer = $this->getMockBuilder('Proffer\Model\Behavior\ProfferBehavior')
             ->setConstructorArgs([$table, $this->config])
