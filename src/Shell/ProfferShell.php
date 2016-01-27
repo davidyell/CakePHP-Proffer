@@ -42,7 +42,10 @@ class ProfferShell extends Shell
                     'image-class' => [
                         'short' => 'i',
                         'help' => __('Fully name spaced custom image transform class, you must use double backslash.')
-                    ]
+                    ],
+                    'remove-behaviors' => [
+                        'help' => __('The behaviors to remove before generate.'),
+                    ],
                 ]
             ]
         ]);
@@ -58,7 +61,10 @@ class ProfferShell extends Shell
                         'short' => 'd',
                         'help' => __('Do a dry run and don\'t delete any files.'),
                         'boolean' => true
-                    ]
+                    ],
+                    'remove-behaviors' => [
+                        'help' => __('The behaviors to remove before cleanup.'),
+                    ],
                 ]
             ],
         ]);
@@ -293,6 +299,13 @@ class ProfferShell extends Shell
                 $this->_stop();
             }
 
+        }
+
+        if ($this->param('remove-behaviors')) {
+            $removeBehaviors = explode(',', (string)$this->param('remove-behaviors'));
+            foreach ($removeBehaviors as $removeBehavior) {
+                $this->Table->removeBehavior($removeBehavior);
+            }
         }
     }
 }
