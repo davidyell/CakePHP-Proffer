@@ -80,4 +80,33 @@ field names, so that your request data is formatted correctly.
 How you deal with the display of existing images, deletion of existing images,
 and adding of new upload fields is up to you, and outside the scope of this example.
 
+###Deleting images but preserving data
+If you need to delete an upload and remove it's associated data from your data store, you can achieve this in your controller.
+
+The easiest way is to add a checkbox to your form and then look for it when processing your post data.
+
+An example form might look like. It's important to note that I've disabled the `hiddenField` option here.
+
+```php
+echo $this->Form->input('cover', ['type' => 'file']);
+if (!empty($league->cover)) {
+    echo $this->Form->input('delete_cover', ['type' => 'checkbox', 'hiddenField' => false, 'label' => 'Remove my cover photo']);
+}
+```
+
+Then in your controller, check for the field before using `patchEntity`
+
+```php
+// Deleting the upload?
+if (isset($this->request->data['delete_cover'])) {
+    $this->request->data['image_dir'] = null;
+    $this->request->data['cover'] = null;
+
+    $path = new \Proffer\Lib\ProfferPath($this->Leagues, $league, 'cover', $this->Leagues->behaviors()->Proffer->config('cover'));
+    $path->deleteFiles($path->getFolder(), true);
+}
+
+// patchEntity etc
+```
+
 [< Shell tasks](shell.md) | [FAQ >](faq.md)
