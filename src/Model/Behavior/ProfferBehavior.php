@@ -105,10 +105,11 @@ class ProfferBehavior extends Behavior
 
                         $thumbnailPaths = $imageTransform->processThumbnails($settings);
                         $imagePaths = array_merge($imagePaths, $thumbnailPaths);
+
+                        $eventData = ['path' => $path, 'images' => $imagePaths];
+                        $event = new Event('Proffer.afterCreateImage', $entity, $eventData);
+                        $this->_table->eventManager()->dispatch($event);
                     }
-                    $eventData = ['path' => $path, 'images' => $imagePaths];
-                    $event = new Event('Proffer.afterCreateImage', $entity, $eventData);
-                    $this->_table->eventManager()->dispatch($event);
                 } else {
                     throw new Exception('Cannot upload file');
                 }
