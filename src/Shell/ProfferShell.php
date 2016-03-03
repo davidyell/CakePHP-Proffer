@@ -42,7 +42,10 @@ class ProfferShell extends Shell
                     'image-class' => [
                         'short' => 'i',
                         'help' => __('Fully name spaced custom image transform class, you must use double backslash.')
-                    ]
+                    ],
+                    'remove-behaviors' => [
+                        'help' => __('The behaviors to remove before generate.'),
+                    ],
                 ]
             ]
         ]);
@@ -58,7 +61,10 @@ class ProfferShell extends Shell
                         'short' => 'd',
                         'help' => __('Do a dry run and don\'t delete any files.'),
                         'boolean' => true
-                    ]
+                    ],
+                    'remove-behaviors' => [
+                        'help' => __('The behaviors to remove before cleanup.'),
+                    ],
                 ]
             ],
         ]);
@@ -163,12 +169,17 @@ class ProfferShell extends Shell
         // Loop through each upload field configured for this table (field)
         foreach ($uploadFieldFolders as $fieldFolder) {
             // Loop through each instance of an upload for this field (seed)
+            $pathFieldName = pathinfo($fieldFolder, PATHINFO_BASENAME);
             $uploadFolders = glob($fieldFolder . DS . '*');
             foreach ($uploadFolders as $seedFolder) {
                 // Does the seed exist in the db?
                 $seed = pathinfo($seedFolder, PATHINFO_BASENAME);
 
                 foreach ($config as $field => $settings) {
+                    if ($pathFieldName != $field) {
+                        continue;
+                    }
+
                     $targets = [];
 
                     $record = $this->{$this->Table->alias()}->find()
@@ -293,6 +304,13 @@ class ProfferShell extends Shell
                 $this->_stop();
             }
 
+        }
+
+        if ($this->param('remove-behaviors')) {
+            $removeBehaviors = explode(',', (string)$this->param('remove-behaviors'));
+            foreach ($removeBehaviors as $removeBehavior) {
+                $this->Table->removeBehavior($removeBehavior);
+            }
         }
     }
 }

@@ -10,6 +10,7 @@ namespace Proffer\Model\Behavior;
 
 use ArrayObject;
 use Cake\Database\Type;
+use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
 use Cake\ORM\Behavior;
 use Cake\ORM\Entity;
@@ -27,6 +28,7 @@ class ProfferBehavior extends Behavior
      * Build the behaviour
      *
      * @param array $config Passed configuration
+     *
      * @return void
      */
     public function initialize(array $config)
@@ -42,9 +44,12 @@ class ProfferBehavior extends Behavior
     /**
      * beforeMarshal event
      *
-     * @param Event $event Event instance
+     * If a field is allowed to be empty as defined in the validation it should be unset to prevent processing
+     *
+     * @param \Cake\Event\Event $event Event instance
      * @param ArrayObject $data Data to process
      * @param ArrayObject $options Array of options for event
+     *
      * @return void
      */
     public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options)
@@ -61,18 +66,23 @@ class ProfferBehavior extends Behavior
     /**
      * beforeSave method
      *
-     * @param Event $event The event
-     * @param Entity $entity The entity
+     * Process any uploaded files, generate paths, move the files and kick of thumbnail generation if it's an image
+     *
+     * @param \Cake\Event\Event $event The event
+     * @param \Cake\Datasource\EntityInterface $entity The entity
      * @param ArrayObject $options Array of options
-     * @param ProfferPathInterface $path Inject an instance of ProfferPath
+     * @param \Proffer\Lib\ProfferPathInterface $path Inject an instance of ProfferPath
+     *
      * @return true
-     * @throws Exception
+     *
+     * @throws \Exception
      */
-    public function beforeSave(Event $event, Entity $entity, ArrayObject $options, ProfferPathInterface $path = null)
+    public function beforeSave(Event $event, EntityInterface $entity, ArrayObject $options, ProfferPathInterface $path = null)
     {
         foreach ($this->config() as $field => $settings) {
             if ($entity->has($field) && is_array($entity->get($field)) &&
                 $entity->get($field)['error'] === UPLOAD_ERR_OK) {
+
                 // Allow path to be injected or set in config
                 if (!empty($settings['pathClass'])) {
                     $path = new $settings['pathClass']($this->_table, $entity, $field, $settings);
@@ -89,6 +99,8 @@ class ProfferBehavior extends Behavior
                 $path->createPathFolder();
 
                 if ($this->moveUploadedFile($entity->get($field)['tmp_name'], $path->fullPath())) {
+                    $imagePaths = [$path->fullPath()];
+
                     $entity->set($field, $path->getFilename());
                     $entity->set($settings['dir'], $path->getSeed());
 
@@ -101,7 +113,12 @@ class ProfferBehavior extends Behavior
                             $imageTransform = new ImageTransform($this->_table, $path);
                         }
 
-                        $imageTransform->processThumbnails($settings);
+                        $thumbnailPaths = $imageTransform->processThumbnails($settings);
+                        $imagePaths = array_merge($imagePaths, $thumbnailPaths);
+
+                        $eventData = ['path' => $path, 'images' => $imagePaths];
+                        $event = new Event('Proffer.afterCreateImage', $entity, $eventData);
+                        $this->_table->eventManager()->dispatch($event);
                     }
                 } else {
                     throw new Exception('Cannot upload file');
@@ -118,22 +135,27 @@ class ProfferBehavior extends Behavior
      *
      * Remove images from records which have been deleted, if they exist
      *
-     * @param Event $event The passed event
-     * @param Entity $entity The entity
+     * @param \Cake\Event\Event $event The passed event
+     * @param \Cake\Datasource\EntityInterface $entity The entity
      * @param ArrayObject $options Array of options
-     * @param ProfferPathInterface $path Inject and instance of ProfferPath
-     * @return bool
+     * @param \Proffer\Lib\ProfferPathInterface $path Inject an instance of ProfferPath
+     *
+     * @return true
      */
-    public function afterDelete(Event $event, Entity $entity, ArrayObject $options, ProfferPathInterface $path = null)
+    public function afterDelete(Event $event, EntityInterface $entity, ArrayObject $options, ProfferPathInterface $path = null)
     {
         foreach ($this->config() as $field => $settings) {
             $dir = $entity->get($settings['dir']);
 
             if (!empty($entity) && !empty($dir)) {
-                if (!$path) {
+                if (!empty($settings['pathClass'])) {
+                    $path = new $settings['pathClass']($this->_table, $entity, $field, $settings);
+                } elseif (!isset($path)) {
                     $path = new ProfferPath($this->_table, $entity, $field, $settings);
                 }
 
+                $event = new Event('Proffer.beforeDeleteFolder', $entity, ['path' => $path]);
+                $this->_table->eventManager()->dispatch($event);
                 $path->deleteFiles($path->getFolder(), true);
             }
 
@@ -149,6 +171,7 @@ class ProfferBehavior extends Behavior
      *
      * @param string $file Path to the uploaded file
      * @param string $destination The destination file name
+     *
      * @return bool
      */
     protected function moveUploadedFile($file, $destination)

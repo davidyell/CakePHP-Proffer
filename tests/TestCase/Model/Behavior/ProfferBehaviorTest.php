@@ -381,7 +381,8 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
     public function testAfterDelete()
     {
         $schema = $this->getMock('Cake\Database\Schema\Table', null, ['examples']);
-        $table = $this->getMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
+        $eventManager = $this->getMock('Cake\Event\EventManager');
+        $table = $this->getMock('Cake\ORM\Table', ['alias'], [['eventManager' => $eventManager, 'schema' => $schema]]);
         $table->method('alias')
             ->willReturn('ProfferTest');
 
@@ -411,6 +412,11 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg',
             $testUploadPath . 'portrait_image_640x480.jpg'
         );
+
+        $event = new Event('Proffer.beforeDeleteFolder', $entity, ['path' => $path]);
+        $eventManager->expects($this->at(0))
+            ->method('dispatch')
+            ->with($this->equalTo($event));
 
         $Proffer->afterDelete(
             $this->getMock('Cake\Event\Event', null, ['afterDelete']),
@@ -462,7 +468,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         $this->assertFileNotExists($testUploadPath . 'portrait_image_640x480.jpg');
     }
 
-    public function testAfterPathEvent()
+    public function testEventsForBeforeSave()
     {
         $entityData = [
             'photo' => [
@@ -488,11 +494,22 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
 
         $path = $this->_getProfferPathMock($table, $entity, 'photo');
 
-        $event = new Event('Proffer.afterPath', $entity, ['path' => $path]);
+        $eventAfterPath = new Event('Proffer.afterPath', $entity, ['path' => $path]);
 
         $eventManager->expects($this->at(0))
             ->method('dispatch')
-            ->with($this->equalTo($event));
+            ->with($this->equalTo($eventAfterPath));
+
+        $images = [
+            $path->getFolder() . 'image_640x480.jpg',
+            $path->getFolder() . 'square_image_640x480.jpg',
+            $path->getFolder() . 'portrait_image_640x480.jpg',
+        ];
+        $eventAfterCreateImage = new Event('Proffer.afterCreateImage', $entity, ['path' => $path, 'images' => $images]);
+
+        $eventManager->expects($this->at(1))
+            ->method('dispatch')
+            ->with($this->equalTo($eventAfterCreateImage));
 
         $Proffer = $this->getMockBuilder('Proffer\Model\Behavior\ProfferBehavior')
             ->setConstructorArgs([$table, $this->config])
