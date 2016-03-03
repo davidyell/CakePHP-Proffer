@@ -82,6 +82,7 @@ class ProfferBehavior extends Behavior
         foreach ($this->config() as $field => $settings) {
             if ($entity->has($field) && is_array($entity->get($field)) &&
                 $entity->get($field)['error'] === UPLOAD_ERR_OK) {
+
                 // Allow path to be injected or set in config
                 if (!empty($settings['pathClass'])) {
                     $path = new $settings['pathClass']($this->_table, $entity, $field, $settings);
@@ -137,9 +138,9 @@ class ProfferBehavior extends Behavior
      * @param \Cake\Event\Event $event The passed event
      * @param \Cake\Datasource\EntityInterface $entity The entity
      * @param ArrayObject $options Array of options
-     * @param \Proffer\Lib\ProfferPathInterface $path Inject and instance of ProfferPath
+     * @param \Proffer\Lib\ProfferPathInterface $path Inject an instance of ProfferPath
      *
-     * @return bool
+     * @return true
      */
     public function afterDelete(Event $event, EntityInterface $entity, ArrayObject $options, ProfferPathInterface $path = null)
     {
@@ -147,9 +148,12 @@ class ProfferBehavior extends Behavior
             $dir = $entity->get($settings['dir']);
 
             if (!empty($entity) && !empty($dir)) {
-                if (!$path) {
+                if (!empty($settings['pathClass'])) {
+                    $path = new $settings['pathClass']($this->_table, $entity, $field, $settings);
+                } elseif (!isset($path)) {
                     $path = new ProfferPath($this->_table, $entity, $field, $settings);
                 }
+
                 $event = new Event('Proffer.beforeDeleteFolder', $entity, ['path' => $path]);
                 $this->_table->eventManager()->dispatch($event);
                 $path->deleteFiles($path->getFolder(), true);
