@@ -18,7 +18,7 @@
 	},
 	"require": {
 		"php": ">=5.4.16",
-		"imagine/imagine": "0.6.2",
+		"imagine/imagine": "^0.6",
 		"cakephp/orm": "3.*"
 	},
   	"require-dev": {
