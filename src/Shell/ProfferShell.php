@@ -169,12 +169,17 @@ class ProfferShell extends Shell
         // Loop through each upload field configured for this table (field)
         foreach ($uploadFieldFolders as $fieldFolder) {
             // Loop through each instance of an upload for this field (seed)
+            $pathFieldName = pathinfo($fieldFolder, PATHINFO_BASENAME);
             $uploadFolders = glob($fieldFolder . DS . '*');
             foreach ($uploadFolders as $seedFolder) {
                 // Does the seed exist in the db?
                 $seed = pathinfo($seedFolder, PATHINFO_BASENAME);
 
                 foreach ($config as $field => $settings) {
+                    if ($pathFieldName != $field) {
+                        continue;
+                    }
+
                     $targets = [];
 
                     $record = $this->{$this->Table->alias()}->find()
