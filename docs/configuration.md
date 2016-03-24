@@ -18,7 +18,7 @@ $this->addBehavior('Proffer.Proffer', [
 			'square' => [	// Define the prefix of your thumbnail
 				'w' => 200,	// Width
 				'h' => 200,	// Height
-				'crop' => true	// Crop will crop the image as well as resize it
+				'crop' => true,	// Crop will crop the image as well as resize it
 				'jpeg_quality'	=> 100,
 				'png_compression_level' => 9
 			],
