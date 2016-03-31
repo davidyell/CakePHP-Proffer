@@ -26,7 +26,7 @@ $ bin/cake proffer generate -p \\App\\Lib\\Proffer\\UserImagePath UserImages
 ```
 
 ##Cleanup task
-The cleanup task will look at a models uploads folder and match the files there with it's matching entry in the
+The cleanup task will look at a model's uploads folder and match the files there with its matching entry in the
 database. If a file doesn't have a matching record in the database it **will be deleted**.
 
 :warning: This shell only works with the default behaviour settings.
