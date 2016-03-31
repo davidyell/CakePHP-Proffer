@@ -112,33 +112,52 @@ class ProfferShell extends Shell
                     );
                 }
 
-                if (!empty($this->param('path-class'))) {
-                    $class = (string)$this->param('path-class');
-                    $path = new $class($this->Table, $item, $field, $settings);
-                } else {
-                    $path = new ProfferPath($this->Table, $item, $field, $settings);
-                }
+				try {
 
-                if (!empty($this->param('image-class'))) {
-                    $class = (string)$this->param('image-class');
-                    $transform = new $class($this->Table, $path);
-                } else {
-                    $transform = new ImageTransform($this->Table, $path);
-                }
+					$this->generateSingleRecordThumbnails($item, $field, $settings);
 
-                $transform->processThumbnails($settings);
-
-                if ($this->param('verbose')) {
-                    $this->out(__('Thumbnails regenerated for ' . $path->fullPath()));
-                } else {
-                    $this->out(__('Thumbnails regenerated for ' . $this->Table->alias() . ' ' . $item->get($field)));
-                }
+				} catch(\Exception $e) {
+					if ($this->param('verbose')) {
+						$this->err($e->getMessage() . ' ' , __('[{0} line {1}]', $e->getFile(), $e->getLine()));
+					}
+				}
             }
         }
 
         $this->out($this->nl(0));
         $this->out(__('<info>Completed</info>'));
     }
+
+	/**
+	 * Regenerate the thumbnails for single record from table
+	 *
+	 * @param $item
+	 * @param $field
+	 * @param $settings
+	 */
+	protected function generateSingleRecordThumbnails($item, $field, $settings) {
+		if (!empty($this->param('path-class'))) {
+			$class = (string)$this->param('path-class');
+			$path  = new $class($this->Table, $item, $field, $settings);
+		} else {
+			$path = new ProfferPath($this->Table, $item, $field, $settings);
+		}
+
+		if (!empty($this->param('image-class'))) {
+			$class     = (string)$this->param('image-class');
+			$transform = new $class($this->Table, $path);
+		} else {
+			$transform = new ImageTransform($this->Table, $path);
+		}
+
+		$transform->processThumbnails($settings);
+
+		if ($this->param('verbose')) {
+			$this->out(__('Thumbnails regenerated for ' . $path->fullPath()));
+		} else {
+			$this->out(__('Thumbnails regenerated for ' . $this->Table->alias() . ' ' . $item->get($field)));
+		}
+	}
 
     /**
      * Clean up files associated with a table which don't have an entry in the db
