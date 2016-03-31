@@ -118,7 +118,7 @@ class ProfferShell extends Shell
 
 				} catch(\Exception $e) {
 					if ($this->param('verbose')) {
-						$this->err($e->getMessage() . ' ' , __('[{0} line {1}]', $e->getFile(), $e->getLine()));
+						$this->err($e->getMessage() . ' ' . __('[{0} line {1}]', $e->getFile(), $e->getLine()));
 					}
 				}
             }
