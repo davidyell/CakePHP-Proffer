@@ -146,9 +146,7 @@ class ImageTransform implements ImageTransformInterface
      */
     protected function thumbnailScale(ImageInterface $image, $width, $height)
     {
-        $transformation = new Transformation();
-        $transformation->thumbnail(new Box($width, $height));
-        return $transformation->apply($image);
+        return $image->resize(new Box($width, $height));
     }
 
     /**
