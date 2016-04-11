@@ -13,7 +13,6 @@ use Cake\Database\Type;
 use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
 use Cake\ORM\Behavior;
-use Cake\ORM\Entity;
 use Exception;
 use Proffer\Lib\ImageTransform;
 use Proffer\Lib\ProfferPath;
