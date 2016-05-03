@@ -128,6 +128,7 @@ can use the built-in shell to regenerate the thumbnails for a table.
 
 ```bash
 $ bin/cake proffer.proffer generate <table>
+$ bin/cake proffer.proffer generate <PluginName>.<table>
 ```
 
 ###Cleanup task
@@ -136,6 +137,7 @@ database. If a file doesn't have a matching record in the database it will be de
 
 ```bash
 $ bin/cake proffer.proffer cleanup <table>
+$ bin/cake proffer.proffer cleanup <PluginName>.<table>
 ```
 
 ##Contribution
