@@ -15,6 +15,7 @@ can use the built-in shell to regenerate the thumbnails for a table.
 
 ```bash
 $ bin/cake proffer generate <table>
+$ bin/cake proffer.proffer generate <PluginName>.<table>
 ```
 
 If you have used a custom ImageTransform or Path class in your uploads, these can be passed as params.
