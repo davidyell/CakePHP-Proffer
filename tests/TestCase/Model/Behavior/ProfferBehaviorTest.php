@@ -10,6 +10,7 @@ namespace Proffer\Tests\Model\Behavior;
 use ArrayObject;
 use Cake\Core\Plugin;
 use Cake\Event\Event;
+use Cake\Event\EventManager;
 use Cake\ORM\Entity;
 use Cake\ORM\Table;
 use PHPUnit_Framework_TestCase;
@@ -135,7 +136,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             [
                 ['photo' => ['error' => UPLOAD_ERR_NO_FILE]],
                 true,
-                []
+                ['photo' => ['error' => UPLOAD_ERR_NO_FILE]]
             ],
             [
                 ['photo' => ['error' => UPLOAD_ERR_NO_FILE]],
@@ -160,15 +161,20 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
      */
     public function testBeforeMarshal(array $data, $allowEmpty, array $expected)
     {
-        $schema = $this->getMock('Cake\Database\Schema\Table', null, ['examples']);
-        $table = $this->getMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
+        $schema = $this->createMock('Cake\Database\Schema\Table', null, ['examples']);
+        $table = $this->createMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
         $table->method('alias')
             ->willReturn('ProfferTest');
+        $table->method('schema')
+            ->willReturn($schema);
 
         $Proffer = new ProfferBehavior($table, $this->config);
 
-        $validator = $this->getMock('Cake\Validation\Validator', null);
+        $validator = $this->createMock('Cake\Validation\Validator', null);
         $table->validator('test', $validator);
+
+        $table->method('validator')
+            ->willReturn($validator);
 
         if ($allowEmpty) {
             $table->validator()->allowEmpty('photo');
@@ -177,7 +183,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         $arrayObject = new ArrayObject($data);
 
         $Proffer->beforeMarshal(
-            $this->getMock('Cake\Event\Event', null, ['beforeValidate']),
+            $this->createMock('Cake\Event\Event', null, ['beforeValidate']),
             $arrayObject,
             new ArrayObject()
         );
@@ -249,10 +255,15 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
      */
     public function testBeforeSaveWithValidFile(array $entityData, array $expected)
     {
-        $schema = $this->getMock('Cake\Database\Schema\Table', null, ['examples']);
-        $table = $this->getMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
+        $schema = $this->createMock('Cake\Database\Schema\Table', null, ['examples']);
+        $table = $this->createMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
+        $eventManager = $this->createMock('Cake\Event\EventManager');
         $table->method('alias')
             ->willReturn('ProfferTest');
+        $table->method('schema')
+            ->willReturn($schema);
+        $table->method('eventManager')
+            ->willReturn($eventManager);
 
         $entity = new Entity($entityData);
         $path = $this->_getProfferPathMock($table, $entity, 'photo');
@@ -272,7 +283,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             });
 
         $Proffer->beforeSave(
-            $this->getMock('Cake\Event\Event', null, ['beforeSave']),
+            $this->createMock('Cake\Event\Event', null, ['beforeSave']),
             $entity,
             new ArrayObject(),
             $path
@@ -296,14 +307,19 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Exception
+     * @expectedException \Exception
      */
     public function testBeforeSaveWithoutUploadingAFile()
     {
-        $schema = $this->getMock('Cake\Database\Schema\Table', null, ['examples']);
-        $table = $this->getMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
+        $schema = $this->createMock('Cake\Database\Schema\Table', null, ['examples']);
+        $table = $this->createMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
+        $eventManager = $this->createMock('Cake\Event\EventManager');
         $table->method('alias')
             ->willReturn('ProfferTest');
+        $table->method('schema')
+            ->willReturn($schema);
+        $table->method('eventManager')
+            ->willReturn($eventManager);
 
         $path = $this->_getProfferPathMock(
             $table,
@@ -330,7 +346,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         ]);
 
         $Proffer->beforeSave(
-            $this->getMock('Cake\Event\Event', null, ['beforeSave']),
+            $this->createMock('Cake\Event\Event', null, ['beforeSave']),
             $entity,
             new ArrayObject(),
             $path
@@ -338,14 +354,19 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException Exception
+     * @expectedException \Exception
      */
     public function testFailedToMoveFile()
     {
-        $schema = $this->getMock('Cake\Database\Schema\Table', null, ['examples']);
-        $table = $this->getMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
+        $schema = $this->createMock('Cake\Database\Schema\Table', null, ['examples']);
+        $table = $this->createMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
+        $eventManager = $this->createMock('Cake\Event\EventManager');
         $table->method('alias')
             ->willReturn('ProfferTest');
+        $table->method('schema')
+            ->willReturn($schema);
+        $table->method('eventManager')
+            ->willReturn($eventManager);
 
         $Proffer = $this->getMockBuilder('Proffer\Model\Behavior\ProfferBehavior')
             ->setConstructorArgs([$table, $this->config])
@@ -368,7 +389,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         $path = $this->_getProfferPathMock($table, $entity, 'photo');
 
         $Proffer->beforeSave(
-            $this->getMock('Cake\Event\Event', null, ['beforeSave']),
+            $this->createMock('Cake\Event\Event', null, ['beforeSave']),
             $entity,
             new ArrayObject(),
             $path
@@ -380,11 +401,15 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
      */
     public function testAfterDelete()
     {
-        $schema = $this->getMock('Cake\Database\Schema\Table', null, ['examples']);
-        $eventManager = $this->getMock('Cake\Event\EventManager');
-        $table = $this->getMock('Cake\ORM\Table', ['alias'], [['eventManager' => $eventManager, 'schema' => $schema]]);
+        $schema = $this->createMock('Cake\Database\Schema\Table', null, ['examples']);
+        $eventManager = $this->createMock('Cake\Event\EventManager');
+        $table = $this->createMock('Cake\ORM\Table', ['alias'], [['eventManager' => $eventManager, 'schema' => $schema]]);
         $table->method('alias')
             ->willReturn('ProfferTest');
+        $table->method('schema')
+            ->willReturn($schema);
+        $table->method('eventManager')
+            ->willReturn($eventManager);
 
         $Proffer = new ProfferBehavior($table, $this->config);
 
@@ -419,7 +444,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             ->with($this->equalTo($event));
 
         $Proffer->afterDelete(
-            $this->getMock('Cake\Event\Event', null, ['afterDelete']),
+            $this->createMock('Cake\Event\Event', null, ['afterDelete']),
             $entity,
             new ArrayObject(),
             $path
@@ -432,10 +457,15 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
 
     public function testAfterDeleteWithMissingFiles()
     {
-        $schema = $this->getMock('Cake\Database\Schema\Table', null, ['examples']);
-        $table = $this->getMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
+        $schema = $this->createMock('Cake\Database\Schema\Table', null, ['examples']);
+        $table = $this->createMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
+        $eventManager = $this->createMock('Cake\Event\EventManager');
         $table->method('alias')
             ->willReturn('ProfferTest');
+        $table->method('schema')
+            ->willReturn($schema);
+        $table->method('eventManager')
+            ->willReturn($eventManager);
 
         $Proffer = new ProfferBehavior($table, $this->config);
 
@@ -457,7 +487,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         );
 
         $Proffer->afterDelete(
-            $this->getMock('Cake\Event\Event', null, ['afterDelete']),
+            $this->createMock('Cake\Event\Event', null, ['afterDelete']),
             $entity,
             new ArrayObject(),
             $path
@@ -481,9 +511,9 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         ];
         $entity = new Entity($entityData);
 
-        $eventManager = $this->getMock('Cake\Event\EventManager');
+        $eventManager = $this->createMock('Cake\Event\EventManager');
 
-        $schema = $this->getMock('Cake\Database\Schema\Table', null, ['examples']);
+        $schema = $this->createMock('Cake\Database\Schema\Table', null, ['examples']);
         $table = $this->getMockBuilder('Cake\ORM\Table')
             ->setConstructorArgs([['eventManager' => $eventManager, 'schema' => $schema]])
             ->setMethods(['alias'])
@@ -525,7 +555,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             ));
 
         $Proffer->beforeSave(
-            $this->getMock('Cake\Event\Event', null, ['beforeSave']),
+            $this->createMock('Cake\Event\Event', null, ['beforeSave']),
             $entity,
             new ArrayObject(),
             $path
@@ -534,10 +564,15 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
 
     public function testThumbsNotCreatedWhenNoSizes()
     {
-        $schema = $this->getMock('Cake\Database\Schema\Table', null, ['examples']);
-        $table = $this->getMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
+        $schema = $this->createMock('Cake\Database\Schema\Table', null, ['examples']);
+        $table = $this->createMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
+        $eventManager = $this->createMock('Cake\Event\EventManager');
         $table->method('alias')
             ->willReturn('ProfferTest');
+        $table->method('schema')
+            ->willReturn($schema);
+        $table->method('eventManager')
+            ->willReturn($eventManager);
 
         $config = $this->config;
         unset($config['photo']['thumbnailSizes']);
@@ -569,7 +604,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             });
 
         $Proffer->beforeSave(
-            $this->getMock('Cake\Event\Event', null, ['beforeSave']),
+            $this->createMock('Cake\Event\Event', null, ['beforeSave']),
             $entity,
             new ArrayObject(),
             $path
@@ -638,10 +673,15 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
      */
     public function testChangingThePathUsingEvents(array $pathData, $expected)
     {
-        $schema = $this->getMock('Cake\Database\Schema\Table', null, ['examples']);
-        $table = $this->getMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
+        $schema = $this->createMock('Cake\Database\Schema\Table', null, ['examples']);
+        $table = $this->createMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
+        $eventManager = new EventManager();
         $table->method('alias')
             ->willReturn('ProfferTest');
+        $table->method('schema')
+            ->willReturn($schema);
+        $table->method('eventManager')
+            ->willReturn($eventManager);
 
         $listener = $this->getMockBuilder('Cake\Event\EventListenerInterface')
             ->setMethods(['implementedEvents', 'filename'])
@@ -694,7 +734,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             });
 
         $Proffer->beforeSave(
-            $this->getMock('Cake\Event\Event', null, ['beforeSave']),
+            $this->createMock('Cake\Event\Event', null, ['beforeSave']),
             $entity,
             new ArrayObject(),
             $path
@@ -709,10 +749,12 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
 
     public function testDeletingARecordWithNoThumbnailConfig()
     {
-        $schema = $this->getMock('Cake\Database\Schema\Table', null, ['examples']);
-        $table = $this->getMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
+        $schema = $this->createMock('Cake\Database\Schema\Table', null, ['examples']);
+        $table = $this->createMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
         $table->method('alias')
             ->willReturn('ProfferTest');
+        $table->method('schema')
+            ->willReturn($schema);
 
         $config = $this->config;
         unset($config['photo']['thumbnailSizes']);
@@ -733,7 +775,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             ->method('afterDelete');
 
         $Proffer->afterDelete(
-            $this->getMock('Cake\Event\Event', [], ['afterDelete']),
+            $this->createMock('Cake\Event\Event', [], ['afterDelete']),
             $entity,
             new ArrayObject(),
             $path
@@ -742,10 +784,15 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
 
     public function testReplacingComponents()
     {
-        $schema = $this->getMock('Cake\Database\Schema\Table', null, ['examples']);
-        $table = $this->getMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
+        $schema = $this->createMock('Cake\Database\Schema\Table', null, ['examples']);
+        $table = $this->createMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
+        $eventManager = $this->createMock('Cake\Event\EventManager');
         $table->method('alias')
             ->willReturn('ProfferTest');
+        $table->method('schema')
+            ->willReturn($schema);
+        $table->method('eventManager')
+            ->willReturn($eventManager);
 
         $config = [
             'photo' => [
@@ -787,7 +834,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             });
 
         $Proffer->beforeSave(
-            $this->getMock('Cake\Event\Event', null, ['beforeSave']),
+            $this->createMock('Cake\Event\Event', null, ['beforeSave']),
             $entity,
             new ArrayObject()
         );
@@ -811,10 +858,15 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
 
     public function testMultipleFieldUpload()
     {
-        $schema = $this->getMock('Cake\Database\Schema\Table', null, ['examples']);
-        $table = $this->getMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
+        $schema = $this->createMock('Cake\Database\Schema\Table', null, ['examples']);
+        $table = $this->createMock('Cake\ORM\Table', ['alias'], [['schema' => $schema]]);
+        $eventManager = $this->createMock('Cake\Event\EventManager');
         $table->method('alias')
             ->willReturn('ProfferTest');
+        $table->method('schema')
+            ->willReturn($schema);
+        $table->method('eventManager')
+            ->willReturn($eventManager);
 
         $entityData = [
             'photo' => [
@@ -866,7 +918,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             });
 
         $Proffer->beforeSave(
-            $this->getMock('Cake\Event\Event', null, ['beforeSave']),
+            $this->createMock('Cake\Event\Event', null, ['beforeSave']),
             $entity,
             new ArrayObject()
         );
