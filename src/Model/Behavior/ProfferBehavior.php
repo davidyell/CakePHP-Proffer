@@ -81,7 +81,6 @@ class ProfferBehavior extends Behavior
         foreach ($this->config() as $field => $settings) {
             if ($entity->has($field) && is_array($entity->get($field)) &&
                 $entity->get($field)['error'] === UPLOAD_ERR_OK) {
-
                 // Allow path to be injected or set in config
                 if (!empty($settings['pathClass'])) {
                     $path = new $settings['pathClass']($this->_table, $entity, $field, $settings);

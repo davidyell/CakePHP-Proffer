@@ -150,5 +150,4 @@ class ImageTransform implements ImageTransformInterface
     {
         return $image->resize($width, $height);
     }
-
 }

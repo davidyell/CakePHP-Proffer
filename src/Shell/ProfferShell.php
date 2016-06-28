@@ -216,7 +216,6 @@ class ProfferShell extends Shell
                                 $this->out(__("Removed `$seed` folder and contents"));
                             }
                         }
-
                     } else {
                         $files = glob($seedFolder . DS . '*');
 
@@ -303,7 +302,6 @@ class ProfferShell extends Shell
                 $this->out($out);
                 $this->_stop();
             }
-
         }
 
         if ($this->param('remove-behaviors')) {
