@@ -15,6 +15,7 @@ can use the built-in shell to regenerate the thumbnails for a table.
 
 ```bash
 $ bin/cake proffer generate <table>
+$ bin/cake proffer.proffer generate <PluginName>.<table>
 ```
 
 If you have used a custom ImageTransform or Path class in your uploads, these can be passed as params.
@@ -26,7 +27,7 @@ $ bin/cake proffer generate -p \\App\\Lib\\Proffer\\UserImagePath UserImages
 ```
 
 ##Cleanup task
-The cleanup task will look at a models uploads folder and match the files there with it's matching entry in the
+The cleanup task will look at a model's uploads folder and match the files there with its matching entry in the
 database. If a file doesn't have a matching record in the database it **will be deleted**.
 
 :warning: This shell only works with the default behaviour settings.

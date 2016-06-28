@@ -18,16 +18,14 @@ $this->addBehavior('Proffer.Proffer', [
 			'square' => [	// Define the prefix of your thumbnail
 				'w' => 200,	// Width
 				'h' => 200,	// Height
-				'crop' => true	// Crop will crop the image as well as resize it
-				'jpeg_quality'	=> 100,
-				'png_compression_level' => 9
+				'jpeg_quality'	=> 100
 			],
 			'portrait' => [		// Define a second thumbnail
 				'w' => 100,
 				'h' => 300
 			],
 		],
-		'thumbnailMethod' => 'imagick'	// Options are Imagick, Gd or Gmagick
+		'thumbnailMethod' => 'gd'	// Options are Imagick or Gd
 	]
 ]);
 ```
@@ -39,6 +37,33 @@ directory in.
 * By default generated thumbnail images will be set to the highest image quality in the `ImageTransform` class.
 * By default files will be uploaded to `/webroot/files/<table alias>/<uuid>/<filename>`.
 
+### Thumbnail methods
+Additional thumbnail generation types are available using the `crop` and `fit` options, in the thumbnail configuration.
+
+```php
+'square' => [
+    'w' => 200,
+    'h' => 200,
+    'fit' => true
+],
+'portrait' => [
+    'w' => 150,
+    'h' => 300,
+    'crop' => true
+]
+```
+
+#### Fit
+> Combine cropping and resizing to format image in a smart way. The method will find the best fitting aspect ratio of 
+> your given width and height on the current image automatically, cut it out and resize it to the given dimension.
+See [Intervention Fit method](http://image.intervention.io/api/fit)
+
+#### Crop
+> Cut out a rectangular part of the current image with given width and height.
+By default, will be the centre of the image.
+See [Intervention Crop method](http://image.intervention.io/api/crop)
+
+## Template
 In order to upload a file to your application you will need to add the form fields to your view.
 ```php
 echo $this->Form->create($entity, ['type' => 'file']); // Dont miss this out or no files will upload
@@ -67,7 +92,7 @@ Allows you to customise the root folder in which all the file upload folders and
 
 ###thumbnailMethod
 **optional:** defaults to, `gd`
-Which Imagine engine to use to convert the images. Defaults to PHP's GD library. Can also be `imagick` and `gmagick`.
+Which Intervention engine to use to convert the images. Defaults to PHP's GD library. Can also be `imagick`.
 
 ###pathClass
 **optional**

@@ -4,16 +4,20 @@ An upload plugin for CakePHP 3.
 ![Proffer definition](http://i.imgur.com/OaAqQ6x.png)
 
 ##What is it?
-So I needed a way to upload images in [CakePHP 3](http://github.com/cakephp/cakephp), and as I couldn't find anything that I liked I decided to write my own 
-in a similar vein to how [@josegonzalez](https://github.com/josegonzalez) had written his 
-[CakePHP-Upload](https://github.com/josegonzalez/cakephp-upload) plugin for CakePHP 2.
+So I needed a way to upload images in [CakePHP 3](http://github.com/cakephp/cakephp), and as I couldn't find anything 
+that I liked I decided to write my own in a similar vein to how [@josegonzalez](https://github.com/josegonzalez) had 
+written his [CakePHP-Upload](https://github.com/josegonzalez/cakephp-upload) plugin for CakePHP 2.
 
 ##Requirements
-* PHP 5.4.16+
+* PHP 5.6+
 * Database
 * CakePHP 3
 * [Composer](http://getcomposer.org/)
 * [File Info is enabled](http://php.net/manual/en/book.fileinfo.php) for mimetype validation
+
+For more requirements, please check the `composer.json` file in the repository.
+
+This plugin implements the [Intervention](http://image.intervention.io/) image library.
 
 ##Status
 [![Build Status](https://travis-ci.org/davidyell/CakePHP3-Proffer.svg?branch=master)](https://travis-ci.org/davidyell/CakePHP3-Proffer)

@@ -1,7 +1,7 @@
 <?php
 /**
  * ImageTransform class
- * This class deals with creating thumbnails for image uploads using the Imagine library
+ * This class deals with creating thumbnails for image uploads using the a library
  *
  * @author David Yell <neon1024@gmail.com>
  */
@@ -9,76 +9,37 @@
 namespace Proffer\Lib;
 
 use Cake\ORM\Table;
-use Imagine\Filter\Transformation;
-use Imagine\Gd\Imagine as Gd;
-use Imagine\Gmagick\Imagine as Gmagick;
-use Imagine\Image\Box;
-use Imagine\Image\ImageInterface;
-use Imagine\Image\Point;
-use Imagine\Imagick\Imagine as Imagick;
+use Intervention\Image\Image;
+use Intervention\Image\ImageManager;
 
 class ImageTransform implements ImageTransformInterface
 {
 
     /**
-     * Store our instance of Imagine
-     *
-     * @var ImagineInterface $Imagine
-     */
-    private $Imagine;
-
-    /**
-     * @var Table $table Instance of the table being used
+     * @var \Cake\ORM\Table $table Instance of the table being used
      */
     protected $Table;
 
     /**
-     * @var ProfferPathInterface $Path Instance of the path class
+     * @var \Proffer\Lib\ProfferPathInterface $Path Instance of the path class
      */
     protected $Path;
 
     /**
+     * @var \Intervention\Image\ImageManager Intervention image manager instance
+     */
+    protected $ImageManager;
+
+    /**
      * Construct the transformation class
      *
-     * @param Table $table The table instance
-     * @param ProfferPathInterface $path Instance of the path class
+     * @param \Cake\ORM\Table $table The table instance
+     * @param \Proffer\Lib\ProfferPathInterface $path Instance of the path class
      */
     public function __construct(Table $table, ProfferPathInterface $path)
     {
         $this->Table = $table;
         $this->Path = $path;
-    }
-
-    /**
-     * Get the specified Imagine engine class
-     *
-     * @return ImagineInterface
-     */
-    protected function getImagine()
-    {
-        return $this->Imagine;
-    }
-
-    /**
-     * Set the Imagine engine class
-     *
-     * @param string $engine The name of the image engine to use
-     * @return void
-     */
-    protected function setImagine($engine = 'gd')
-    {
-        switch ($engine) {
-            default:
-            case 'gd':
-                $this->Imagine = new Gd();
-                break;
-            case 'gmagick':
-                $this->Imagine = new Gmagick();
-                break;
-            case 'imagick':
-                $this->Imagine = new Imagick();
-                break;
-        }
     }
 
     /**
@@ -95,14 +56,16 @@ class ImageTransform implements ImageTransformInterface
         }
 
         foreach ($config['thumbnailSizes'] as $prefix => $thumbnailConfig) {
-            $method = null;
+            $method = 'gd';
             if (!empty($config['thumbnailMethod'])) {
                 $method = $config['thumbnailMethod'];
             }
 
-            $thumbnailPath = $this->makeThumbnail($prefix, $thumbnailConfig, $method);
-            $thumbnailPaths[] = $thumbnailPath;
+            $this->ImageManager = new ImageManager(['driver' => $method]);
+
+            $thumbnailPaths[] = $this->makeThumbnail($prefix, $thumbnailConfig);
         }
+
         return $thumbnailPaths;
     }
 
@@ -111,69 +74,80 @@ class ImageTransform implements ImageTransformInterface
      *
      * @param string $prefix The thumbnail prefix
      * @param array $config Array of thumbnail config
-     * @param string $thumbnailMethod Which engine to use to make thumbnails
      * @return string
      */
-    public function makeThumbnail($prefix, array $config, $thumbnailMethod = 'gd')
+    public function makeThumbnail($prefix, array $config)
     {
         $defaultConfig = [
-            'jpeg_quality' => 100,
-            'png_compression_level' => 9
+            'jpeg_quality' => 100
         ];
         $config = array_merge($defaultConfig, $config);
-        $this->setImagine($thumbnailMethod);
 
-        $image = $this->getImagine()->open($this->Path->fullPath());
+        $width = $config['w'];
+        $height = $config['h'];
 
-        if (isset($config['crop']) && $config['crop'] === true) {
-            $image = $this->thumbnailCropScale($image, $config['w'], $config['h']);
+        $image = $this->ImageManager->make($this->Path->fullPath());
+
+        if (!empty($config['crop'])) {
+            $image = $this->thumbnailCrop($image, $width, $height);
+        } elseif (!empty($config['fit'])) {
+            $image = $this->thumbnailFit($image, $width, $height);
         } else {
-            $image = $this->thumbnailScale($image, $config['w'], $config['h']);
+            $image = $this->thumbnailResize($image, $width, $height);
         }
+
         unset($config['crop'], $config['w'], $config['h']);
 
-        $image->save($this->Path->fullPath($prefix), $config);
+        $image->save($this->Path->fullPath($prefix), $config['jpeg_quality']);
+
         return $this->Path->fullPath($prefix);
     }
 
     /**
-     * Scale an image to best fit a thumbnail size
+     * Crop an image to a certain size from the centre of the image
      *
-     * @param ImageInterface $image The ImageInterface instance from Imagine
-     * @param int $width The width in pixels
-     * @param int $height The height in pixels
-     * @return ImageInterface
+     * @see http://image.intervention.io/api/crop
+     *
+     * @param \Intervention\Image\Image $image Image instance
+     * @param int $width Desired width in pixels
+     * @param int $height Desired height in pixels
+     *
+     * @return \Intervention\Image\Image
      */
-    protected function thumbnailScale(ImageInterface $image, $width, $height)
+    protected function thumbnailCrop(Image $image, $width, $height)
     {
-        $transformation = new Transformation();
-        $transformation->thumbnail(new Box($width, $height));
-        return $transformation->apply($image);
+        return $image->crop($width, $height);
     }
 
     /**
-     * Create a thumbnail by scaling an image and cropping it to fit the exact dimensions
+     * Resize and crop to find the best fitting aspect ratio
      *
-     * @param ImageInterface $image The ImageInterface instance from Imagine
-     * @param int $targetWidth The width in pixels
-     * @param int $targetHeight The height in pixels
-     * @return ImageInterface
+     * @see http://image.intervention.io/api/fit
+     *
+     * @param \Intervention\Image\Image $image Image instance
+     * @param int $width Desired width in pixels
+     * @param int $height Desired height in pixels
+     *
+     * @return \Intervention\Image\Image
      */
-    protected function thumbnailCropScale(ImageInterface $image, $targetWidth, $targetHeight)
+    protected function thumbnailFit(Image $image, $width, $height)
     {
-        $target = new Box($targetWidth, $targetHeight);
-        $sourceSize = $image->getSize();
-        if ($sourceSize->getWidth() > $sourceSize->getHeight()) {
-            $width = $sourceSize->getWidth() * ($target->getHeight() / $sourceSize->getHeight());
-            $height = $targetHeight;
-            $cropPoint = new Point((int)(max($width - $target->getWidth(), 0) / 2), 0);
-        } else {
-            $height = $sourceSize->getHeight() * ($target->getWidth() / $sourceSize->getWidth());
-            $width = $targetWidth;
-            $cropPoint = new Point(0, (int)(max($height - $target->getHeight(), 0) / 2));
-        }
-        $box = new Box($width, $height);
-        return $image->thumbnail($box, ImageInterface::THUMBNAIL_OUTBOUND)
-            ->crop($cropPoint, $target);
+        return $image->fit($width, $height);
+    }
+
+    /**
+     * Resize current image
+     *
+     * @see http://image.intervention.io/api/resize
+     *
+     * @param \Intervention\Image\Image $image Image instance
+     * @param int $width Desired width in pixels
+     * @param int $height Desired height in pixels
+     *
+     * @return \Intervention\Image\Image
+     */
+    protected function thumbnailResize(Image $image, $width, $height)
+    {
+        return $image->resize($width, $height);
     }
 }
