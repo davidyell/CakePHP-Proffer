@@ -22,7 +22,7 @@
 		"cakephp/orm": "3.*"
 	},
   	"require-dev": {
-	  "phpunit/phpunit": "*",
+	  "phpunit/phpunit": "^5.4",
 	  "cakephp/cakephp": "~3.0",
 	  "cakephp/cakephp-codesniffer": "^2.0"
 	},
