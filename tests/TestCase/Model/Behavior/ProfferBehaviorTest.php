@@ -14,7 +14,6 @@ use Cake\Event\EventManager;
 use Cake\ORM\Entity;
 use Cake\ORM\Table;
 use PHPUnit_Framework_TestCase;
-use Proffer\Event\ProfferListener;
 use Proffer\Lib\ProfferPath;
 use Proffer\Model\Behavior\ProfferBehavior;
 
