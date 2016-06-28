@@ -23,7 +23,7 @@ use Proffer\Model\Behavior\ProfferBehavior;
  *
  * @package Proffer\Tests\Model\Behavior
  */
-class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
+class ProfferBehaviorTest extends \PHPUnit_Framework_TestCase
 {
 
     private $config = [
