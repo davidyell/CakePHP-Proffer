@@ -26,8 +26,7 @@ interface ImageTransformInterface
      *
      * @param string $prefix The prefix name for the thumbnail
      * @param array $dimensions The thumbnail dimensions
-     * @param string $thumbnailMethod Which method to use to create the thumbnail
      * @return string
      */
-    public function makeThumbnail($prefix, array $dimensions, $thumbnailMethod = 'gd');
+    public function makeThumbnail($prefix, array $dimensions);
 }
