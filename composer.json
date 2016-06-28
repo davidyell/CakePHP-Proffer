@@ -17,7 +17,7 @@
 	  "source": "https://github.com/davidyell/CakePHP3-Proffer"
 	},
 	"require": {
-		"php": ">=5.4.16",
+		"php": ">=5.6",
 		"imagine/imagine": "^0.6",
 		"cakephp/orm": "3.*"
 	},
