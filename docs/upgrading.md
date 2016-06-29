@@ -4,6 +4,11 @@ will need to make and potential pitfalls.
 
 For more release information [please see the releases](https://github.com/davidyell/CakePHP3-Proffer/releases).
 
+## 0.7.0
+[Release 0.7.0](https://github.com/davidyell/CakePHP3-Proffer/releases/tag/0.7.0)
+
+You should only encounter problems if you have a Transform class which depends upon the Imagine image library, which has been removed in this release.
+
 ## 0.6.0
 [Release 0.6.0](https://github.com/davidyell/CakePHP3-Proffer/releases/tag/0.6.0)
 
