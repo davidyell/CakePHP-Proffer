@@ -37,8 +37,5 @@
 		"Proffer\\Tests\\Fixture\\": "tests/Fixture",
 		"Proffer\\Tests\\Stubs\\": "tests/Stubs"
 	  }
-	},
-	"extra": {
-		"installer-name": "Proffer"	
 	}
 }
