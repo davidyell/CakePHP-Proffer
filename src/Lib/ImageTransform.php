@@ -83,8 +83,8 @@ class ImageTransform implements ImageTransformInterface
         ];
         $config = array_merge($defaultConfig, $config);
 
-        $width = $config['w'];
-        $height = $config['h'];
+        $width  = !empty($config['w']) ? $config['w'] : null;
+        $height = !empty($config['h']) ? $config['h'] : null;
 
         $image = $this->ImageManager->make($this->Path->fullPath());
 
@@ -92,11 +92,13 @@ class ImageTransform implements ImageTransformInterface
             $image = $this->thumbnailCrop($image, $width, $height);
         } elseif (!empty($config['fit'])) {
             $image = $this->thumbnailFit($image, $width, $height);
+        } elseif (!empty($config['custom'])) {
+            $image = $this->thumbnailCustom($image, $config['custom'], $config['params']);
         } else {
             $image = $this->thumbnailResize($image, $width, $height);
         }
 
-        unset($config['crop'], $config['w'], $config['h']);
+        unset($config['crop'], $config['w'], $config['h'], $config['custom'], $config['params']);
 
         $image->save($this->Path->fullPath($prefix), $config['jpeg_quality']);
 
@@ -150,4 +152,21 @@ class ImageTransform implements ImageTransformInterface
     {
         return $image->resize($width, $height);
     }
+    
+    /**
+     * Call any method from the intervention library
+     *
+     * @see http://image.intervention.io/
+     *
+     * @param \Intervention\Image\Image $image Image instance
+     * @param string $custom Method you want to call
+     * @param array $params Array of parameters to pass to the method
+     *
+     * @return \Intervention\Image\Image
+     */
+    protected function thumbnailCustom(Image $image, $custom, $params)
+    {
+        return call_user_func_array([$image, $custom], $params);
+    }
+    
 }
