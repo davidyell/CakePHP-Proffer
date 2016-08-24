@@ -83,8 +83,12 @@ class ImageTransform implements ImageTransformInterface
         ];
         $config = array_merge($defaultConfig, $config);
 
-        $width = $config['w'];
-        $height = $config['h'];
+        if (!empty($config['w'])) {
+            $width = $config['w'];
+        }
+        if (!empty($config['h'])) {
+            $height = $config['h'];
+        }
 
         $image = $this->ImageManager->make($this->Path->fullPath());
 
@@ -138,8 +142,8 @@ class ImageTransform implements ImageTransformInterface
     {
         return $image->fit($width, $height);
     }
-    
-     /**
+
+    /**
      * Widen current image
      *
      * @see http://image.intervention.io/api/widen
@@ -166,7 +170,7 @@ class ImageTransform implements ImageTransformInterface
      */
     protected function thumbnailHeighten(Image $image, $height)
     {
-        return $image->heighten($heighten);
+        return $image->heighten($height);
     }
 
     /**
