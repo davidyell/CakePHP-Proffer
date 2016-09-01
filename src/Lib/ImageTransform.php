@@ -78,19 +78,17 @@ class ImageTransform implements ImageTransformInterface
      */
     public function makeThumbnail($prefix, array $config)
     {
+        $image = $this->ImageManager->make($this->Path->fullPath());
+
         $defaultConfig = [
-            'jpeg_quality' => 100
+            'jpeg_quality' => 100,
+            'w' => $image->width(),
+            'h' => $image->height()
         ];
         $config = array_merge($defaultConfig, $config);
 
-        if (!empty($config['w'])) {
-            $width = $config['w'];
-        }
-        if (!empty($config['h'])) {
-            $height = $config['h'];
-        }
-
-        $image = $this->ImageManager->make($this->Path->fullPath());
+        $width = $config['w'];
+        $height = $config['h'];
 
         if (!empty($config['crop'])) {
             $image = $this->thumbnailCrop($image, $width, $height);
