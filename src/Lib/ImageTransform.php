@@ -78,25 +78,31 @@ class ImageTransform implements ImageTransformInterface
      */
     public function makeThumbnail($prefix, array $config)
     {
+        $image = $this->ImageManager->make($this->Path->fullPath());
+
         $defaultConfig = [
-            'jpeg_quality' => 100
+            'jpeg_quality' => 100,
+            'w' => $image->width(),
+            'h' => $image->height()
         ];
         $config = array_merge($defaultConfig, $config);
 
         $width = $config['w'];
         $height = $config['h'];
 
-        $image = $this->ImageManager->make($this->Path->fullPath());
-
         if (!empty($config['crop'])) {
             $image = $this->thumbnailCrop($image, $width, $height);
         } elseif (!empty($config['fit'])) {
             $image = $this->thumbnailFit($image, $width, $height);
+        } elseif (!empty($config['widen'])) {
+            $image = $this->thumbnailWiden($image, $width);
+        } elseif (!empty($config['heighten'])) {
+            $image = $this->thumbnailHeighten($image, $height);
         } else {
             $image = $this->thumbnailResize($image, $width, $height);
         }
 
-        unset($config['crop'], $config['w'], $config['h']);
+        unset($config['crop'], $config['fit'], $config['widen'], $config['heighten'], $config['w'], $config['h']);
 
         $image->save($this->Path->fullPath($prefix), $config['jpeg_quality']);
 
@@ -133,6 +139,36 @@ class ImageTransform implements ImageTransformInterface
     protected function thumbnailFit(Image $image, $width, $height)
     {
         return $image->fit($width, $height);
+    }
+
+    /**
+     * Widen current image
+     *
+     * @see http://image.intervention.io/api/widen
+     *
+     * @param \Intervention\Image\Image $image Image instance
+     * @param int $width Desired width in pixels
+     *
+     * @return \Intervention\Image\Image
+     */
+    protected function thumbnailWiden(Image $image, $width)
+    {
+        return $image->widen($width);
+    }
+
+    /**
+     * Heighten current image
+     *
+     * @see http://image.intervention.io/api/heighten
+     *
+     * @param \Intervention\Image\Image $image Image instance
+     * @param int $height Desired height in pixels
+     *
+     * @return \Intervention\Image\Image
+     */
+    protected function thumbnailHeighten(Image $image, $height)
+    {
+        return $image->heighten($height);
     }
 
     /**

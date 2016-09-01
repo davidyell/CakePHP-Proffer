@@ -38,7 +38,7 @@ directory in.
 * By default files will be uploaded to `/webroot/files/<table alias>/<uuid>/<filename>`.
 
 ### Thumbnail methods
-Additional thumbnail generation types are available using the `crop` and `fit` options, in the thumbnail configuration.
+Additional thumbnail generation types are available using the `crop`, `fit`, `widen` and `heighten` options, in the thumbnail configuration.
 
 ```php
 'square' => [
@@ -51,6 +51,14 @@ Additional thumbnail generation types are available using the `crop` and `fit` o
     'h' => 300,
     'crop' => true
 ]
+'fixedwidth' => [
+    'w' => 200,
+    'widen' => true
+]
+'fixedheight' => [
+    'h' => 300,
+    'heighten' => true
+]
 ```
 
 #### Fit
@@ -62,6 +70,14 @@ See [Intervention Fit method](http://image.intervention.io/api/fit)
 > Cut out a rectangular part of the current image with given width and height.
 By default, will be the centre of the image.
 See [Intervention Crop method](http://image.intervention.io/api/crop)
+
+#### Widen
+> Resizes the current image to new width, constraining aspect ratio.
+See [Intervention Widen method](http://image.intervention.io/api/widen)
+
+#### Heighten
+> Resizes the current image to new height, constraining aspect ratio.
+See [Intervention Heighten method](http://image.intervention.io/api/heighten)
 
 ## Template
 In order to upload a file to your application you will need to add the form fields to your view.
