@@ -39,5 +39,8 @@ script:
   - sh -c "if [ '$COVERALLS' = '1' ]; then vendor/bin/phpunit --stderr --coverage-clover build/logs/clover.xml; fi"
   - sh -c "if [ '$COVERALLS' = '1' ]; then php vendor/bin/coveralls -c .coveralls.yml -v --root_dir src; fi"
 
+after_script:
+  - sh -c "cat build/log/clover.xml"
+
 notifications:
   email: false
