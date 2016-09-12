@@ -83,7 +83,7 @@ class ImageTransform implements ImageTransformInterface
         ];
         $config = array_merge($defaultConfig, $config);
 
-        $width  = !empty($config['w']) ? $config['w'] : null;
+        $width = !empty($config['w']) ? $config['w'] : null;
         $height = !empty($config['h']) ? $config['h'] : null;
 
         $image = $this->ImageManager->make($this->Path->fullPath());
@@ -168,5 +168,4 @@ class ImageTransform implements ImageTransformInterface
     {
         return call_user_func_array([$image, $custom], $params);
     }
-    
 }
