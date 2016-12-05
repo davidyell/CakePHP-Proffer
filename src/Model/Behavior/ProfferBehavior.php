@@ -13,6 +13,7 @@ use Cake\Database\Type;
 use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
 use Cake\ORM\Behavior;
+use Cake\ORM\Entity;
 use Exception;
 use Proffer\Lib\ImageTransform;
 use Proffer\Lib\ProfferPath;
@@ -79,52 +80,76 @@ class ProfferBehavior extends Behavior
     public function beforeSave(Event $event, EntityInterface $entity, ArrayObject $options, ProfferPathInterface $path = null)
     {
         foreach ($this->config() as $field => $settings) {
-            if ($entity->has($field) && is_array($entity->get($field)) &&
-                $entity->get($field)['error'] === UPLOAD_ERR_OK) {
-                // Allow path to be injected or set in config
-                if (!empty($settings['pathClass'])) {
-                    $path = new $settings['pathClass']($this->_table, $entity, $field, $settings);
-                } elseif (!isset($path)) {
-                    $path = new ProfferPath($this->_table, $entity, $field, $settings);
+        
+            //if ($entity->has($field) && is_array($entity->get($field))){
+            if ($entity->has($field)){
+                  
+                $list = $entity->get($field); // create a list from 
+                
+                if(!is_array($entity->get($field))){ // if a single file upload push the object into an array
+                    $list = [$list];           
                 }
 
-                $event = new Event('Proffer.afterPath', $entity, ['path' => $path]);
-                $this->_table->eventManager()->dispatch($event);
-                if (!empty($event->result)) {
-                    $path = $event->result;
-                }
-
-                $path->createPathFolder();
-
-                if ($this->moveUploadedFile($entity->get($field)['tmp_name'], $path->fullPath())) {
-                    $imagePaths = [$path->fullPath()];
-
-                    $entity->set($field, $path->getFilename());
-                    $entity->set($settings['dir'], $path->getSeed());
-
-                    // Only generate thumbnails for image uploads
-                    if (getimagesize($path->fullPath()) !== false && isset($settings['thumbnailSizes'])) {
-                        // Allow the transformation class to be injected
-                        if (!empty($settings['transformClass'])) {
-                            $imageTransform = new $settings['transformClass']($this->_table, $path);
-                        } else {
-                            $imageTransform = new ImageTransform($this->_table, $path);
+                //foreach($entity->get($field) as $key => $temp){
+                foreach($list as $file){
+   
+                    //$entity->get($field)['error'] === UPLOAD_ERR_OK) {
+                    if ($file['error'] === UPLOAD_ERR_OK) {
+                    
+                        // Allow path to be injected or set in config
+                        if (!empty($settings['pathClass'])) {
+                            $path = new $settings['pathClass']($this->_table, $entity, $field, $settings);
+                        } elseif (!isset($path)) {
+                            $path = new ProfferPath($this->_table, $file, $field, $settings);
                         }
 
-                        $thumbnailPaths = $imageTransform->processThumbnails($settings);
-                        $imagePaths = array_merge($imagePaths, $thumbnailPaths);
+                        $event = new Event('Proffer.afterPath', $entity, ['path' => $path]);
 
-                        $eventData = ['path' => $path, 'images' => $imagePaths];
-                        $event = new Event('Proffer.afterCreateImage', $entity, $eventData);
                         $this->_table->eventManager()->dispatch($event);
-                    }
-                } else {
-                    throw new Exception('Cannot upload file');
-                }
-            }
-            unset($path);
-        }
+                        if (!empty($event->result)) {
+                            $path = $event->result;
+                        }
 
+                        $path->createPathFolder();
+
+                        //if ($this->moveUploadedFile($entity->get($field)['tmp_name'], $path->fullPath())) {
+                        if ($this->moveUploadedFile($file['tmp_name'], $path->fullPath())) {
+      
+                            $imagePaths = [$path->fullPath()];
+
+                            //$entity->set($field, $path->getFilename()); // is this reqquired now?
+                            //$entity->set($settings['dir'], $path->getSeed());
+                            $file[$settings['dir']]=$path->getSeed();
+
+                            // Only generate thumbnails for image uploads
+                            if (getimagesize($path->fullPath()) !== false && isset($settings['thumbnailSizes'])) {
+                                // Allow the transformation class to be injected
+                                if (!empty($settings['transformClass'])) {
+                                    $imageTransform = new $settings['transformClass']($this->_table, $path);
+                                } else {
+                                    $imageTransform = new ImageTransform($this->_table, $path);
+                                }
+        
+                                $thumbnailPaths = $imageTransform->processThumbnails($settings);
+                                $imagePaths = array_merge($imagePaths, $thumbnailPaths);
+        
+                                $eventData = ['path' => $path, 'images' => $imagePaths];
+                                $event = new Event('Proffer.afterCreateImage', $entity, $eventData);
+                                $this->_table->eventManager()->dispatch($event);
+                        }
+                        } else {
+                            throw new Exception('Cannot upload file');
+                        }
+                        
+                    }
+
+                unset($path);
+                
+                }
+                
+            }
+            
+        }
         return true;
     }
 

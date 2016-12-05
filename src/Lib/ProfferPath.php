@@ -37,6 +37,7 @@ class ProfferPath implements ProfferPathInterface
      */
     public function __construct(Table $table, Entity $entity, $field, array $settings)
     {
+        //debug($entity);
         if (isset($settings['root'])) {
             $this->setRoot($settings['root']);
         } else {
@@ -51,7 +52,9 @@ class ProfferPath implements ProfferPathInterface
             $this->setPrefixes($settings['thumbnailSizes']);
         }
 
-        $this->setFilename($entity->get($field));
+        //$this->setFilename($entity->get($field));
+        $this->setFilename($entity);
+        
     }
 
     /**
@@ -157,7 +160,8 @@ class ProfferPath implements ProfferPathInterface
      */
     public function setFilename($filename)
     {
-        if (is_array($filename) && isset($filename['name'])) {
+        //if (is_array($filename) && isset($filename['name'])) {
+        if (isset($filename['name'])) {
             $this->filename = $filename['name'];
         } else {
             $this->filename = $filename;
@@ -196,7 +200,7 @@ class ProfferPath implements ProfferPathInterface
     public function generateSeed($seed = null)
     {
         if ($seed) {
-            return $seed;
+            //return $seed;
         }
 
         return Text::uuid();
