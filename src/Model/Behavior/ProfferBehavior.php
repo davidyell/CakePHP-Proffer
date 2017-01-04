@@ -80,9 +80,8 @@ class ProfferBehavior extends Behavior
     {
         foreach ($this->config() as $field => $settings) {
             if ($entity->has($field) && is_array($entity->get($field)) && $entity->get($field)['error'] === UPLOAD_ERR_OK) {
-                $this->process($field, $settings, $entity);
+                $this->process($field, $settings, $entity, $path);
             }
-            unset($path);
         }
 
         return true;
@@ -94,10 +93,11 @@ class ProfferBehavior extends Behavior
      * @param string $field The upload field name
      * @param array $settings Array of upload settings for the field
      * @param \Cake\Datasource\EntityInterface $entity The current entity to process
+     * @param \Proffer\Lib\ProfferPathInterface $path Inject an instance of ProfferPath
      *
      * @throws \Exception If the file cannot be renamed / moved to the correct path
      */
-    protected function process($field, array $settings, EntityInterface $entity)
+    protected function process($field, array $settings, EntityInterface $entity, ProfferPathInterface $path = null)
     {
         // Allow path to be injected or set in config
         if (!empty($settings['pathClass'])) {
@@ -115,13 +115,13 @@ class ProfferBehavior extends Behavior
         $path->createPathFolder();
 
         if ($this->moveUploadedFile($entity->get($field)['tmp_name'], $path->fullPath())) {
-            $imagePaths = [$path->fullPath()];
-
             $entity->set($field, $path->getFilename());
             $entity->set($settings['dir'], $path->getSeed());
 
             // Only generate thumbnails for image uploads
             if (getimagesize($path->fullPath()) !== false && isset($settings['thumbnailSizes'])) {
+                $imagePaths = [$path->fullPath()];
+
                 // Allow the transformation class to be injected
                 if (!empty($settings['transformClass'])) {
                     $imageTransform = new $settings['transformClass']($this->_table, $path);
@@ -139,6 +139,8 @@ class ProfferBehavior extends Behavior
         } else {
             throw new Exception('Cannot upload file');
         }
+
+        unset($path);
     }
 
     /**
