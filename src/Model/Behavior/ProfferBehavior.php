@@ -70,7 +70,7 @@ class ProfferBehavior extends Behavior
      * @param \Cake\Event\Event $event The event
      * @param \Cake\Datasource\EntityInterface $entity The entity
      * @param ArrayObject $options Array of options
-     * @param \Proffer\Lib\ProfferPathInterface $path Inject an instance of ProfferPath
+     * @param \Proffer\Lib\ProfferPathInterface|null $path Inject an instance of ProfferPath
      *
      * @return true
      *
@@ -93,13 +93,38 @@ class ProfferBehavior extends Behavior
      * @param string $field The upload field name
      * @param array $settings Array of upload settings for the field
      * @param \Cake\Datasource\EntityInterface $entity The current entity to process
-     * @param \Proffer\Lib\ProfferPathInterface $path Inject an instance of ProfferPath
+     * @param \Proffer\Lib\ProfferPathInterface|null $path Inject an instance of ProfferPath
      *
      * @throws \Exception If the file cannot be renamed / moved to the correct path
      */
     protected function process($field, array $settings, EntityInterface $entity, ProfferPathInterface $path = null)
     {
-        // Allow path to be injected or set in config
+        $path = $this->createPath($entity, $field, $settings, $path);
+
+        if ($this->moveUploadedFile($entity->get($field)['tmp_name'], $path->fullPath())) {
+            $entity->set($field, $path->getFilename());
+            $entity->set($settings['dir'], $path->getSeed());
+
+            $this->createThumbnails($entity, $settings, $path);
+        } else {
+            throw new Exception('Cannot upload file');
+        }
+
+        unset($path);
+    }
+
+    /**
+     * Load a path class instance and create the path for the uploads to be moved into
+     *
+     * @param \Cake\Datasource\EntityInterface $entity
+     * @param string $field The upload field name
+     * @param array $settings Array of upload settings for the field
+     * @param \Proffer\Lib\ProfferPathInterface|null $path Inject an instance of ProfferPath
+     *
+     * @return \Proffer\Lib\ProfferPathInterface
+     */
+    protected function createPath(EntityInterface $entity, $field, array $settings, ProfferPathInterface $path = null)
+    {
         if (!empty($settings['pathClass'])) {
             $path = new $settings['pathClass']($this->_table, $entity, $field, $settings);
         } elseif (!isset($path)) {
@@ -114,33 +139,38 @@ class ProfferBehavior extends Behavior
 
         $path->createPathFolder();
 
-        if ($this->moveUploadedFile($entity->get($field)['tmp_name'], $path->fullPath())) {
-            $entity->set($field, $path->getFilename());
-            $entity->set($settings['dir'], $path->getSeed());
+        return $path;
+    }
 
-            // Only generate thumbnails for image uploads
-            if (getimagesize($path->fullPath()) !== false && isset($settings['thumbnailSizes'])) {
-                $imagePaths = [$path->fullPath()];
+    /**
+     * Create a new image transform instance, and create any configured thumbnails; if the upload is an image and there
+     * are thumbnails configured.
+     *
+     * @param \Cake\Datasource\EntityInterface $entity
+     * @param array $settings
+     * @param \Proffer\Lib\ProfferPathInterface $path
+     *
+     * @return void
+     */
+    protected function createThumbnails(EntityInterface $entity, array $settings, ProfferPathInterface $path)
+    {
+        if (getimagesize($path->fullPath()) !== false && isset($settings['thumbnailSizes'])) {
+            $imagePaths = [$path->fullPath()];
 
-                // Allow the transformation class to be injected
-                if (!empty($settings['transformClass'])) {
-                    $imageTransform = new $settings['transformClass']($this->_table, $path);
-                } else {
-                    $imageTransform = new ImageTransform($this->_table, $path);
-                }
-
-                $thumbnailPaths = $imageTransform->processThumbnails($settings);
-                $imagePaths = array_merge($imagePaths, $thumbnailPaths);
-
-                $eventData = ['path' => $path, 'images' => $imagePaths];
-                $event = new Event('Proffer.afterCreateImage', $entity, $eventData);
-                $this->_table->eventManager()->dispatch($event);
+            // Allow the transformation class to be injected
+            if (!empty($settings['transformClass'])) {
+                $imageTransform = new $settings['transformClass']($this->_table, $path);
+            } else {
+                $imageTransform = new ImageTransform($this->_table, $path);
             }
-        } else {
-            throw new Exception('Cannot upload file');
-        }
 
-        unset($path);
+            $thumbnailPaths = $imageTransform->processThumbnails($settings);
+            $imagePaths = array_merge($imagePaths, $thumbnailPaths);
+
+            $eventData = ['path' => $path, 'images' => $imagePaths];
+            $event = new Event('Proffer.afterCreateImage', $entity, $eventData);
+            $this->_table->eventManager()->dispatch($event);
+        }
     }
 
     /**
@@ -179,7 +209,8 @@ class ProfferBehavior extends Behavior
     }
 
     /**
-     * Wrapper method for move_uploaded_file
+     * Wrapper method for move_uploaded_file to facilitate testing and 'uploading' of local files
+     *
      * This will check if the file has been uploaded or not before picking the correct method to move the file
      *
      * @param string $file Path to the uploaded file
