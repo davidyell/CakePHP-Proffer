@@ -101,13 +101,20 @@ class ProfferBehavior extends Behavior
     {
         $path = $this->createPath($entity, $field, $settings, $path);
 
-        if ($this->moveUploadedFile($entity->get($field)['tmp_name'], $path->fullPath())) {
-            $entity->set($field, $path->getFilename());
-            $entity->set($settings['dir'], $path->getSeed());
+        $uploadList = $entity->get($field);
+        if (count(array_filter(array_keys($entity->get($field)), 'is_string')) > 0) {
+            $uploadList = [$entity->get($field)];
+        }
 
-            $this->createThumbnails($entity, $settings, $path);
-        } else {
-            throw new Exception('Cannot upload file');
+        foreach ($uploadList as $upload) {
+            if ($this->moveUploadedFile($upload['tmp_name'], $path->fullPath())) {
+                $entity->set($field, $path->getFilename());
+                $entity->set($settings['dir'], $path->getSeed());
+
+                $this->createThumbnails($entity, $settings, $path);
+            } else {
+                throw new Exception('Cannot upload file');
+            }
         }
 
         unset($path);
