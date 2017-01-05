@@ -79,8 +79,19 @@ class ProfferBehavior extends Behavior
     public function beforeSave(Event $event, EntityInterface $entity, ArrayObject $options, ProfferPathInterface $path = null)
     {
         foreach ($this->config() as $field => $settings) {
+            $tableEntityClass = $this->_table->entityClass();
+
             if ($entity->has($field) && is_array($entity->get($field)) && $entity->get($field)['error'] === UPLOAD_ERR_OK) {
                 $this->process($field, $settings, $entity, $path);
+            } elseif ($entity instanceof $tableEntityClass && $entity->get('error') === UPLOAD_ERR_OK) {
+                $filename = $entity->get('name');
+                $entity->set($field, $filename);
+
+                if (empty($entity->get($settings['dir']))) {
+                    $entity->set($settings['dir'], null);
+                }
+
+                $this->process($field, $settings, $entity);
             }
         }
 
@@ -100,10 +111,23 @@ class ProfferBehavior extends Behavior
     protected function process($field, array $settings, EntityInterface $entity, ProfferPathInterface $path = null)
     {
         $path = $this->createPath($entity, $field, $settings, $path);
+        $tableEntityClass = $this->_table->entityClass();
 
-        $uploadList = $entity->get($field);
-        if (count(array_filter(array_keys($entity->get($field)), 'is_string')) > 0) {
-            $uploadList = [$entity->get($field)];
+        if ($entity instanceof $tableEntityClass) {
+            $uploadList = [
+                [
+                    'name' => $entity->get('name'),
+                    'type' => $entity->get('type'),
+                    'tmp_name' => $entity->get('tmp_name'),
+                    'error' => $entity->get('error'),
+                    'size' => $entity->get('size')
+                ]
+            ];
+        } else {
+            $uploadList = $entity->get($field);
+            if (count(array_filter(array_keys($entity->get($field)), 'is_string')) > 0) {
+                $uploadList = [$entity->get($field)];
+            }
         }
 
         foreach ($uploadList as $upload) {
