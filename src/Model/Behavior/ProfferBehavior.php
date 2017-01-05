@@ -113,7 +113,7 @@ class ProfferBehavior extends Behavior
         $path = $this->createPath($entity, $field, $settings, $path);
         $tableEntityClass = $this->_table->entityClass();
 
-        if ($entity instanceof $tableEntityClass) {
+        if ($tableEntityClass !== null && $entity instanceof $tableEntityClass) {
             $uploadList = [
                 [
                     'name' => $entity->get('name'),
