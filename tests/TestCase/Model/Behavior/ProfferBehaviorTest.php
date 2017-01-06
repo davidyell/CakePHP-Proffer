@@ -157,6 +157,10 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider beforeMarshalProvider
+     *
+     * @param array $data
+     * @param $allowEmpty
+     * @param array $expected
      */
     public function testBeforeMarshal(array $data, $allowEmpty, array $expected)
     {
@@ -251,6 +255,9 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
      * A bit of a unit and integration test as it will still dispatch the events to the listener
      *
      * @dataProvider validFileProvider
+     *
+     * @param array $entityData
+     * @param array $expected
      */
     public function testBeforeSaveWithValidFile(array $entityData, array $expected)
     {
@@ -278,6 +285,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
                 if (!file_exists(pathinfo($destination, PATHINFO_DIRNAME))) {
                     mkdir(pathinfo($destination, PATHINFO_DIRNAME), 0777, true);
                 }
+
                 return copy($source, $destination);
             });
 
@@ -296,10 +304,10 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         $this->assertFileExists($testUploadPath . $expected['filename']);
         $this->assertFileExists($testUploadPath . 'portrait_' . $expected['filename']);
         $this->assertFileExists($testUploadPath . 'square_' . $expected['filename']);
-        
+
         $portraitSizes = getimagesize($testUploadPath . 'portrait_' . $expected['filename']);
         $this->assertEquals(100, $portraitSizes[0]);
-        
+
         $squareSizes = getimagesize($testUploadPath . 'square_' . $expected['filename']);
         $this->assertEquals(200, $squareSizes[0]);
         $this->assertEquals(200, $squareSizes[1]);
@@ -599,6 +607,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
                 if (!file_exists(pathinfo($destination, PATHINFO_DIRNAME))) {
                     mkdir(pathinfo($destination, PATHINFO_DIRNAME), 0777, true);
                 }
+
                 return copy($source, $destination);
             });
 
@@ -668,6 +677,8 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
 
     /**
      * @param array $pathData An array of data to pass into the path customisation
+     * @param $expected
+     *
      * @dataProvider providerPathEvents
      */
     public function testChangingThePathUsingEvents(array $pathData, $expected)
@@ -729,6 +740,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
                 if (!file_exists(pathinfo($destination, PATHINFO_DIRNAME))) {
                     mkdir(pathinfo($destination, PATHINFO_DIRNAME), 0777, true);
                 }
+
                 return copy($source, $destination);
             });
 
@@ -829,6 +841,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
                 if (!file_exists(pathinfo($destination, PATHINFO_DIRNAME))) {
                     mkdir(pathinfo($destination, PATHINFO_DIRNAME), 0777, true);
                 }
+
                 return copy($source, $destination);
             });
 
@@ -913,6 +926,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
                 if (!file_exists(pathinfo($destination, PATHINFO_DIRNAME))) {
                     mkdir(pathinfo($destination, PATHINFO_DIRNAME), 0777, true);
                 }
+
                 return copy($source, $destination);
             });
 
@@ -932,5 +946,82 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals('image_480x640.jpg', $entity->get('avatar'));
         $this->assertEquals('proffer_test', $entity->get('avatar_dir'));
+    }
+
+    /**
+     * Test that uploads are processed correctly when the upload is it's own entity. For when users associate many
+     * uploads with a single parent item. Such as Posts hasMany Uploads
+     *
+     * @return void
+     */
+    public function testMultipleAssociatedUploads()
+    {
+        $eventManager = $this->createMock('Cake\Event\EventManager');
+
+        $uploadsSchema = $this->getMockBuilder('Cake\Database\Schema\Table')
+            ->setConstructorArgs([
+                'uploads',
+                [
+                    'photo' => 'string',
+                    'photo_dir' => 'string'
+                ]
+            ])
+            ->getMock();
+
+        $uploadsTable = $this->getMockBuilder('Cake\ORM\Table')
+            ->setConstructorArgs([
+                ['schema' => $uploadsSchema]
+            ])
+            ->getMock();
+
+        $uploadsTable->method('entityClass')->willReturn('Cake\ORM\Entity');
+        $uploadsTable->method('alias')->willReturn('Uploads');
+        $uploadsTable->method('schema')->willReturn($uploadsSchema);
+        $uploadsTable->method('eventManager')->willReturn($eventManager);
+
+        $config = [
+            'photo' => [
+                'dir' => 'photo_dir',
+                'thumbnailSizes' => [
+                    'square' => ['w' => 200, 'h' => 200, 'crop' => true],
+                ],
+                'pathClass' => '\Proffer\Tests\Stubs\TestPath'
+            ],
+        ];
+
+        $Proffer = $this->getMockBuilder('Proffer\Model\Behavior\ProfferBehavior')
+            ->setConstructorArgs([$uploadsTable, $config])
+            ->setMethods(['moveUploadedFile'])
+            ->getMock();
+
+        $Proffer->expects($this->exactly(1))
+            ->method('moveUploadedFile')
+            ->willReturnCallback(function ($source, $destination) {
+                if (!file_exists(pathinfo($destination, PATHINFO_DIRNAME))) {
+                    mkdir(pathinfo($destination, PATHINFO_DIRNAME), 0777, true);
+                }
+
+                return copy($source, $destination);
+            });
+
+        $entity = new Entity([
+            'name' => 'image_640x480.jpg',
+            'tmp_name' => Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg',
+            'size' => 33000,
+            'error' => UPLOAD_ERR_OK
+        ]);
+
+        $Proffer->beforeSave(
+            $this->getMockBuilder('Cake\Event\Event')
+                ->setConstructorArgs(['Model.beforeSave'])
+                ->getMock(),
+            $entity,
+            new ArrayObject()
+        );
+
+        $this->assertFileExists(TMP . 'ProfferTests' . DS . 'uploads' . DS . 'photo' . DS . 'proffer_test' . DS . 'image_640x480.jpg');
+
+        $this->assertEquals('image_640x480.jpg', $entity->get('photo'));
+        $this->assertEquals('proffer_test', $entity->get('photo_dir'));
     }
 }

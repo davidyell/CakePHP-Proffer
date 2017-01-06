@@ -83,7 +83,7 @@ class ProfferBehavior extends Behavior
 
             if ($entity->has($field) && is_array($entity->get($field)) && $entity->get($field)['error'] === UPLOAD_ERR_OK) {
                 $this->process($field, $settings, $entity, $path);
-            } elseif ($entity instanceof $tableEntityClass && $entity->get('error') === UPLOAD_ERR_OK) {
+            } elseif ($tableEntityClass !== null && $entity instanceof $tableEntityClass && $entity->get('error') === UPLOAD_ERR_OK) {
                 $filename = $entity->get('name');
                 $entity->set($field, $filename);
 
@@ -107,6 +107,8 @@ class ProfferBehavior extends Behavior
      * @param \Proffer\Lib\ProfferPathInterface|null $path Inject an instance of ProfferPath
      *
      * @throws \Exception If the file cannot be renamed / moved to the correct path
+     *
+     * @return void
      */
     protected function process($field, array $settings, EntityInterface $entity, ProfferPathInterface $path = null)
     {
@@ -147,7 +149,7 @@ class ProfferBehavior extends Behavior
     /**
      * Load a path class instance and create the path for the uploads to be moved into
      *
-     * @param \Cake\Datasource\EntityInterface $entity
+     * @param \Cake\Datasource\EntityInterface $entity Instance of the entity
      * @param string $field The upload field name
      * @param array $settings Array of upload settings for the field
      * @param \Proffer\Lib\ProfferPathInterface|null $path Inject an instance of ProfferPath
@@ -177,9 +179,9 @@ class ProfferBehavior extends Behavior
      * Create a new image transform instance, and create any configured thumbnails; if the upload is an image and there
      * are thumbnails configured.
      *
-     * @param \Cake\Datasource\EntityInterface $entity
-     * @param array $settings
-     * @param \Proffer\Lib\ProfferPathInterface $path
+     * @param \Cake\Datasource\EntityInterface $entity Instance of the entity
+     * @param array $settings Array of upload field settings
+     * @param \Proffer\Lib\ProfferPathInterface $path Instance of the path class
      *
      * @return void
      */
