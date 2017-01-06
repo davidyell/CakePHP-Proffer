@@ -104,6 +104,42 @@ Eg, `'App\Lib\Proffer\AvatarPath'`.
 If you want to replace the creation of thumbnails you can specify your own class here, it must be a fully qualified namespace.
 EG, `'App\Lib\Proffer\WatermarkThumbnail'`.
 
+## Associating many uploads to a parent
+If you need to associate many uploads to a single parent entity, the same process as above applies, but you should attach 
+and configure the behaviour on the association.
+
+Let's look at an example.
+
+```php
+// Posts hasMany Uploads
+
+// ! Remember to add a `post_id` field to your uploads database table.
+
+// App\Model\Table\PostsTable::initialize
+$this->hasMany('Uploads');
+
+// App\Model\Table\UploadsTable::initialize
+$this->loadBehavior('Proffer.Proffer', [
+    'filename' => [
+        'dir' => 'file_dir'
+    ]
+]);
+```
+
+Now, when you save a post, with associated Uploads data, each upload will be converted to an entity, and saved.
+
+### Uploading multiple files
+So now you've configured the behaviour and created the table associations, you'll need to get the request data. If you're 
+using HTML5, then you can use the file input, with the `multiple` flag, to allow for multiple file upload fields. Older 
+browsers will see this as a single file upload field instead of multiple.
+
+:warning: Note that the field name is an array!
+
+```php
+// Template/Posts/add.ctp
+echo $this->Form->input('filename[]', ['type' => 'file', 'multiple' => true, 'label' => 'Files to upload']);
+```
+
 ## Configuring your templates
 You will need to make sure that your forms are using the file type so that the files can be uploaded.
 
