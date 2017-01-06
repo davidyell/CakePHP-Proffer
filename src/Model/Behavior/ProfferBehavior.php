@@ -13,8 +13,10 @@ use Cake\Database\Type;
 use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
 use Cake\ORM\Behavior;
-use Exception;
+use Proffer\Exception\CannotUploadFileException;
+use Proffer\Exception\InvalidClassException;
 use Proffer\Lib\ImageTransform;
+use Proffer\Lib\ImageTransformInterface;
 use Proffer\Lib\ProfferPath;
 use Proffer\Lib\ProfferPathInterface;
 
@@ -122,7 +124,7 @@ class ProfferBehavior extends Behavior
                     'type' => $entity->get('type'),
                     'tmp_name' => $entity->get('tmp_name'),
                     'error' => $entity->get('error'),
-                    'size' => $entity->get('size')
+                    'size' => $entity->get('size'),
                 ]
             ];
         } else {
@@ -139,7 +141,7 @@ class ProfferBehavior extends Behavior
 
                 $this->createThumbnails($entity, $settings, $path);
             } else {
-                throw new Exception('Cannot upload file');
+                throw new CannotUploadFileException("File `{$upload['name']}` could not be copied.");
             }
         }
 
@@ -154,12 +156,17 @@ class ProfferBehavior extends Behavior
      * @param array $settings Array of upload settings for the field
      * @param \Proffer\Lib\ProfferPathInterface|null $path Inject an instance of ProfferPath
      *
+     * @throws \App\Exception\InvalidClassException If the custom class doesn't implement the interface
+     *
      * @return \Proffer\Lib\ProfferPathInterface
      */
     protected function createPath(EntityInterface $entity, $field, array $settings, ProfferPathInterface $path = null)
     {
         if (!empty($settings['pathClass'])) {
             $path = new $settings['pathClass']($this->_table, $entity, $field, $settings);
+            if (!$path instanceof ProfferPathInterface) {
+                throw new InvalidClassException("Class {$settings['pathClass']} does not implement the ProfferPathInterface.");
+            }
         } elseif (!isset($path)) {
             $path = new ProfferPath($this->_table, $entity, $field, $settings);
         }
@@ -183,6 +190,8 @@ class ProfferBehavior extends Behavior
      * @param array $settings Array of upload field settings
      * @param \Proffer\Lib\ProfferPathInterface $path Instance of the path class
      *
+     * @throws \App\Exception\InvalidClassException If the transform class doesn't implement the interface
+     *
      * @return void
      */
     protected function createThumbnails(EntityInterface $entity, array $settings, ProfferPathInterface $path)
@@ -190,9 +199,11 @@ class ProfferBehavior extends Behavior
         if (getimagesize($path->fullPath()) !== false && isset($settings['thumbnailSizes'])) {
             $imagePaths = [$path->fullPath()];
 
-            // Allow the transformation class to be injected
             if (!empty($settings['transformClass'])) {
                 $imageTransform = new $settings['transformClass']($this->_table, $path);
+                if (!$imageTransform instanceof ImageTransformInterface) {
+                    throw new InvalidClassException("Class {$settings['pathClass']} does not implement the ImageTransformInterface.");
+                }
             } else {
                 $imageTransform = new ImageTransform($this->_table, $path);
             }
