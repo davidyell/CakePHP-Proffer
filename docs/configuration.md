@@ -97,12 +97,12 @@ Which Intervention engine to use to convert the images. Defaults to PHP's GD lib
 ###pathClass
 **optional**
 If you want to inject your own class for dealing with paths you can specify it here as a fully qualified namespace.
-Eg, `'App\Lib\Proffer\AvatarPath'`.
+Eg, `'pathClass' => App\Lib\Proffer\AvatarPath::class`
 
 ###transformClass
 **optional**
 If you want to replace the creation of thumbnails you can specify your own class here, it must be a fully qualified namespace.
-EG, `'App\Lib\Proffer\WatermarkThumbnail'`.
+EG, `'transformClass' => App\Lib\Proffer\WatermarkThumbnail::class`.
 
 ## Associating many uploads to a parent
 If you need to associate many uploads to a single parent entity, the same process as above applies, but you should attach 
@@ -112,14 +112,13 @@ Let's look at an example.
 
 ```php
 // Posts hasMany Uploads
-
-// ! Remember to add a `post_id` field to your uploads database table.
+// ! Remember to add a `post_id` field to your associated `uploads` database table.
 
 // App\Model\Table\PostsTable::initialize
 $this->hasMany('Uploads');
 
 // App\Model\Table\UploadsTable::initialize
-$this->loadBehavior('Proffer.Proffer', [
+$this->addBehavior('Proffer.Proffer', [
     'filename' => [
         'dir' => 'file_dir'
     ]
