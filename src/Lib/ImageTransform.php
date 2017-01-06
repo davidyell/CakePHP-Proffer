@@ -152,7 +152,7 @@ class ImageTransform implements ImageTransformInterface
     {
         return $image->resize($width, $height);
     }
-    
+
     /**
      * Call any method from the intervention library
      *
