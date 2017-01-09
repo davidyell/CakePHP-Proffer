@@ -15,7 +15,7 @@ class ProfferRulesTest extends PHPUnit_Framework_TestCase
     {
         $this->Rules = new ProfferRules;
     }
-    
+
     public function providerDimensions()
     {
         return [
@@ -45,7 +45,7 @@ class ProfferRulesTest extends PHPUnit_Framework_TestCase
             ],
         ];
     }
-    
+
     /**
      * @dataProvider providerDimensions
      */
