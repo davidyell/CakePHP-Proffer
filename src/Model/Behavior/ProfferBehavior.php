@@ -80,6 +80,7 @@ class ProfferBehavior extends Behavior
      */
     public function beforeSave(Event $event, EntityInterface $entity, ArrayObject $options, ProfferPathInterface $path = null)
     {
+
         foreach ($this->config() as $field => $settings) {
             $tableEntityClass = $this->_table->entityClass();
 
@@ -115,9 +116,10 @@ class ProfferBehavior extends Behavior
     protected function process($field, array $settings, EntityInterface $entity, ProfferPathInterface $path = null)
     {
         $path = $this->createPath($entity, $field, $settings, $path);
-        $tableEntityClass = $this->_table->entityClass();
 
-        if ($tableEntityClass !== null && $entity instanceof $tableEntityClass) {
+        if (is_array($entity->get($field)) && count(array_filter(array_keys($entity->get($field)), 'is_string')) > 0) {
+            $uploadList = [$entity->get($field)];
+        } else {
             $uploadList = [
                 [
                     'name' => $entity->get('name'),
@@ -127,11 +129,6 @@ class ProfferBehavior extends Behavior
                     'size' => $entity->get('size'),
                 ]
             ];
-        } else {
-            $uploadList = $entity->get($field);
-            if (count(array_filter(array_keys($entity->get($field)), 'is_string')) > 0) {
-                $uploadList = [$entity->get($field)];
-            }
         }
 
         foreach ($uploadList as $upload) {
