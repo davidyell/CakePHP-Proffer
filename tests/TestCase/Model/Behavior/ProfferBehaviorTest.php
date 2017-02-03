@@ -35,6 +35,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             'thumbnailSizes' => [
                 'square' => ['w' => 200, 'h' => 200, 'crop' => true],
                 'portrait' => ['w' => 100, 'h' => 300],
+                'large' => ['w' => 1200, 'h' => 900, 'orientate' => true],
             ]
         ]
     ];
@@ -99,7 +100,8 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             ->with($this->logicalOr(
                 $this->equalTo(null),
                 $this->equalTo('square'),
-                $this->equalTo('portrait')
+                $this->equalTo('portrait'),
+                $this->equalTo('large')
             ))
             ->will($this->returnCallback(
                 function ($param) use ($table, $entity) {
@@ -545,6 +547,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             $path->getFolder() . 'image_640x480.jpg',
             $path->getFolder() . 'square_image_640x480.jpg',
             $path->getFolder() . 'portrait_image_640x480.jpg',
+            $path->getFolder() . 'large_image_640x480.jpg',
         ];
         $eventAfterCreateImage = new Event('Proffer.afterCreateImage', $entity, ['path' => $path, 'images' => $images]);
 
