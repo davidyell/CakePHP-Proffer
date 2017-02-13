@@ -49,12 +49,13 @@ Additional thumbnail generation types are available using the `crop` and `fit` o
 'portrait' => [
     'w' => 150,
     'h' => 300,
-    'crop' => true
+    'crop' => true,
+    'orientate' => true
 ]
 ```
 
 #### Fit
-> Combine cropping and resizing to format image in a smart way. The method will find the best fitting aspect ratio of 
+> Combine cropping and resizing to format image in a smart way. The method will find the best fitting aspect ratio of
 > your given width and height on the current image automatically, cut it out and resize it to the given dimension.
 See [Intervention Fit method](http://image.intervention.io/api/fit)
 
@@ -62,6 +63,10 @@ See [Intervention Fit method](http://image.intervention.io/api/fit)
 > Cut out a rectangular part of the current image with given width and height.
 By default, will be the centre of the image.
 See [Intervention Crop method](http://image.intervention.io/api/crop)
+
+#### Orientate
+> Reads the EXIF image profile setting 'Orientation' and performs a rotation on the image to display the image correctly.
+See [Intervention Orientate method](http://image.intervention.io/api/orientate) for PHP installation requirements.
 
 ## Template
 In order to upload a file to your application you will need to add the form fields to your view.
@@ -105,7 +110,7 @@ If you want to replace the creation of thumbnails you can specify your own class
 EG, `'transformClass' => App\Lib\Proffer\WatermarkThumbnail::class`.
 
 ## Associating many uploads to a parent
-If you need to associate many uploads to a single parent entity, the same process as above applies, but you should attach 
+If you need to associate many uploads to a single parent entity, the same process as above applies, but you should attach
 and configure the behaviour on the association.
 
 Let's look at an example.
@@ -128,8 +133,8 @@ $this->addBehavior('Proffer.Proffer', [
 Now, when you save a post, with associated Uploads data, each upload will be converted to an entity, and saved.
 
 ### Uploading multiple files
-So now you've configured the behaviour and created the table associations, you'll need to get the request data. If you're 
-using HTML5, then you can use the file input, with the `multiple` flag, to allow for multiple file upload fields. Older 
+So now you've configured the behaviour and created the table associations, you'll need to get the request data. If you're
+using HTML5, then you can use the file input, with the `multiple` flag, to allow for multiple file upload fields. Older
 browsers will see this as a single file upload field instead of multiple.
 
 :warning: Note that the field name is an array!

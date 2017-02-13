@@ -88,6 +88,10 @@ class ImageTransform implements ImageTransformInterface
 
         $image = $this->ImageManager->make($this->Path->fullPath());
 
+        if (!empty($config['orientate'])) {
+            $image = $this->orientate($image);
+        }
+
         if (!empty($config['crop'])) {
             $image = $this->thumbnailCrop($image, $width, $height);
         } elseif (!empty($config['fit'])) {
@@ -98,7 +102,7 @@ class ImageTransform implements ImageTransformInterface
             $image = $this->thumbnailResize($image, $width, $height);
         }
 
-        unset($config['crop'], $config['w'], $config['h'], $config['custom'], $config['params']);
+        unset($config['crop'], $config['w'], $config['h'], $config['custom'], $config['params'], $config['orientate']);
 
         $image->save($this->Path->fullPath($prefix), $config['jpeg_quality']);
 
@@ -167,5 +171,18 @@ class ImageTransform implements ImageTransformInterface
     protected function thumbnailCustom(Image $image, $custom, $params)
     {
         return call_user_func_array([$image, $custom], $params);
+    }
+
+    /**
+     * EXIF orientate the current image
+     *
+     * @see http://image.intervention.io/api/orientate
+     *
+     * @param \Intervention\Image\Image $image Image instance
+     * @return \Intervention\Image\Image
+     */
+    protected function orientate(Image $image)
+    {
+        return $image->orientate();
     }
 }
