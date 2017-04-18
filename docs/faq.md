@@ -1,4 +1,4 @@
-#Frequently asked questions
+# Frequently asked questions
 This manual page collects together all the frequent questions about the plugin, it's functionality and some of the more
 common errors people might experience.
 

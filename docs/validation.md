@@ -1,8 +1,8 @@
-#Validation
+# Validation
 This manual page deals with how to use the included ProfferRules validation provider to add upload related validation rules to
 your application.
 
-##Built-in validation provider
+## Built-in validation provider
 Proffer comes an extra validation rule to check the dimensions of an uploaded image. Other rules are provided by the core and are listed below.
 
 In your validation function in your table class you'll need to add the validator as a provider and then apply the rules.

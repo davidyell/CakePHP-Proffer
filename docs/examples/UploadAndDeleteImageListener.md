@@ -1,8 +1,8 @@
-##Customizing behavior of file creation/deletion using event listener
+## Customizing behavior of file creation/deletion using event listener
 
 You can hook Proffer's image creation/deletion as below.
 
-###Create src/Event/UploadAndDeleteImageListener.php
+### Create src/Event/UploadAndDeleteImageListener.php
 
 ```php
 <?php
@@ -41,7 +41,7 @@ class UploadAndDeleteImageListener implements EventListenerInterface {
 }
 ```
 
-###Register listener to EventManager in config/bootstrap.php
+### Register listener to EventManager in config/bootstrap.php
 
 ```php
 Cake\Event\EventManager::instance()->on(new \App\Event\UploadAndDeleteImageListener());
