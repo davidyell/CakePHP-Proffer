@@ -1,4 +1,4 @@
-#Installation
+# Installation
 This manual page deals with the installation of the Proffer plugin. Where you can get the code and where should it be in your project.
 
 ## Packagist
