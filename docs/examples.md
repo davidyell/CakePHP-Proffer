@@ -1,8 +1,8 @@
-#Examples
+# Examples
 This manual page shows some examples of how to customise the behaviour of the plugin,
 as well as event listeners and image display.
 
-##Displaying uploaded images
+## Displaying uploaded images
 You can use the `HtmlHelper` to link the images. Just make sure that you have both upload fields in the data set to the view.
 This is what it would look like if you're using the defaults, if you've implemented your own path class, you will need
 to update the paths accordingly.
@@ -15,12 +15,12 @@ Here are some basic event listener example classes
 * [Customize the upload folder and filename](examples/UploadFilenameListener.md)
 * [Customize behavior of file creation/deletion](examples/UploadAndDeleteImageListener.md)
 
-##Uploading multiple related images
+## Uploading multiple related images
 This example will show you how to upload many images which are related to your
 current table class. An example setup might be that you have a `Users` table class
 and a `UserImages` table class. The example below is just [baked code](http://book.cakephp.org/3.0/en/bake/usage.html).
 
-###Tables
+### Tables
 The relationships are setup as follows. Be sure to attach the behavior to the
 table class which is receiving the uploads.
 
@@ -42,11 +42,11 @@ $this->addBehavior('Proffer.Proffer', [
 $this->belongsTo('Users', ['foreignKey' => 'user_id', 'joinType' => 'INNER']);
 ```
 
-###Entities
+### Entities
 Your entity must allow the associated field in it's `$_accessible` array. So in our
 example we need to check that the `'user_images' => true` is included in our `User` entity.
 
-###Controller
+### Controller
 No changes need to be made to standard controller code as Cake will automatically save any
 first level associated data by default. As our `Users` table is directly associated with
 our `UserImages` table, we don't need to change anything.
@@ -55,7 +55,7 @@ If you were working with a related models data, you would need to specify the as
 to populate when [merging the entity data](http://book.cakephp.org/3.0/en/orm/saving-data.html#converting-request-data-into-entities)
 using the `'associated'` key.
 
-###Templates
+### Templates
 You will need to include the related fields in your templates using the correct
 field names, so that your request data is formatted correctly.
 
@@ -74,7 +74,7 @@ field names, so that your request data is formatted correctly.
 How you deal with the display of existing images, deletion of existing images,
 and adding of new upload fields is up to you, and outside the scope of this example.
 
-###Deleting images but preserving data
+### Deleting images but preserving data
 If you need to delete an upload and remove it's associated data from your data store, you can achieve this in your controller.
 
 The easiest way is to add a checkbox to your form and then look for it when processing your post data.

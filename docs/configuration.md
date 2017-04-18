@@ -1,4 +1,4 @@
-#Configuration
+# Configuration
 This manual page relates to how to configure the Proffer behaviour, what the configuration options do, their defaults and how to change them.
 
 ## Configuring the behaviour in your table
@@ -78,33 +78,33 @@ echo $this->Form->end();
 ```
 This will turn your form into a multipart form and add the relevant fields.
 
-##Configuration options
+## Configuration options
 There are a number of configuration options you can pass into the behaviour when you attach it to your table. These options are passed as an array value of the upload field.
 
-###dir
+### dir
 **required** `string`
 The database field which will store the name of the folder in which the files are uploaded.
 
-###thumbnailSizes
+### thumbnailSizes
 **optional** `array`
 An array of sizes to create thumbnails of an uploaded image. The format is that the image prefix will be the array key and the sizes are the value as an array.
 Eg, `'square' => ['w' => 200, 'h' => 200]` would create a thumbnail prefixed with `square_` and would be 100px x 100px.
 If you do not specify the `thumbnailSizes` configuration option, no thumbnails will be created.
 
-###root
+### root
 **optional:** defaults to, `WWW_DIR . 'files'`
 Allows you to customise the root folder in which all the file upload folders and files will be created.
 
-###thumbnailMethod
+### thumbnailMethod
 **optional:** defaults to, `gd`
 Which Intervention engine to use to convert the images. Defaults to PHP's GD library. Can also be `imagick`.
 
-###pathClass
+### pathClass
 **optional**
 If you want to inject your own class for dealing with paths you can specify it here as a fully qualified namespace.
 Eg, `'pathClass' => App\Lib\Proffer\AvatarPath::class`
 
-###transformClass
+### transformClass
 **optional**
 If you want to replace the creation of thumbnails you can specify your own class here, it must be a fully qualified namespace.
 EG, `'transformClass' => App\Lib\Proffer\WatermarkThumbnail::class`.
