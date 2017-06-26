@@ -3,8 +3,7 @@
 /**
  * BadPath.php
  *
- * @author David Yell <dyell@ukwebmedia.com>
- * @copyright 2017 UK Web Media Ltd
+ * @author David Yell <neon1024@gmail.com>
  */
 
 namespace Proffer\Tests\Stubs;
