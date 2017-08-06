@@ -1,4 +1,4 @@
-# Customisation
+# Customization
 This manual page deals with customising the behaviour of the Proffer plugin. How to change the upload location and changing
 file names. It also cover how you can use the Proffer events to change the way the plugin behaves.
 
