@@ -13,6 +13,15 @@ use Cake\Routing\Router;
  */
 class ProfferComponent extends Component
 {
+    /**
+     * Returns the URL path for the specified resource
+     *
+     * @param \Cake\Datasource\EntityInterface $entity The entity filled with data
+     * @param string $field Name of the image field
+     * @param array $options Array of options
+     *
+     * @return string The URL path
+     */
     public function getUploadUrl(\Cake\Datasource\EntityInterface $entity, $field, array $options = [])
     {
         $options += [

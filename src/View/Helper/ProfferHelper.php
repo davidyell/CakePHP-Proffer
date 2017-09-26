@@ -28,8 +28,6 @@ class ProfferHelper extends Helper
      * @param array $options Array of options
      *
      * @return string The URL path
-     *
-     * @throws \Exception
      */
     public function getUploadUrl(\Cake\Datasource\EntityInterface $entity, $field, array $options = [])
     {
