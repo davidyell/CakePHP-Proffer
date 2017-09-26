@@ -27,7 +27,7 @@ class ProfferHelperTest extends TestCase
 		$this->testEntity = new Entity($entityData);
 		$this->testEntity->setSource('table');
 
-		$this->fullBaseUrl = COnfigure::read('App.fullBaseUrl');
+		$this->fullBaseUrl = Configure::read('App.fullBaseUrl');
 	}
 
 	public function testGetUploadUrlDefault()
