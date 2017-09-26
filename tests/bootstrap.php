@@ -4,6 +4,7 @@ use Cake\Core\Configure;
 use Cake\Core\Plugin;
 use Cake\Datasource\ConnectionManager;
 use Cake\Log\Log;
+use Cake\Routing\DispatcherFactory;
 
 require_once 'vendor/autoload.php';
 
@@ -17,6 +18,7 @@ define('CORE_PATH', ROOT . 'vendor' . DS . 'cakephp' . DS . 'cakephp' . DS);
 define('CAKE', CORE_PATH . 'src' . DS);
 define('APP', ROOT . 'tests' . DS . 'test_app' . DS);
 define('APP_DIR', 'test_app');
+define('CONFIG', ROOT . 'tests' . DS . 'config' . DS);
 define('WEBROOT_DIR', 'webroot');
 define('WWW_ROOT', APP . 'webroot' . DS);
 define('TMP', ROOT . 'tests' . DS . 'tmp' . DS);
@@ -103,4 +105,8 @@ Log::config([
     ]
 ]);
 
-Plugin::load('Proffer', ['path' => ROOT]);
+DispatcherFactory::add('Asset');
+DispatcherFactory::add('Routing');
+DispatcherFactory::add('ControllerFactory');
+
+Plugin::load('Foo', ['path' => ROOT]);
