@@ -14,47 +14,77 @@ use Cake\Core\Configure;
 
 class ProfferHelperTest extends TestCase 
 {
+    private $testEntity;
+    private $fullBaseUrl;
+
 	public function setUp() 
 	{
 		parent::setUp();
 		$View = new View();
 		$this->Proffer = new ProfferHelper($View);
+
+		$entityData = ['id' => 1, 'photo' => 'test.png', 'photo_dir' => 'testDir'];
+		$this->testEntity = new Entity($entityData);
+		$this->testEntity->setSource('table');
+
+		$this->fullBaseUrl = COnfigure::read('App.fullBaseUrl');
 	}
 
-	public function testGetUploadUrl()
-	{
-		$entityData = ['id' => 1, 'photo' => 'test.png', 'photo_dir' => 'testDir'];
-		$entity = new Entity($entityData);
-		$entity->setSource('table');
+	public function testGetUploadUrlDefault()
+    {
+        $uploadUrl = $this->Proffer->getUploadUrl($this->testEntity, 'photo');
+        $this->assertEquals($this->fullBaseUrl . '/files/table/photo/testDir/test.png', $uploadUrl);
+    }
 
-		// TODO: Refatorar em pequenos testes
-		$uploadUrl = $this->Proffer->getUploadUrl($entity, 'photo');
+    public function testGetUploadUrlConfigFolder()
+    {
+        $uploadUrl = $this->Proffer->getUploadUrl($this->testEntity, 'photo', [
+            'folder' => 'test_folder',
+        ]);
 
-		$fullBaseUrl = Configure::read('App.fullBaseUrl');
+        $this->assertEquals($this->fullBaseUrl . '/test_folder/table/photo/testDir/test.png', $uploadUrl);
+    }
 
-		$this->assertEquals($fullBaseUrl . '/files/table/photo/testDir/test.png', $uploadUrl);
-
-		/* Test params */
-		$uploadUrl = $this->Proffer->getUploadUrl($entity, 'photo', [
-		    'folder' => 'test_folder',
+    public function testGetUploadUrlConfigThumb()
+    {
+        $uploadUrl = $this->Proffer->getUploadUrl($this->testEntity, 'photo', [
             'thumb' => 'thumbnail_prefix',
         ]);
 
-		$this->assertEquals($fullBaseUrl . '/test_folder/table/photo/testDir/thumbnail_prefix_test.png', $uploadUrl);
+        $this->assertEquals($this->fullBaseUrl . '/files/table/photo/testDir/thumbnail_prefix_test.png', $uploadUrl);
+    }
 
+    public function testGetUploadUrlConfigFullUrl()
+    {
         /* Test fullUrl */
-        $uploadUrl = $this->Proffer->getUploadUrl($entity, 'photo', [
+        $uploadUrl = $this->Proffer->getUploadUrl($this->testEntity, 'photo', [
             'fullUrl' => false
         ]);
 
         $this->assertEquals('/files/table/photo/testDir/test.png', $uploadUrl);
+    }
 
-        $entity['test_dir'] = 'test';
+    public function testGetUploadUrlConfigDir() {
+        $this->testEntity['test_dir'] = 'test';
 
-        $uploadUrl = $this->Proffer->getUploadUrl($entity, 'photo', [
+        $uploadUrl = $this->Proffer->getUploadUrl($this->testEntity, 'photo', [
             'dir' => 'test_dir',
         ]);
 
-        $this->assertEquals($fullBaseUrl . '/files/table/photo/test/test.png', $uploadUrl);
+        $this->assertEquals($this->fullBaseUrl . '/files/table/photo/test/test.png', $uploadUrl);
 	}
+
+	public function testGetUploadLink() {
+	    $expectedHtml = '<a href="' . $this->fullBaseUrl . '/files/table/photo/testDir/test.png">Test Title</a>';
+	    $uploadLink = $this->Proffer->getUploadLink('Test Title', $this->testEntity, 'photo');
+
+	    $this->assertEquals($expectedHtml, $uploadLink);
+    }
+
+    public function testGetUploadImage() {
+	    $expectedHtml = '<img src="' . $this->fullBaseUrl . '/files/table/photo/testDir/test.png" alt=""/>';
+	    $uploadImage = $this->Proffer->getUploadImage($this->testEntity, 'photo');
+
+	    $this->assertEquals($expectedHtml, $uploadImage);
+    }
 }
