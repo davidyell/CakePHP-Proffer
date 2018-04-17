@@ -115,9 +115,9 @@ class ProfferPathTest extends PHPUnit_Framework_TestCase
     public function testConstructedFullPath($data, $expected)
     {
         $table = $this->getMockBuilder('Cake\ORM\Table')
-            ->setMethods(['alias'])
+            ->setMethods(['getAlias'])
             ->getMock();
-        $table->method('alias')
+        $table->method('getAlias')
             ->willReturn('ProfferTest');
 
         $entity = new Entity($data['entity']);
@@ -136,9 +136,9 @@ class ProfferPathTest extends PHPUnit_Framework_TestCase
     public function testGetFolder()
     {
         $table = $this->getMockBuilder('Cake\ORM\Table')
-            ->setMethods(['alias'])
+            ->setMethods(['getAlias'])
             ->getMock();
-        $table->method('alias')
+        $table->method('getAlias')
             ->willReturn('ProfferTest');
 
         $entity = new Entity([
@@ -165,9 +165,9 @@ class ProfferPathTest extends PHPUnit_Framework_TestCase
     public function testPrefixes()
     {
         $table = $this->getMockBuilder('Cake\ORM\Table')
-            ->setMethods(['alias'])
+            ->setMethods(['getAlias'])
             ->getMock();
-        $table->method('alias')
+        $table->method('getAlias')
             ->willReturn('ProfferTest');
 
         $entity = new Entity([
@@ -194,9 +194,9 @@ class ProfferPathTest extends PHPUnit_Framework_TestCase
     public function testDeleteFiles()
     {
         $table = $this->getMockBuilder('Cake\ORM\Table')
-            ->setMethods(['alias'])
+            ->setMethods(['getAlias'])
             ->getMock();
-        $table->method('alias')
+        $table->method('getAlias')
             ->willReturn('ProfferTest');
 
         $entity = new Entity([
@@ -220,7 +220,7 @@ class ProfferPathTest extends PHPUnit_Framework_TestCase
 
         $path->expects($this->any())
             ->method('getFolder')
-            ->willReturn(TMP . 'ProfferTests' . DS . $table->alias() . DS . 'photo' . DS . 'proffer_test' . DS);
+            ->willReturn(TMP . 'ProfferTests' . DS . $table->getAlias() . DS . 'photo' . DS . 'proffer_test' . DS);
 
         $path = new ProfferPath($table, $entity, 'photo', $settings);
 
@@ -258,9 +258,9 @@ class ProfferPathTest extends PHPUnit_Framework_TestCase
     public function testCreatingPathFolderWhichExists()
     {
         $table = $this->getMockBuilder('Cake\ORM\Table')
-            ->setMethods(['alias'])
+            ->setMethods(['getAlias'])
             ->getMock();
-        $table->method('alias')
+        $table->method('getAlias')
             ->willReturn('ProfferTest');
 
         $entity = new Entity([

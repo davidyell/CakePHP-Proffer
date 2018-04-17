@@ -11,9 +11,9 @@
 
 namespace Proffer\Database\Type;
 
-use Cake\Database\Type;
+use Cake\Database\Type\StringType;
 
-class FileType extends Type
+class FileType extends StringType
 {
     /**
      * Prevent the marhsaller changing the upload array into a string
