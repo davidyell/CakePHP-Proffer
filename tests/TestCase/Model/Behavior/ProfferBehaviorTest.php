@@ -9,7 +9,7 @@ namespace Proffer\Tests\Model\Behavior;
 
 use ArrayObject;
 use Cake\Core\Plugin;
-use Cake\Database\Schema\Table as TableSchema;
+use Cake\Database\Schema\TableSchema;
 use Cake\Event\Event;
 use Cake\Event\EventListenerInterface;
 use Cake\Event\EventManager;
@@ -118,14 +118,14 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
                         $filename .= $entityFieldData;
                     }
 
-                    return TMP . 'ProfferTests' . DS . $table->alias() .
+                    return TMP . 'ProfferTests' . DS . $table->getAlias() .
                         DS . 'photo' . DS . 'proffer_test' . DS . $filename;
                 }
             ));
 
         $path->expects($this->any())
             ->method('getFolder')
-            ->willReturn(TMP . 'ProfferTests' . DS . $table->alias() . DS . 'photo' . DS . 'proffer_test' . DS);
+            ->willReturn(TMP . 'ProfferTests' . DS . $table->getAlias() . DS . 'photo' . DS . 'proffer_test' . DS);
 
         return $path;
     }
@@ -170,23 +170,23 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
      */
     public function testBeforeMarshal(array $data, $allowEmpty, array $expected)
     {
-        $schema = $this->createMock(TableSchema::class, null, ['examples']);
-        $table = $this->createMock(Table::class, ['alias'], [['schema' => $schema]]);
-        $table->method('alias')
+        $schema = $this->createMock(TableSchema::class);
+        $table = $this->createMock(Table::class);
+        $table->method('getAlias')
             ->willReturn('ProfferTest');
-        $table->method('schema')
+        $table->method('getSchema')
             ->willReturn($schema);
 
         $proffer = new ProfferBehavior($table, $this->config);
 
         $validator = $this->createMock(Validator::class);
-        $table->validator('test', $validator);
+        $table->setValidator('test', $validator);
 
-        $table->method('validator')
+        $table->method('getValidator')
             ->willReturn($validator);
 
         if ($allowEmpty) {
-            $table->validator()->allowEmpty('photo');
+            $table->getValidator()->allowEmpty('photo');
         }
 
         $arrayObject = new ArrayObject($data);
@@ -270,11 +270,11 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         $schema = $this->createMock(TableSchema::class);
         $table = $this->createMock(Table::class);
         $eventManager = $this->createMock(EventManager::class);
-        $table->method('alias')
+        $table->method('getAlias')
             ->willReturn('ProfferTest');
-        $table->method('schema')
+        $table->method('getSchema')
             ->willReturn($schema);
-        $table->method('eventManager')
+        $table->method('getEventManager')
             ->willReturn($eventManager);
 
         $entity = new Entity($entityData);
@@ -290,7 +290,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             ->willReturnCallback(function ($source, $destination) {
                 if (!file_exists(pathinfo($destination, PATHINFO_DIRNAME))) {
                     mkdir(pathinfo($destination, PATHINFO_DIRNAME), 0777, true);
-                }
+            }
 
                 return copy($source, $destination);
             });
@@ -327,11 +327,11 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         $schema = $this->createMock(TableSchema::class);
         $table = $this->createMock(Table::class);
         $eventManager = $this->createMock(EventManager::class);
-        $table->method('alias')
+        $table->method('getAlias')
             ->willReturn('ProfferTest');
-        $table->method('schema')
+        $table->method('getSchema')
             ->willReturn($schema);
-        $table->method('eventManager')
+        $table->method('getEventManager')
             ->willReturn($eventManager);
 
         $path = $this->_getProfferPathMock(
@@ -374,11 +374,11 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         $schema = $this->createMock(TableSchema::class);
         $table = $this->createMock(Table::class);
         $eventManager = $this->createMock(EventManager::class);
-        $table->method('alias')
+        $table->method('getAlias')
             ->willReturn('ProfferTest');
-        $table->method('schema')
+        $table->method('getSchema')
             ->willReturn($schema);
-        $table->method('eventManager')
+        $table->method('getEventManager')
             ->willReturn($eventManager);
 
         $proffer = $this->getMockBuilder(ProfferBehavior::class)
@@ -417,11 +417,11 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         $schema = $this->createMock(TableSchema::class);
         $eventManager = $this->createMock(EventManager::class);
         $table = $this->createMock(Table::class);
-        $table->method('alias')
+        $table->method('getAlias')
             ->willReturn('ProfferTest');
-        $table->method('schema')
+        $table->method('getSchema')
             ->willReturn($schema);
-        $table->method('eventManager')
+        $table->method('getEventManager')
             ->willReturn($eventManager);
 
         $proffer = new ProfferBehavior($table, $this->config);
@@ -473,11 +473,11 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         $schema = $this->createMock(TableSchema::class);
         $table = $this->createMock(Table::class);
         $eventManager = $this->createMock(EventManager::class);
-        $table->method('alias')
+        $table->method('getAlias')
             ->willReturn('ProfferTest');
-        $table->method('schema')
+        $table->method('getSchema')
             ->willReturn($schema);
-        $table->method('eventManager')
+        $table->method('getEventManager')
             ->willReturn($eventManager);
 
         $proffer = new ProfferBehavior($table, $this->config);
@@ -529,10 +529,10 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         $schema = $this->createMock(TableSchema::class);
         $table = $this->getMockBuilder(Table::class)
             ->setConstructorArgs([['eventManager' => $eventManager, 'schema' => $schema]])
-            ->setMethods(['alias'])
+            ->setMethods(['getAlias'])
             ->getMock();
 
-        $table->method('alias')
+        $table->method('getAlias')
             ->willReturn('ProfferTest');
 
         $path = $this->_getProfferPathMock($table, $entity, 'photo');
@@ -581,11 +581,11 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         $schema = $this->createMock(TableSchema::class);
         $table = $this->createMock(Table::class);
         $eventManager = $this->createMock(EventManager::class);
-        $table->method('alias')
+        $table->method('getAlias')
             ->willReturn('ProfferTest');
-        $table->method('schema')
+        $table->method('getSchema')
             ->willReturn($schema);
-        $table->method('eventManager')
+        $table->method('getEventManager')
             ->willReturn($eventManager);
 
         $config = $this->config;
@@ -693,11 +693,11 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         $schema = $this->createMock(TableSchema::class);
         $table = $this->createMock(Table::class);
         $eventManager = new EventManager();
-        $table->method('alias')
+        $table->method('getAlias')
             ->willReturn('ProfferTest');
-        $table->method('schema')
+        $table->method('getSchema')
             ->willReturn($schema);
-        $table->method('eventManager')
+        $table->method('getEventManager')
             ->willReturn($eventManager);
 
         $listener = $this->getMockBuilder(EventListenerInterface::class)
@@ -715,12 +715,12 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
                 $path->setSeed($pathData['seed']);
                 $path->setFilename($pathData['filename']);
 
-                $event->subject()['photo']['name'] = $pathData['filename'];
+                $event->getSubject()['photo']['name'] = $pathData['filename'];
 
                 return $path;
             });
 
-        $table->eventManager()->on($listener);
+        $table->getEventManager()->on($listener);
 
         $entityData = [
             'photo' => [
@@ -769,9 +769,9 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
     {
         $schema = $this->createMock(TableSchema::class);
         $table = $this->createMock(Table::class);
-        $table->method('alias')
+        $table->method('getAlias')
             ->willReturn('ProfferTest');
-        $table->method('schema')
+        $table->method('getSchema')
             ->willReturn($schema);
 
         $config = $this->config;
@@ -805,11 +805,11 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         $schema = $this->createMock(TableSchema::class);
         $table = $this->createMock(Table::class);
         $eventManager = $this->createMock(EventManager::class);
-        $table->method('alias')
+        $table->method('getAlias')
             ->willReturn('ProfferTest');
-        $table->method('schema')
+        $table->method('getSchema')
             ->willReturn($schema);
-        $table->method('eventManager')
+        $table->method('getEventManager')
             ->willReturn($eventManager);
 
         $config = [
@@ -883,11 +883,11 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         $schema = $this->createMock(TableSchema::class);
         $table = $this->createMock(Table::class);
         $eventManager = $this->createMock(EventManager::class);
-        $table->method('alias')
+        $table->method('getAlias')
             ->willReturn('ProfferTest');
-        $table->method('schema')
+        $table->method('getSchema')
             ->willReturn($schema);
-        $table->method('eventManager')
+        $table->method('getEventManager')
             ->willReturn($eventManager);
 
         $config = [
@@ -950,11 +950,11 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
         $schema = $this->createMock(TableSchema::class);
         $table = $this->createMock(Table::class);
         $eventManager = $this->createMock(EventManager::class);
-        $table->method('alias')
+        $table->method('getAlias')
             ->willReturn('ProfferTest');
-        $table->method('schema')
+        $table->method('getSchema')
             ->willReturn($schema);
-        $table->method('eventManager')
+        $table->method('getEventManager')
             ->willReturn($eventManager);
 
         $entityData = [
@@ -1051,10 +1051,10 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             ])
             ->getMock();
 
-        $uploadsTable->method('entityClass')->willReturn(Entity::class);
-        $uploadsTable->method('alias')->willReturn('Uploads');
-        $uploadsTable->method('schema')->willReturn($uploadsSchema);
-        $uploadsTable->method('eventManager')->willReturn($eventManager);
+        $uploadsTable->method('getEntityClass')->willReturn(Entity::class);
+        $uploadsTable->method('getAlias')->willReturn('Uploads');
+        $uploadsTable->method('getSchema')->willReturn($uploadsSchema);
+        $uploadsTable->method('getEventManager')->willReturn($eventManager);
 
         $config = [
             'photo' => [

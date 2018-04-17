@@ -21,7 +21,7 @@ class TestPath extends ProfferPath
     {
         $this->setRoot(TMP . 'ProfferTests');
 
-        $this->setTable($table->alias());
+        $this->setTable($table->getAlias());
         $this->setField($field);
         $this->setSeed('proffer_test');
 

@@ -43,7 +43,7 @@ class ProfferPath implements ProfferPathInterface
             $this->setRoot(WWW_ROOT . 'files');
         }
 
-        $this->setTable($table->alias());
+        $this->setTable($table->getAlias());
         $this->setField($field);
         $this->setSeed($this->generateSeed($entity->get($settings['dir'])));
 

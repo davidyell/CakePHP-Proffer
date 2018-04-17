@@ -35,11 +35,11 @@ class ProfferBehavior extends Behavior
     public function initialize(array $config)
     {
         Type::map('proffer.file', '\Proffer\Database\Type\FileType');
-        $schema = $this->_table->schema();
-        foreach (array_keys($this->config()) as $field) {
-            $schema->columnType($field, 'proffer.file');
+        $schema = $this->_table->getSchema();
+        foreach (array_keys($this->getConfig()) as $field) {
+            $schema->setColumnType($field, 'proffer.file');
         }
-        $this->_table->schema($schema);
+        $this->_table->setSchema($schema);
     }
 
     /**
@@ -55,8 +55,8 @@ class ProfferBehavior extends Behavior
      */
     public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options)
     {
-        foreach ($this->config() as $field => $settings) {
-            if ($this->_table->validator()->isEmptyAllowed($field, false) &&
+        foreach ($this->getConfig() as $field => $settings) {
+            if ($this->_table->getValidator()->isEmptyAllowed($field, false) &&
                 isset($data[$field]['error']) && $data[$field]['error'] === UPLOAD_ERR_NO_FILE
             ) {
                 unset($data[$field]);
@@ -81,8 +81,8 @@ class ProfferBehavior extends Behavior
     public function beforeSave(Event $event, EntityInterface $entity, ArrayObject $options, ProfferPathInterface $path = null)
     {
 
-        foreach ($this->config() as $field => $settings) {
-            $tableEntityClass = $this->_table->entityClass();
+        foreach ($this->getConfig() as $field => $settings) {
+            $tableEntityClass = $this->_table->getEntityClass();
 
             if ($entity->has($field) && is_array($entity->get($field)) && $entity->get($field)['error'] === UPLOAD_ERR_OK) {
                 $this->process($field, $settings, $entity, $path);
@@ -169,7 +169,7 @@ class ProfferBehavior extends Behavior
         }
 
         $event = new Event('Proffer.afterPath', $entity, ['path' => $path]);
-        $this->_table->eventManager()->dispatch($event);
+        $this->_table->getEventManager()->dispatch($event);
         if (!empty($event->result)) {
             $path = $event->result;
         }
@@ -210,7 +210,7 @@ class ProfferBehavior extends Behavior
 
             $eventData = ['path' => $path, 'images' => $imagePaths];
             $event = new Event('Proffer.afterCreateImage', $entity, $eventData);
-            $this->_table->eventManager()->dispatch($event);
+            $this->_table->getEventManager()->dispatch($event);
         }
     }
 
@@ -228,7 +228,7 @@ class ProfferBehavior extends Behavior
      */
     public function afterDelete(Event $event, EntityInterface $entity, ArrayObject $options, ProfferPathInterface $path = null)
     {
-        foreach ($this->config() as $field => $settings) {
+        foreach ($this->getConfig() as $field => $settings) {
             $dir = $entity->get($settings['dir']);
 
             if (!empty($entity) && !empty($dir)) {
@@ -239,7 +239,7 @@ class ProfferBehavior extends Behavior
                 }
 
                 $event = new Event('Proffer.beforeDeleteFolder', $entity, ['path' => $path]);
-                $this->_table->eventManager()->dispatch($event);
+                $this->_table->getEventManager()->dispatch($event);
                 $path->deleteFiles($path->getFolder(), true);
             }
 
