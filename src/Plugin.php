@@ -12,19 +12,10 @@
 namespace Proffer;
 
 use Cake\Core\BasePlugin;
-use Cake\Core\Configure;
 
 /**
  * Default Plugin class
  */
 class Plugin extends BasePlugin
 {
-    /**
-     * Initialize plugin
-     *
-     * @return void
-     */
-    public function initialize()
-    {
-    }
 }
