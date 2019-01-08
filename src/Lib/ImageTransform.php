@@ -154,7 +154,9 @@ class ImageTransform implements ImageTransformInterface
      */
     protected function thumbnailResize(Image $image, $width, $height)
     {
-        return $image->resize($width, $height);
+        return $image->resize($width, $height, function ($constraint) {
+            $constraint->aspectRatio();
+        });
     }
 
     /**
