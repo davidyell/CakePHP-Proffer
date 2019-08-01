@@ -8,10 +8,10 @@ namespace Proffer\Tests\Lib;
 
 use Cake\Core\Plugin;
 use Cake\ORM\Entity;
-use PHPUnit_Framework_TestCase;
+use Cake\TestSuite\TestCase;
 use Proffer\Lib\ProfferPath;
 
-class ProfferPathTest extends PHPUnit_Framework_TestCase
+class ProfferPathTest extends TestCase
 {
 
     /**
@@ -35,6 +35,13 @@ class ProfferPathTest extends PHPUnit_Framework_TestCase
             reset($objects);
             rmdir($dir);
         }
+    }
+
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->loadPlugins(['Proffer' => ['path' => ROOT]]);
     }
 
     /**

@@ -102,5 +102,3 @@ Log::setConfig([
         'file' => 'error',
     ]
 ]);
-
-Plugin::load('Proffer', ['path' => ROOT]);
