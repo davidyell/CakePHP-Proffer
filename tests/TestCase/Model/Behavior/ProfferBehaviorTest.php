@@ -279,7 +279,7 @@ class ProfferBehaviorTest extends TestCase
             ->willReturnCallback(function ($source, $destination) {
                 if (!file_exists(pathinfo($destination, PATHINFO_DIRNAME))) {
                     mkdir(pathinfo($destination, PATHINFO_DIRNAME), 0777, true);
-            }
+                }
 
                 return copy($source, $destination);
             });

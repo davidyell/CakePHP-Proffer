@@ -8,7 +8,7 @@
 
 namespace Proffer\Lib;
 
-use Cake\ORM\Entity;
+use Cake\Datasource\EntityInterface;
 use Cake\ORM\Table;
 use Cake\Utility\Text;
 
@@ -31,11 +31,11 @@ class ProfferPath implements ProfferPathInterface
      * Construct the class and setup the defaults
      *
      * @param Table $table Instance of the table
-     * @param Entity $entity Instance of the entity data
+     * @param EntityInterface $entity Instance of the entity data
      * @param string $field The name of the upload field
      * @param array $settings Array of settings for the upload field
      */
-    public function __construct(Table $table, Entity $entity, $field, array $settings)
+    public function __construct(Table $table, EntityInterface $entity, $field, array $settings)
     {
         if (isset($settings['root'])) {
             $this->setRoot($settings['root']);
@@ -253,13 +253,19 @@ class ProfferPath implements ProfferPathInterface
      *
      * @param string $folder Absolute path to the folder
      * @param bool $rmdir If you want to remove the folder as well
-     * @return void
+     * @return bool
      */
     public function deleteFiles($folder, $rmdir = false)
     {
-        array_map('unlink', glob($folder . DS . '*'));
+        $fileList = glob($folder . DS . '*');
+        if ($fileList !== false) {
+            array_map('unlink', $fileList);
+        }
+
         if ($rmdir) {
             rmdir($folder);
         }
+
+        return true;
     }
 }

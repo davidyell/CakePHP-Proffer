@@ -172,7 +172,11 @@ class ImageTransform implements ImageTransformInterface
      */
     protected function thumbnailCustom(Image $image, $custom, $params)
     {
-        return call_user_func_array([$image, $custom], $params);
+        if (method_exists($image, $custom)) {
+            return call_user_func_array($image->{$custom}(), $params);
+        }
+
+        return $image;
     }
 
     /**
