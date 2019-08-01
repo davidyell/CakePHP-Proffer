@@ -2,20 +2,14 @@
 
 namespace Proffer\Tests\Model\Validation;
 
-use Cake\Core\Plugin;
 use Cake\TestSuite\TestCase;
 use Proffer\Model\Validation\ProfferRules;
 
 class ProfferRulesTest extends TestCase
 {
-
-    private $Rules;
-
     public function setUp()
     {
         $this->loadPlugins(['Proffer' => ['path' => ROOT]]);
-
-        $this->Rules = new ProfferRules;
     }
 
     public function providerDimensions()
@@ -53,7 +47,7 @@ class ProfferRulesTest extends TestCase
      */
     public function testDimensions($value, $dimensions, $expected)
     {
-        $result = $this->Rules->dimensions($value, $dimensions);
+        $result = ProfferRules::dimensions($value, $dimensions);
         $this->assertEquals($expected, $result);
     }
 }
