@@ -17,10 +17,16 @@ It's always advised to lock your dependencies to a specific version number. You 
 :warning: Installing the plugin without the use of Composer is unsupported, you do so at your own risk.
 
 ## CakePHP
-Then you'll need to load the plugin in your `config/bootstrap.php` file.
+Then you'll need to load the plugin in your `src/Application.php` file.
 
 ```php
-Plugin::load('Proffer');
+$this->addPlugin('Proffer');
+```
+
+or you can use the console to do this for you.
+
+```bash
+bin/cake plugin load Proffer
 ```
 
 ## Database

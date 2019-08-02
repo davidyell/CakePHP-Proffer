@@ -3,6 +3,8 @@ namespace Proffer\Shell;
 
 use Cake\Console\Shell;
 use Cake\Core\Exception\Exception;
+use Cake\ORM\Entity;
+use Cake\ORM\ResultSet;
 use Proffer\Lib\ImageTransform;
 use Proffer\Lib\ProfferPath;
 
@@ -75,7 +77,7 @@ class ProfferShell extends Shell
     /**
      * Introduction to the shell
      *
-     * @return void
+     * @return bool|int|null
      */
     public function main()
     {
@@ -83,6 +85,8 @@ class ProfferShell extends Shell
         $this->out('This shell can be used to regenerate thumbnails and cleanup unlinked images.');
         $this->hr();
         $this->out($this->OptionParser->help());
+
+        return parent::main();
     }
 
     /**
@@ -161,19 +165,28 @@ class ProfferShell extends Shell
             $this->out($this->nl(0));
         }
 
-        $config = $this->Table->behaviors()->Proffer->config();
+        $config = $this->Table->behaviors()->get('Proffer')->config();
 
         // Get the root upload folder for this table
         $uploadFieldFolders = glob(WWW_ROOT . 'files' . DS . strtolower($table) . DS . '*');
+        if (!is_array($uploadFieldFolders)) {
+            $this->err('No files found to process.');
+            $this->_stop();
+        }
 
         // Loop through each upload field configured for this table (field)
-        foreach ($uploadFieldFolders as $fieldFolder) {
+        foreach ((array)$uploadFieldFolders as $fieldFolder) {
             // Loop through each instance of an upload for this field (seed)
-            $pathFieldName = pathinfo($fieldFolder, PATHINFO_BASENAME);
+            $pathFieldName = pathinfo((string)$fieldFolder, PATHINFO_BASENAME);
             $uploadFolders = glob($fieldFolder . DS . '*');
-            foreach ($uploadFolders as $seedFolder) {
+            if (!is_array($uploadFolders)) {
+                $this->err('No folders found to process.');
+                $this->_stop();
+            }
+
+            foreach ((array)$uploadFolders as $seedFolder) {
                 // Does the seed exist in the db?
-                $seed = pathinfo($seedFolder, PATHINFO_BASENAME);
+                $seed = pathinfo((string)$seedFolder, PATHINFO_BASENAME);
 
                 foreach ($config as $field => $settings) {
                     if ($pathFieldName != $field) {
@@ -182,7 +195,8 @@ class ProfferShell extends Shell
 
                     $targets = [];
 
-                    $record = $this->{$this->Table->alias()}->find()
+                    /** @var Entity|false $record */
+                    $record = $this->{$this->Table->getAlias()}->find()
                         ->select([
                             $field,
                             $settings['dir']
@@ -207,8 +221,8 @@ class ProfferShell extends Shell
                                 $this->out(__("Would remove folder `$seed`"));
                             }
                         } else {
-                            array_map('unlink', glob($seedFolder . DS . '*'));
-                            rmdir($seedFolder);
+                            array_map('unlink', (array)glob($seedFolder . DS . '*'));
+                            rmdir((string)$seedFolder);
 
                             if ($this->param('verbose')) {
                                 $this->out(__("Remove `$seedFolder` folder and contents"));
@@ -217,7 +231,7 @@ class ProfferShell extends Shell
                             }
                         }
                     } else {
-                        $files = glob($seedFolder . DS . '*');
+                        $files = (array)glob($seedFolder . DS . '*');
 
                         $filenames = array_map(function ($p) {
                             return pathinfo($p, PATHINFO_BASENAME);

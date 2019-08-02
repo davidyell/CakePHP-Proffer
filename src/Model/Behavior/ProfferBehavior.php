@@ -37,7 +37,9 @@ class ProfferBehavior extends Behavior
         Type::map('proffer.file', '\Proffer\Database\Type\FileType');
         $schema = $this->_table->getSchema();
         foreach (array_keys($this->getConfig()) as $field) {
-            $schema->setColumnType($field, 'proffer.file');
+            if (is_string($field)) {
+                $schema->setColumnType($field, 'proffer.file');
+            }
         }
         $this->_table->setSchema($schema);
     }
@@ -75,12 +77,10 @@ class ProfferBehavior extends Behavior
      * @param \Proffer\Lib\ProfferPathInterface|null $path Inject an instance of ProfferPath
      *
      * @return true
-     *
      * @throws \Exception
      */
     public function beforeSave(Event $event, EntityInterface $entity, ArrayObject $options, ProfferPathInterface $path = null)
     {
-
         foreach ($this->getConfig() as $field => $settings) {
             $tableEntityClass = $this->_table->getEntityClass();
 
@@ -109,9 +109,8 @@ class ProfferBehavior extends Behavior
      * @param \Cake\Datasource\EntityInterface $entity The current entity to process
      * @param \Proffer\Lib\ProfferPathInterface|null $path Inject an instance of ProfferPath
      *
-     * @throws \Exception If the file cannot be renamed / moved to the correct path
-     *
      * @return void
+     * @throws \Exception If the file cannot be renamed / moved to the correct path
      */
     protected function process($field, array $settings, EntityInterface $entity, ProfferPathInterface $path = null)
     {
@@ -153,9 +152,8 @@ class ProfferBehavior extends Behavior
      * @param array $settings Array of upload settings for the field
      * @param \Proffer\Lib\ProfferPathInterface|null $path Inject an instance of ProfferPath
      *
-     * @throws \App\Exception\InvalidClassException If the custom class doesn't implement the interface
-     *
      * @return \Proffer\Lib\ProfferPathInterface
+     * @throws \Proffer\Exception\InvalidClassException If the custom class doesn't implement the interface
      */
     protected function createPath(EntityInterface $entity, $field, array $settings, ProfferPathInterface $path = null)
     {
@@ -187,9 +185,8 @@ class ProfferBehavior extends Behavior
      * @param array $settings Array of upload field settings
      * @param \Proffer\Lib\ProfferPathInterface $path Instance of the path class
      *
-     * @throws \App\Exception\InvalidClassException If the transform class doesn't implement the interface
-     *
      * @return void
+     * @throws \Proffer\Exception\InvalidClassException If the transform class doesn't implement the interface
      */
     protected function createThumbnails(EntityInterface $entity, array $settings, ProfferPathInterface $path)
     {

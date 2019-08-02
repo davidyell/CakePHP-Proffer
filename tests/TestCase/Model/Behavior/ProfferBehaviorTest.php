@@ -15,8 +15,8 @@ use Cake\Event\EventListenerInterface;
 use Cake\Event\EventManager;
 use Cake\ORM\Entity;
 use Cake\ORM\Table;
+use Cake\TestSuite\TestCase;
 use Cake\Validation\Validator;
-use PHPUnit_Framework_TestCase;
 use Proffer\Lib\ProfferPath;
 use Proffer\Model\Behavior\ProfferBehavior;
 use Proffer\Tests\Stubs\TestPath;
@@ -26,7 +26,7 @@ use Proffer\Tests\Stubs\TestPath;
  *
  * @package Proffer\Tests\Model\Behavior
  */
-class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
+class ProfferBehaviorTest extends TestCase
 {
 
     private $config = [
@@ -45,6 +45,10 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
+        $this->loadPlugins([
+            'Proffer' => ['path' => ROOT]
+        ]);
+
         $this->config['photo']['root'] = TMP . 'ProfferTests' . DS;
     }
 
@@ -209,11 +213,11 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
     public function validFileProvider()
     {
         return [
-            [
+            'landscape image' => [
                 [
                     'photo' => [
                         'name' => 'image_640x480.jpg',
-                        'tmp_name' => Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg',
+                        'tmp_name' => ROOT . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg',
                         'size' => 33000,
                         'error' => UPLOAD_ERR_OK
                     ],
@@ -224,11 +228,11 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
                     'dir' => 'proffer_test'
                 ]
             ],
-            [
+            'portrait image' => [
                 [
                     'photo' => [
                         'name' => 'image_480x640.jpg',
-                        'tmp_name' => Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_480x640.jpg',
+                        'tmp_name' => ROOT . 'tests' . DS . 'Fixture' . DS . 'image_480x640.jpg',
                         'size' => 45704,
                         'error' => UPLOAD_ERR_OK
                     ],
@@ -238,22 +242,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
                     'filename' => 'image_480x640.jpg',
                     'dir' => 'proffer_test'
                 ]
-            ],
-            [
-                [
-                    'photo' => [
-                        'name' => 'image_480x640.jpg',
-                        'tmp_name' => Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_480x640.jpg',
-                        'size' => 45704,
-                        'error' => UPLOAD_ERR_OK
-                    ],
-                    'photo_dir' => 'proffer_test'
-                ],
-                [
-                    'filename' => 'image_480x640.jpg',
-                    'dir' => 'proffer_test'
-                ]
-            ],
+            ]
         ];
     }
 
@@ -290,7 +279,7 @@ class ProfferBehaviorTest extends PHPUnit_Framework_TestCase
             ->willReturnCallback(function ($source, $destination) {
                 if (!file_exists(pathinfo($destination, PATHINFO_DIRNAME))) {
                     mkdir(pathinfo($destination, PATHINFO_DIRNAME), 0777, true);
-            }
+                }
 
                 return copy($source, $destination);
             });
