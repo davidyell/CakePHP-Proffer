@@ -171,8 +171,8 @@ class ProfferBehavior extends Behavior
 
         $event = new Event('Proffer.afterPath', $entity, ['path' => $path]);
         $this->_table->getEventManager()->dispatch($event);
-        if (!empty($event->result)) {
-            $path = $event->result;
+        if (!empty($event->getResult())) {
+            $path = $event->getResult();
         }
 
         $path->createPathFolder();
