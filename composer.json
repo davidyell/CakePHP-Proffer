@@ -1,9 +1,9 @@
 {
     "name": "davidyell/proffer",
-    "description": "An upload plugin for CakePHP 3",
+    "description": "An upload plugin for CakePHP 4",
 	"type": "cakephp-plugin",
-  	"keywords": ["cakephp", "cakephp3", "upload", "file", "image", "orm"],
-  	"homepage": "https://github.com/davidyell/CakePHP3-Proffer",
+  	"keywords": ["cakephp", "cakephp4", "upload", "file", "image", "orm"],
+  	"homepage": "https://github.com/davidyell/CakePHP-Proffer",
   	"license": "MIT",
   	"authors": [
 	  {
@@ -13,18 +13,18 @@
 	],
 	"support": {
 	  "irc": "irc://irc.freenode.org/cakephp",
-	  "issues": "https://github.com/davidyell/CakePHP3-Proffer/issues",
-	  "source": "https://github.com/davidyell/CakePHP3-Proffer"
+	  "issues": "https://github.com/davidyell/CakePHP-Proffer/issues",
+	  "source": "https://github.com/davidyell/CakePHP-Proffer/tree/cake-4"
 	},
 	"require": {
-		"php": ">=5.6.0",
-		"cakephp/orm": "3.*",
-		"intervention/image": "^2.3"
+		"php": ">=7.2",
+		"cakephp/orm": "~4.0",
+		"intervention/image": "^2.5"
 	},
   	"require-dev": {
-	  "phpunit/phpunit": "^5|^6",
-	  "cakephp/cakephp": "~3.4",
-	  "cakephp/cakephp-codesniffer": "~3.0"
+	  "phpunit/phpunit": "^8.5",
+	  "cakephp/cakephp": "~4.0",
+	  "cakephp/cakephp-codesniffer": "~4.0"
 	},
 	"autoload": {
 	  "psr-4": {
