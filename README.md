@@ -1,17 +1,16 @@
-# CakePHP3-Proffer
-An upload plugin for CakePHP 3.
+# CakePHP4-Proffer
+An upload plugin for CakePHP 4.
 
 ![Proffer definition](http://i.imgur.com/OaAqQ6x.png)
 
 ## What is it?
-So I needed a way to upload images in [CakePHP 3](http://github.com/cakephp/cakephp), and as I couldn't find anything 
-that I liked I decided to write my own in a similar vein to how [@josegonzalez](https://github.com/josegonzalez) had 
-written his [CakePHP-Upload](https://github.com/josegonzalez/cakephp-upload) plugin for CakePHP 2.
+This plugin allows images and files to be uploaded, and includes a bundled image library for generating thumbnails from source images. You can also 
+rename images.
 
 ## Requirements
-* PHP 5.6+
+* PHP 7.2+
 * Database
-* CakePHP 3
+* CakePHP 4
 * [Composer](http://getcomposer.org/)
 * [File Info is enabled](http://php.net/manual/en/book.fileinfo.php) for mimetype validation
 
