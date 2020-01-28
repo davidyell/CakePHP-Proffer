@@ -308,11 +308,10 @@ class ProfferBehaviorTest extends TestCase
         $this->assertEquals(200, $squareSizes[1]);
     }
 
-    /**
-     * @expectedException \Proffer\Exception\CannotUploadFileException
-     */
     public function testBeforeSaveWithoutUploadingAFile()
     {
+        $this->expectException(\Proffer\Exception\CannotUploadFileException::class);
+
         $schema = $this->createMock(TableSchema::class);
         $table = $this->createMock(Table::class);
         $eventManager = $this->createMock(EventManager::class);
@@ -355,11 +354,10 @@ class ProfferBehaviorTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \Proffer\Exception\CannotUploadFileException
-     */
     public function testFailedToMoveFile()
     {
+        $this->expectException(\Proffer\Exception\CannotUploadFileException::class);
+
         $schema = $this->createMock(TableSchema::class);
         $table = $this->createMock(Table::class);
         $eventManager = $this->createMock(EventManager::class);
@@ -864,11 +862,10 @@ class ProfferBehaviorTest extends TestCase
         $this->assertEquals(200, $squareSizes[1]);
     }
 
-    /**
-     * @expectedException \Proffer\Exception\InvalidClassException
-     */
     public function testReplacingComponentsWithNoInterface()
     {
+        $this->expectException(\Proffer\Exception\InvalidClassException::class);
+
         $schema = $this->createMock(TableSchema::class);
         $table = $this->createMock(Table::class);
         $eventManager = $this->createMock(EventManager::class);
