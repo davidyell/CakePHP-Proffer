@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * Created by PhpStorm.
  *
@@ -28,7 +30,6 @@ use Proffer\Tests\Stubs\TestPath;
  */
 class ProfferBehaviorTest extends TestCase
 {
-
     private $config = [
         'photo' => [
             'dir' => 'photo_dir',
@@ -36,8 +37,8 @@ class ProfferBehaviorTest extends TestCase
                 'square' => ['w' => 200, 'h' => 200, 'crop' => true],
                 'portrait' => ['w' => 100, 'h' => 300],
                 'large' => ['w' => 1200, 'h' => 900, 'orientate' => true],
-            ]
-        ]
+            ],
+        ],
     ];
 
     /**
@@ -46,7 +47,7 @@ class ProfferBehaviorTest extends TestCase
     public function setUp(): void
     {
         $this->loadPlugins([
-            'Proffer' => ['path' => ROOT]
+            'Proffer' => ['path' => ROOT],
         ]);
 
         $this->config['photo']['root'] = TMP . 'ProfferTests' . DS;
@@ -145,22 +146,22 @@ class ProfferBehaviorTest extends TestCase
             [
                 ['photo' => ['error' => UPLOAD_ERR_NO_FILE]],
                 true,
-                ['photo' => ['error' => UPLOAD_ERR_NO_FILE]]
+                ['photo' => ['error' => UPLOAD_ERR_NO_FILE]],
             ],
             [
                 ['photo' => ['error' => UPLOAD_ERR_NO_FILE]],
                 false,
-                ['photo' => ['error' => UPLOAD_ERR_NO_FILE]]
+                ['photo' => ['error' => UPLOAD_ERR_NO_FILE]],
             ],
             [
                 ['photo' => ['error' => UPLOAD_ERR_OK]],
                 true,
-                ['photo' => ['error' => UPLOAD_ERR_OK]]
+                ['photo' => ['error' => UPLOAD_ERR_OK]],
             ],
             [
                 ['photo' => ['error' => UPLOAD_ERR_OK]],
                 false,
-                ['photo' => ['error' => UPLOAD_ERR_OK]]
+                ['photo' => ['error' => UPLOAD_ERR_OK]],
             ],
         ];
     }
@@ -219,14 +220,14 @@ class ProfferBehaviorTest extends TestCase
                         'name' => 'image_640x480.jpg',
                         'tmp_name' => ROOT . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg',
                         'size' => 33000,
-                        'error' => UPLOAD_ERR_OK
+                        'error' => UPLOAD_ERR_OK,
                     ],
-                    'photo_dir' => 'proffer_test'
+                    'photo_dir' => 'proffer_test',
                 ],
                 [
                     'filename' => 'image_640x480.jpg',
-                    'dir' => 'proffer_test'
-                ]
+                    'dir' => 'proffer_test',
+                ],
             ],
             'portrait image' => [
                 [
@@ -234,15 +235,15 @@ class ProfferBehaviorTest extends TestCase
                         'name' => 'image_480x640.jpg',
                         'tmp_name' => ROOT . 'tests' . DS . 'Fixture' . DS . 'image_480x640.jpg',
                         'size' => 45704,
-                        'error' => UPLOAD_ERR_OK
+                        'error' => UPLOAD_ERR_OK,
                     ],
-                    'photo_dir' => 'proffer_test'
+                    'photo_dir' => 'proffer_test',
                 ],
                 [
                     'filename' => 'image_480x640.jpg',
-                    'dir' => 'proffer_test'
-                ]
-            ]
+                    'dir' => 'proffer_test',
+                ],
+            ],
         ];
     }
 
@@ -342,8 +343,8 @@ class ProfferBehaviorTest extends TestCase
                 'name' => '',
                 'tmp_name' => '',
                 'size' => '',
-                'error' => UPLOAD_ERR_OK
-            ]
+                'error' => UPLOAD_ERR_OK,
+            ],
         ]);
 
         $proffer->beforeSave(
@@ -382,8 +383,8 @@ class ProfferBehaviorTest extends TestCase
                 'name' => 'image_640x480.jpg',
                 'tmp_name' => Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg',
                 'size' => 33000,
-                'error' => UPLOAD_ERR_OK
-            ]
+                'error' => UPLOAD_ERR_OK,
+            ],
         ]);
 
         $path = $this->_getProfferPathMock($table, $entity, 'photo');
@@ -415,7 +416,7 @@ class ProfferBehaviorTest extends TestCase
 
         $entity = new Entity([
             'photo' => 'image_640x480.jpg',
-            'photo_dir' => 'proffer_test'
+            'photo_dir' => 'proffer_test',
         ]);
 
         $path = $this->_getProfferPathMock($table, $entity, 'photo');
@@ -471,7 +472,7 @@ class ProfferBehaviorTest extends TestCase
 
         $entity = new Entity([
             'photo' => 'image_640x480.jpg',
-            'photo_dir' => 'proffer_test'
+            'photo_dir' => 'proffer_test',
         ]);
 
         $path = $this->_getProfferPathMock($table, $entity, 'photo');
@@ -505,9 +506,9 @@ class ProfferBehaviorTest extends TestCase
                 'name' => 'image_640x480.jpg',
                 'tmp_name' => Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg',
                 'size' => 33000,
-                'error' => UPLOAD_ERR_OK
+                'error' => UPLOAD_ERR_OK,
             ],
-            'photo_dir' => 'proffer_test'
+            'photo_dir' => 'proffer_test',
         ];
         $entity = new Entity($entityData);
 
@@ -583,9 +584,9 @@ class ProfferBehaviorTest extends TestCase
                 'name' => 'image_640x480.jpg',
                 'tmp_name' => Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg',
                 'size' => 33000,
-                'error' => UPLOAD_ERR_OK
+                'error' => UPLOAD_ERR_OK,
             ],
-            'photo_dir' => 'proffer_test'
+            'photo_dir' => 'proffer_test',
         ];
         $entity = new Entity($entityData);
         $path = $this->_getProfferPathMock($table, $entity, 'photo');
@@ -629,42 +630,42 @@ class ProfferBehaviorTest extends TestCase
                 [
                     'table' => 'proffer_path_event_test',
                     'seed' => 'proffer_event_test',
-                    'filename' => 'event_image_640x480.jpg'
+                    'filename' => 'event_image_640x480.jpg',
                 ],
                 TMP . 'ProfferTests' . DS . 'proffer_path_event_test' . DS . 'photo' . DS . 'proffer_event_test' .
-                DS . 'event_image_640x480.jpg'
+                DS . 'event_image_640x480.jpg',
             ],
             [
                 [
                     'table' => null,
                     'seed' => 'proffer_event_test',
-                    'filename' => 'event_image_640x480.jpg'
+                    'filename' => 'event_image_640x480.jpg',
                 ],
-                TMP . 'ProfferTests' . DS . 'photo' . DS . 'proffer_event_test' . DS . 'event_image_640x480.jpg'
+                TMP . 'ProfferTests' . DS . 'photo' . DS . 'proffer_event_test' . DS . 'event_image_640x480.jpg',
             ],
             [
                 [
                     'table' => '',
                     'seed' => 'proffer_event_test',
-                    'filename' => 'event_image_640x480.jpg'
+                    'filename' => 'event_image_640x480.jpg',
                 ],
-                TMP . 'ProfferTests' . DS . 'photo' . DS . 'proffer_event_test' . DS . 'event_image_640x480.jpg'
+                TMP . 'ProfferTests' . DS . 'photo' . DS . 'proffer_event_test' . DS . 'event_image_640x480.jpg',
             ],
             [
                 [
                     'table' => '',
                     'seed' => '',
-                    'filename' => 'event_image_640x480.jpg'
+                    'filename' => 'event_image_640x480.jpg',
                 ],
-                TMP . 'ProfferTests' . DS . 'photo' . DS . 'event_image_640x480.jpg'
+                TMP . 'ProfferTests' . DS . 'photo' . DS . 'event_image_640x480.jpg',
             ],
             [
                 [
                     'table' => 'proffer_path_event_test',
                     'seed' => '',
-                    'filename' => 'event_image_640x480.jpg'
+                    'filename' => 'event_image_640x480.jpg',
                 ],
-                TMP . 'ProfferTests' . DS . 'proffer_path_event_test' . DS . 'photo' . DS . 'event_image_640x480.jpg'
+                TMP . 'ProfferTests' . DS . 'proffer_path_event_test' . DS . 'photo' . DS . 'event_image_640x480.jpg',
             ],
         ];
     }
@@ -714,9 +715,9 @@ class ProfferBehaviorTest extends TestCase
                 'name' => 'image_640x480.jpg',
                 'tmp_name' => Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg',
                 'size' => 33000,
-                'error' => UPLOAD_ERR_OK
+                'error' => UPLOAD_ERR_OK,
             ],
-            'photo_dir' => 'proffer_test'
+            'photo_dir' => 'proffer_test',
         ];
         $entity = new Entity($entityData);
 
@@ -766,7 +767,7 @@ class ProfferBehaviorTest extends TestCase
 
         $entityData = [
             'photo' => 'image_640x480.jpg',
-            'photo_dir' => 'proffer_test'
+            'photo_dir' => 'proffer_test',
         ];
         $entity = new Entity($entityData);
         $path = $this->_getProfferPathMock($table, $entity, 'photo');
@@ -807,8 +808,8 @@ class ProfferBehaviorTest extends TestCase
                     'portrait' => ['w' => 100, 'h' => 300],
                 ],
                 'pathClass' => '\Proffer\Tests\Stubs\TestPath',
-                'transformClass' => '\Proffer\Tests\Stubs\TestTransform'
-            ]
+                'transformClass' => '\Proffer\Tests\Stubs\TestTransform',
+            ],
         ];
 
         $entityData = [
@@ -816,9 +817,9 @@ class ProfferBehaviorTest extends TestCase
                 'name' => 'image_640x480.jpg',
                 'tmp_name' => Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg',
                 'size' => 33000,
-                'error' => UPLOAD_ERR_OK
+                'error' => UPLOAD_ERR_OK,
             ],
-            'photo_dir' => 'proffer_test'
+            'photo_dir' => 'proffer_test',
         ];
         $entity = new Entity($entityData);
 
@@ -884,7 +885,7 @@ class ProfferBehaviorTest extends TestCase
                     'portrait' => ['w' => 100, 'h' => 300],
                 ],
                 'pathClass' => \Proffer\Tests\Stubs\BadPath::class,
-            ]
+            ],
         ];
 
         $entityData = [
@@ -892,9 +893,9 @@ class ProfferBehaviorTest extends TestCase
                 'name' => 'image_640x480.jpg',
                 'tmp_name' => Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg',
                 'size' => 33000,
-                'error' => UPLOAD_ERR_OK
+                'error' => UPLOAD_ERR_OK,
             ],
-            'photo_dir' => 'proffer_test'
+            'photo_dir' => 'proffer_test',
         ];
         $entity = new Entity($entityData);
 
@@ -948,16 +949,16 @@ class ProfferBehaviorTest extends TestCase
                 'name' => 'image_640x480.jpg',
                 'tmp_name' => Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg',
                 'size' => 33000,
-                'error' => UPLOAD_ERR_OK
+                'error' => UPLOAD_ERR_OK,
             ],
             'photo_dir' => 'proffer_test',
             'avatar' => [
                 'name' => 'image_480x640.jpg',
                 'tmp_name' => Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_480x640.jpg',
                 'size' => 45704,
-                'error' => UPLOAD_ERR_OK
+                'error' => UPLOAD_ERR_OK,
             ],
-            'avatar_dir' => 'proffer_test'
+            'avatar_dir' => 'proffer_test',
         ];
         $entity = new Entity($entityData);
 
@@ -967,15 +968,15 @@ class ProfferBehaviorTest extends TestCase
                 'thumbnailSizes' => [
                     'square' => ['w' => 200, 'h' => 200, 'crop' => true],
                 ],
-                'pathClass' => '\Proffer\Tests\Stubs\TestPath'
+                'pathClass' => '\Proffer\Tests\Stubs\TestPath',
             ],
             'avatar' => [
                 'dir' => 'avatar_dir',
                 'thumbnailSizes' => [
                     'square' => ['w' => 200, 'h' => 200, 'crop' => true],
                 ],
-                'pathClass' => '\Proffer\Tests\Stubs\TestPath'
-            ]
+                'pathClass' => '\Proffer\Tests\Stubs\TestPath',
+            ],
         ];
 
         $proffer = $this->getMockBuilder(ProfferBehavior::class)
@@ -1026,14 +1027,14 @@ class ProfferBehaviorTest extends TestCase
                 'uploads',
                 [
                     'photo' => 'string',
-                    'photo_dir' => 'string'
-                ]
+                    'photo_dir' => 'string',
+                ],
             ])
             ->getMock();
 
         $uploadsTable = $this->getMockBuilder(Table::class)
             ->setConstructorArgs([
-                ['schema' => $uploadsSchema]
+                ['schema' => $uploadsSchema],
             ])
             ->getMock();
 
@@ -1048,7 +1049,7 @@ class ProfferBehaviorTest extends TestCase
                 'thumbnailSizes' => [
                     'square' => ['w' => 200, 'h' => 200, 'crop' => true],
                 ],
-                'pathClass' => '\Proffer\Tests\Stubs\TestPath'
+                'pathClass' => '\Proffer\Tests\Stubs\TestPath',
             ],
         ];
 
@@ -1071,7 +1072,7 @@ class ProfferBehaviorTest extends TestCase
             'name' => 'image_640x480.jpg',
             'tmp_name' => Plugin::path('Proffer') . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg',
             'size' => 33000,
-            'error' => UPLOAD_ERR_OK
+            'error' => UPLOAD_ERR_OK,
         ]);
 
         $proffer->beforeSave(

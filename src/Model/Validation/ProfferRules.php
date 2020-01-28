@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * Custom validation rules for validating uploads
  *
@@ -11,7 +13,6 @@ use Cake\Validation\Validation;
 
 class ProfferRules extends Validation
 {
-
     /**
      * Validate the dimensions of an image. If the file isn't an image then validation will fail
      *

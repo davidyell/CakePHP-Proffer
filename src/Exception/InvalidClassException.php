@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * InvalidClassException.php
@@ -12,5 +13,4 @@ use Exception;
 
 class InvalidClassException extends Exception
 {
-
 }

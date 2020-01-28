@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Proffer\Tests\Model\Validation;
 
@@ -19,25 +20,25 @@ class ProfferRulesTest extends TestCase
                 ['tmp_name' => ROOT . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg'],
                 [
                     'min' => ['w' => 100, 'h' => 100],
-                    'max' => ['w' => 500, 'h' => 500]
+                    'max' => ['w' => 500, 'h' => 500],
                 ],
-                false
+                false,
             ],
             [
                 ['tmp_name' => ROOT . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg'],
                 [
                     'min' => ['w' => 700, 'h' => 500],
-                    'max' => ['w' => 1000, 'h' => 800]
+                    'max' => ['w' => 1000, 'h' => 800],
                 ],
-                false
+                false,
             ],
             [
                 ['tmp_name' => ROOT . 'tests' . DS . 'Fixture' . DS . 'image_640x480.jpg'],
                 [
                     'min' => ['w' => 100, 'h' => 100],
-                    'max' => ['w' => 700, 'h' => 700]
+                    'max' => ['w' => 700, 'h' => 700],
                 ],
-                true
+                true,
             ],
         ];
     }

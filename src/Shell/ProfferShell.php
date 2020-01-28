@@ -1,10 +1,10 @@
 <?php
+declare(strict_types=1);
+
 namespace Proffer\Shell;
 
 use Cake\Console\Shell;
 use Cake\Core\Exception\Exception;
-use Cake\ORM\Entity;
-use Cake\ORM\ResultSet;
 use Proffer\Lib\ImageTransform;
 use Proffer\Lib\ProfferPath;
 
@@ -13,7 +13,6 @@ use Proffer\Lib\ProfferPath;
  */
 class ProfferShell extends Shell
 {
-
     /**
      * Store the table instance
      *
@@ -34,40 +33,40 @@ class ProfferShell extends Shell
             'parser' => [
                 'description' => [__('Use this command to regenerate the thumbnails for a specific table.')],
                 'arguments' => [
-                    'table' => ['help' => __('The table to regenerate thumbs for'), 'required' => true]
+                    'table' => ['help' => __('The table to regenerate thumbs for'), 'required' => true],
                 ],
                 'options' => [
                     'path-class' => [
                         'short' => 'p',
-                        'help' => __('Fully name spaced custom path class, you must use double backslash.')
+                        'help' => __('Fully name spaced custom path class, you must use double backslash.'),
                     ],
                     'image-class' => [
                         'short' => 'i',
-                        'help' => __('Fully name spaced custom image transform class, you must use double backslash.')
+                        'help' => __('Fully name spaced custom image transform class, you must use double backslash.'),
                     ],
                     'remove-behaviors' => [
                         'help' => __('The behaviors to remove before generate.'),
                     ],
-                ]
-            ]
+                ],
+            ],
         ]);
         $parser->addSubcommand('cleanup', [
             'help' => __('Clean up old images on the file system which are not linked in the database.'),
             'parser' => [
                 'description' => [__('This command will delete images which are not part of the model configuration.')],
                 'arguments' => [
-                    'table' => ['help' => __('The table to regenerate thumbs for'), 'required' => true]
+                    'table' => ['help' => __('The table to regenerate thumbs for'), 'required' => true],
                 ],
                 'options' => [
                     'dry-run' => [
                         'short' => 'd',
                         'help' => __('Do a dry run and don\'t delete any files.'),
-                        'boolean' => true
+                        'boolean' => true,
                     ],
                     'remove-behaviors' => [
                         'help' => __('The behaviors to remove before cleanup.'),
                     ],
-                ]
+                ],
             ],
         ]);
 
@@ -106,7 +105,7 @@ class ProfferShell extends Shell
                 ->select([$this->Table->primaryKey(), $field, $settings['dir']])
                 ->where([
                     "$field IS NOT NULL",
-                    "$field != ''"
+                    "$field != ''",
                 ]);
 
             foreach ($records as $item) {
@@ -195,14 +194,14 @@ class ProfferShell extends Shell
 
                     $targets = [];
 
-                    /** @var Entity|false $record */
+                    /** @var \Cake\ORM\Entity|false $record */
                     $record = $this->{$this->Table->getAlias()}->find()
                         ->select([
                             $field,
-                            $settings['dir']
+                            $settings['dir'],
                         ])
                         ->where([
-                            $settings['dir'] => $seed
+                            $settings['dir'] => $seed,
                         ])
                         ->first();
 

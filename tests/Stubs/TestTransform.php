@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * @category Proffer
@@ -15,5 +16,4 @@ use Proffer\Lib\ImageTransform;
 
 class TestTransform extends ImageTransform
 {
-
 }

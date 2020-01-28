@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * @category Proffer
@@ -13,7 +14,6 @@ namespace Proffer\Lib;
 
 interface ProfferPathInterface
 {
-
     /**
      * Returns the root folder in which all uploads should be placed.
      *

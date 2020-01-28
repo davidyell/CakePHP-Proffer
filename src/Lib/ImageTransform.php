@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * ImageTransform class
  * This class deals with creating thumbnails for image uploads using the a library
@@ -14,7 +16,6 @@ use Intervention\Image\ImageManager;
 
 class ImageTransform implements ImageTransformInterface
 {
-
     /**
      * @var \Cake\ORM\Table $table Instance of the table being used
      */
@@ -79,7 +80,7 @@ class ImageTransform implements ImageTransformInterface
     public function makeThumbnail($prefix, array $config)
     {
         $defaultConfig = [
-            'jpeg_quality' => 100
+            'jpeg_quality' => 100,
         ];
         $config = array_merge($defaultConfig, $config);
 

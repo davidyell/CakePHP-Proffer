@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * Created by PhpStorm.
  *
@@ -13,7 +15,6 @@ use Proffer\Lib\ProfferPath;
 
 class ProfferPathTest extends TestCase
 {
-
     /**
      * Recursively remove files and folders
      *
@@ -62,7 +63,7 @@ class ProfferPathTest extends TestCase
                     'field' => 'photo',
                     'entity' => [
                         'photo' => 'image_640x480.jpg',
-                        'photo_dir' => 'proffer_test'
+                        'photo_dir' => 'proffer_test',
                     ],
                     'settings' => [
                         'photo' => [
@@ -70,10 +71,10 @@ class ProfferPathTest extends TestCase
                             'dir' => 'photo_dir',
                             'thumbnailSizes' => [
                                 'square' => ['w' => 100, 'h' => 100],
-                                'squareCrop' => ['w' => 100, 'h' => 100, 'crop' => true]
-                            ]
-                        ]
-                    ]
+                                'squareCrop' => ['w' => 100, 'h' => 100, 'crop' => true],
+                            ],
+                        ],
+                    ],
                 ],
                 [
                     TMP . 'ProfferTest' . DS . 'proffertest' . DS . 'photo' . DS . 'proffer_test' .
@@ -81,15 +82,15 @@ class ProfferPathTest extends TestCase
                     TMP . 'ProfferTest' . DS . 'proffertest' . DS . 'photo' . DS . 'proffer_test' .
                     DS . 'square_image_640x480.jpg',
                     TMP . 'ProfferTest' . DS . 'proffertest' . DS . 'photo' . DS . 'proffer_test' .
-                    DS . 'squareCrop_image_640x480.jpg'
-                ]
+                    DS . 'squareCrop_image_640x480.jpg',
+                ],
             ],
             [
                 [
                     'field' => 'profile_picture_image',
                     'entity' => [
                         'profile_picture_image' => 'image_640x480.jpg',
-                        'profile_pictures_dir' => 'proffer_test'
+                        'profile_pictures_dir' => 'proffer_test',
                     ],
                     'settings' => [
                         'profile_picture_image' => [
@@ -97,10 +98,10 @@ class ProfferPathTest extends TestCase
                             'dir' => 'profile_pictures_dir',
                             'thumbnailSizes' => [
                                 'portrait' => ['w' => 300, 'h' => 100],
-                                'portraitCropped' => ['w' => 350, 'h' => 120, 'crop' => true]
-                            ]
-                        ]
-                    ]
+                                'portraitCropped' => ['w' => 350, 'h' => 120, 'crop' => true],
+                            ],
+                        ],
+                    ],
                 ],
                 [
                     TMP . 'ProfferTest' . DS . 'proffertest' . DS . 'profile_picture_image' . DS . 'proffer_test' .
@@ -108,8 +109,8 @@ class ProfferPathTest extends TestCase
                     TMP . 'ProfferTest' . DS . 'proffertest' . DS . 'profile_picture_image' . DS . 'proffer_test' .
                     DS . 'portrait_image_640x480.jpg',
                     TMP . 'ProfferTest' . DS . 'proffertest' . DS . 'profile_picture_image' . DS . 'proffer_test' .
-                    DS . 'portraitCropped_image_640x480.jpg'
-                ]
+                    DS . 'portraitCropped_image_640x480.jpg',
+                ],
             ],
         ];
     }
@@ -150,7 +151,7 @@ class ProfferPathTest extends TestCase
 
         $entity = new Entity([
             'photo' => 'image_640x480.jpg',
-            'photo_dir' => 'proffer_test'
+            'photo_dir' => 'proffer_test',
         ]);
 
         $settings = [
@@ -158,8 +159,8 @@ class ProfferPathTest extends TestCase
             'dir' => 'photo_dir',
             'thumbnailSizes' => [
                 'square' => ['w' => 100, 'h' => 100],
-                'squareCrop' => ['w' => 100, 'h' => 100, 'crop' => true]
-            ]
+                'squareCrop' => ['w' => 100, 'h' => 100, 'crop' => true],
+            ],
         ];
 
         $path = new ProfferPath($table, $entity, 'photo', $settings);
@@ -179,7 +180,7 @@ class ProfferPathTest extends TestCase
 
         $entity = new Entity([
             'photo' => 'image_640x480.jpg',
-            'photo_dir' => 'proffer_test'
+            'photo_dir' => 'proffer_test',
         ]);
 
         $settings = [
@@ -187,8 +188,8 @@ class ProfferPathTest extends TestCase
             'dir' => 'photo_dir',
             'thumbnailSizes' => [
                 'square' => ['w' => 100, 'h' => 100],
-                'squareCrop' => ['w' => 100, 'h' => 100, 'crop' => true]
-            ]
+                'squareCrop' => ['w' => 100, 'h' => 100, 'crop' => true],
+            ],
         ];
         $expected = ['square', 'squareCrop'];
 
@@ -208,7 +209,7 @@ class ProfferPathTest extends TestCase
 
         $entity = new Entity([
             'photo' => 'image_640x480.jpg',
-            'photo_dir' => 'proffer_test'
+            'photo_dir' => 'proffer_test',
         ]);
 
         $settings = [
@@ -216,8 +217,8 @@ class ProfferPathTest extends TestCase
             'dir' => 'photo_dir',
             'thumbnailSizes' => [
                 'square' => ['w' => 100, 'h' => 100],
-                'squareCrop' => ['w' => 100, 'h' => 100, 'crop' => true]
-            ]
+                'squareCrop' => ['w' => 100, 'h' => 100, 'crop' => true],
+            ],
         ];
 
         $path = $this->getMockBuilder('Proffer\Lib\ProfferPath')
@@ -272,7 +273,7 @@ class ProfferPathTest extends TestCase
 
         $entity = new Entity([
             'photo' => 'image_640x480.jpg',
-            'photo_dir' => 'proffer_test'
+            'photo_dir' => 'proffer_test',
         ]);
 
         $settings = [
@@ -280,8 +281,8 @@ class ProfferPathTest extends TestCase
             'dir' => 'photo_dir',
             'thumbnailSizes' => [
                 'square' => ['w' => 100, 'h' => 100],
-                'squareCrop' => ['w' => 100, 'h' => 100, 'crop' => true]
-            ]
+                'squareCrop' => ['w' => 100, 'h' => 100, 'crop' => true],
+            ],
         ];
 
         $path = new ProfferPath($table, $entity, 'photo', $settings);

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * Proffer
  * An upload behavior plugin for CakePHP 3
@@ -50,15 +52,16 @@ class ProfferBehavior extends Behavior
      * If a field is allowed to be empty as defined in the validation it should be unset to prevent processing
      *
      * @param \Cake\Event\Event $event Event instance
-     * @param ArrayObject $data Data to process
-     * @param ArrayObject $options Array of options for event
+     * @param \ArrayObject $data Data to process
+     * @param \ArrayObject $options Array of options for event
      *
      * @return void
      */
     public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options)
     {
         foreach ($this->getConfig() as $field => $settings) {
-            if ($this->_table->getValidator()->isEmptyAllowed($field, false) &&
+            if (
+                $this->_table->getValidator()->isEmptyAllowed($field, false) &&
                 isset($data[$field]['error']) && $data[$field]['error'] === UPLOAD_ERR_NO_FILE
             ) {
                 unset($data[$field]);
@@ -73,13 +76,13 @@ class ProfferBehavior extends Behavior
      *
      * @param \Cake\Event\Event $event The event
      * @param \Cake\Datasource\EntityInterface $entity The entity
-     * @param ArrayObject $options Array of options
+     * @param \ArrayObject $options Array of options
      * @param \Proffer\Lib\ProfferPathInterface|null $path Inject an instance of ProfferPath
      *
      * @return true
      * @throws \Exception
      */
-    public function beforeSave(Event $event, EntityInterface $entity, ArrayObject $options, ProfferPathInterface $path = null)
+    public function beforeSave(Event $event, EntityInterface $entity, ArrayObject $options, ?ProfferPathInterface $path = null)
     {
         foreach ($this->getConfig() as $field => $settings) {
             $tableEntityClass = $this->_table->getEntityClass();
@@ -112,7 +115,7 @@ class ProfferBehavior extends Behavior
      * @return void
      * @throws \Exception If the file cannot be renamed / moved to the correct path
      */
-    protected function process($field, array $settings, EntityInterface $entity, ProfferPathInterface $path = null)
+    protected function process($field, array $settings, EntityInterface $entity, ?ProfferPathInterface $path = null)
     {
         $path = $this->createPath($entity, $field, $settings, $path);
 
@@ -126,7 +129,7 @@ class ProfferBehavior extends Behavior
                     'tmp_name' => $entity->get('tmp_name'),
                     'error' => $entity->get('error'),
                     'size' => $entity->get('size'),
-                ]
+                ],
             ];
         }
 
@@ -155,7 +158,7 @@ class ProfferBehavior extends Behavior
      * @return \Proffer\Lib\ProfferPathInterface
      * @throws \Proffer\Exception\InvalidClassException If the custom class doesn't implement the interface
      */
-    protected function createPath(EntityInterface $entity, $field, array $settings, ProfferPathInterface $path = null)
+    protected function createPath(EntityInterface $entity, $field, array $settings, ?ProfferPathInterface $path = null)
     {
         if (!empty($settings['pathClass'])) {
             $path = new $settings['pathClass']($this->_table, $entity, $field, $settings);
@@ -218,12 +221,12 @@ class ProfferBehavior extends Behavior
      *
      * @param \Cake\Event\Event $event The passed event
      * @param \Cake\Datasource\EntityInterface $entity The entity
-     * @param ArrayObject $options Array of options
+     * @param \ArrayObject $options Array of options
      * @param \Proffer\Lib\ProfferPathInterface $path Inject an instance of ProfferPath
      *
      * @return true
      */
-    public function afterDelete(Event $event, EntityInterface $entity, ArrayObject $options, ProfferPathInterface $path = null)
+    public function afterDelete(Event $event, EntityInterface $entity, ArrayObject $options, ?ProfferPathInterface $path = null)
     {
         foreach ($this->getConfig() as $field => $settings) {
             $dir = $entity->get($settings['dir']);
