@@ -37,7 +37,7 @@ class ProfferPathTest extends TestCase
         }
     }
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -49,7 +49,7 @@ class ProfferPathTest extends TestCase
      *
      * @return void
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->_rrmdir(TMP . 'ProfferTests' . DS);
     }

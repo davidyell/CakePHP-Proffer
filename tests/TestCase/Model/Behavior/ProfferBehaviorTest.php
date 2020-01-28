@@ -43,7 +43,7 @@ class ProfferBehaviorTest extends TestCase
     /**
      * Adjust the default root so that it doesn't overwrite and user files
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->loadPlugins([
             'Proffer' => ['path' => ROOT]
@@ -80,7 +80,7 @@ class ProfferBehaviorTest extends TestCase
      *
      * @return void
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->_rrmdir(TMP . 'ProfferTests' . DS);
     }

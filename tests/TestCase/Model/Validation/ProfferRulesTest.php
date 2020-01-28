@@ -7,7 +7,7 @@ use Proffer\Model\Validation\ProfferRules;
 
 class ProfferRulesTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         $this->loadPlugins(['Proffer' => ['path' => ROOT]]);
     }

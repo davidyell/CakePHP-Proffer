@@ -32,7 +32,7 @@ class ProfferBehavior extends Behavior
      *
      * @return void
      */
-    public function initialize(array $config)
+    public function initialize(array $config): void
     {
         Type::map('proffer.file', '\Proffer\Database\Type\FileType');
         $schema = $this->_table->getSchema();
