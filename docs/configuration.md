@@ -72,7 +72,7 @@ See [Intervention Orientate method](http://image.intervention.io/api/orientate) 
 In order to upload a file to your application you will need to add the form fields to your view.
 ```php
 echo $this->Form->create($entity, ['type' => 'file']); // Dont miss this out or no files will upload
-echo $this->Form->input('image', ['type' => 'file']);
+echo $this->Form->control('image', ['type' => 'file']);
 echo $this->Form->button(__('Submit'));
 echo $this->Form->end();
 ```
