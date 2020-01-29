@@ -1,5 +1,5 @@
 # CakePHP3-Proffer
-An upload plugin for CakePHP 3.
+An upload plugin for CakePHP 3. Looking for CakePHP 4? Check out the `cake-4` branch.
 
 ![Proffer definition](http://i.imgur.com/OaAqQ6x.png)
 
