@@ -11,6 +11,7 @@ namespace Proffer\Tests\Lib;
 use Cake\Core\Plugin;
 use Cake\ORM\Entity;
 use Cake\TestSuite\TestCase;
+use Laminas\Diactoros\UploadedFile;
 use Proffer\Lib\ProfferPath;
 
 class ProfferPathTest extends TestCase
@@ -123,12 +124,14 @@ class ProfferPathTest extends TestCase
     public function testConstructedFullPath($data, $expected)
     {
         $table = $this->getMockBuilder('Cake\ORM\Table')
-            ->setMethods(['getAlias'])
+            ->onlyMethods(['getAlias'])
             ->getMock();
         $table->method('getAlias')
             ->willReturn('ProfferTest');
 
         $entity = new Entity($data['entity']);
+        $upload = new UploadedFile(FIXTURE . 'image_640x480.jpg', 33000, 0, 'image_640x480.jpg', 'image/jpg');
+        $entity->set($data['field'], $upload);
 
         $path = new ProfferPath($table, $entity, $data['field'], $data['settings'][$data['field']]);
 
@@ -144,13 +147,14 @@ class ProfferPathTest extends TestCase
     public function testGetFolder()
     {
         $table = $this->getMockBuilder('Cake\ORM\Table')
-            ->setMethods(['getAlias'])
+            ->onlyMethods(['getAlias'])
             ->getMock();
         $table->method('getAlias')
             ->willReturn('ProfferTest');
 
+        $upload = new UploadedFile(FIXTURE . 'image_640x480.jpg', 33000, 0, 'image_640x480.jpg', 'image/jpg');
         $entity = new Entity([
-            'photo' => 'image_640x480.jpg',
+            'photo' => $upload,
             'photo_dir' => 'proffer_test',
         ]);
 
@@ -173,13 +177,14 @@ class ProfferPathTest extends TestCase
     public function testPrefixes()
     {
         $table = $this->getMockBuilder('Cake\ORM\Table')
-            ->setMethods(['getAlias'])
+            ->onlyMethods(['getAlias'])
             ->getMock();
         $table->method('getAlias')
             ->willReturn('ProfferTest');
 
+        $upload = new UploadedFile(FIXTURE . 'image_640x480.jpg', 33000, 0, 'image_640x480.jpg', 'image/jpg');
         $entity = new Entity([
-            'photo' => 'image_640x480.jpg',
+            'photo' => $upload,
             'photo_dir' => 'proffer_test',
         ]);
 
@@ -202,13 +207,14 @@ class ProfferPathTest extends TestCase
     public function testDeleteFiles()
     {
         $table = $this->getMockBuilder('Cake\ORM\Table')
-            ->setMethods(['getAlias'])
+            ->onlyMethods(['getAlias'])
             ->getMock();
         $table->method('getAlias')
             ->willReturn('ProfferTest');
 
+        $upload = new UploadedFile(FIXTURE . 'image_640x480.jpg', 33000, 0, 'image_640x480.jpg', 'image/jpg');
         $entity = new Entity([
-            'photo' => 'image_640x480.jpg',
+            'photo' => $upload,
             'photo_dir' => 'proffer_test',
         ]);
 
@@ -223,7 +229,7 @@ class ProfferPathTest extends TestCase
 
         $path = $this->getMockBuilder('Proffer\Lib\ProfferPath')
             ->setConstructorArgs([$table, $entity, 'photo', $settings])
-            ->setMethods(['getFolder'])
+            ->onlyMethods(['getFolder'])
             ->getMock();
 
         $path->expects($this->any())
@@ -266,13 +272,14 @@ class ProfferPathTest extends TestCase
     public function testCreatingPathFolderWhichExists()
     {
         $table = $this->getMockBuilder('Cake\ORM\Table')
-            ->setMethods(['getAlias'])
+            ->onlyMethods(['getAlias'])
             ->getMock();
         $table->method('getAlias')
             ->willReturn('ProfferTest');
 
+        $upload = new UploadedFile(FIXTURE . 'image_640x480.jpg', 33000, 0, 'image_640x480.jpg', 'image/jpg');
         $entity = new Entity([
-            'photo' => 'image_640x480.jpg',
+            'photo' => $upload,
             'photo_dir' => 'proffer_test',
         ]);
 
