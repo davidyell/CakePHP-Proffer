@@ -110,7 +110,7 @@ class ProfferShell extends Shell
                 ]);
 
             foreach ($records as $item) {
-                /* @var \Cake\Datasource\EntityInterface $item */
+                /** @var \Cake\Datasource\EntityInterface $item */
                 if ($this->param('verbose')) {
                     $this->out(
                         __('Processing ' . $this->Table->getAlias() . ' ' . $item->get($this->Table->getPrimaryKey()))

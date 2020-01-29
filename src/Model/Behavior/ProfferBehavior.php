@@ -16,7 +16,6 @@ use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
 use Cake\ORM\Behavior;
 use Laminas\Diactoros\UploadedFile;
-use Proffer\Exception\CannotUploadFileException;
 use Proffer\Exception\InvalidClassException;
 use Proffer\Lib\ImageTransform;
 use Proffer\Lib\ImageTransformInterface;
@@ -61,7 +60,7 @@ class ProfferBehavior extends Behavior
     public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options)
     {
         foreach ($this->getConfig() as $field => $settings) {
-            /* @var \Laminas\Diactoros\UploadedFile $upload */
+            /** @var \Laminas\Diactoros\UploadedFile $upload */
             $upload = $data[$field];
             if (
                 $this->_table->getValidator()->isEmptyAllowed($field, false) &&
@@ -137,7 +136,7 @@ class ProfferBehavior extends Behavior
         }
 
         foreach ($uploadList as $upload) {
-            /* @var UploadedFile $upload */
+            /** @var \Laminas\Diactoros\UploadedFile $upload */
             try {
                 $upload->moveTo($path->fullPath());
 

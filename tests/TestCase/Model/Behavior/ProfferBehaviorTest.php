@@ -262,7 +262,7 @@ class ProfferBehaviorTest extends TestCase
             ->willReturn($eventManager);
 
         $entity = new Entity($entityData);
-        /* @var ProfferPath $path */
+        /** @var ProfferPath $path */
         $path = $this->_getProfferPathMock($table, $entity);
 
         $proffer = new ProfferBehavior($table, $this->config);
@@ -559,8 +559,8 @@ class ProfferBehaviorTest extends TestCase
         $listener->expects($this->once())
             ->method('filename')
             ->willReturnCallback(function ($event, $path) use ($pathData) {
-                /* @var Event $event */
-                /* @var ProfferPath $path */
+                /** @var Event $event */
+                /** @var ProfferPath $path */
                 $path->setTable($pathData['table']);
                 $path->setSeed($pathData['seed']);
                 $path->setFilename($pathData['filename']);
