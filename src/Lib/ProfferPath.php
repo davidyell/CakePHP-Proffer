@@ -52,7 +52,7 @@ class ProfferPath implements ProfferPathInterface
             $this->setPrefixes($settings['thumbnailSizes']);
         }
 
-        $this->setFilename($entity->get($field));
+        $this->setFilename($entity->get($field)->getClientFilename());
     }
 
     /**

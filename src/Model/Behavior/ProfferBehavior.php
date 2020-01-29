@@ -15,6 +15,7 @@ use Cake\Database\Type;
 use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
 use Cake\ORM\Behavior;
+use Laminas\Diactoros\UploadedFile;
 use Proffer\Exception\CannotUploadFileException;
 use Proffer\Exception\InvalidClassException;
 use Proffer\Lib\ImageTransform;
@@ -60,9 +61,11 @@ class ProfferBehavior extends Behavior
     public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options)
     {
         foreach ($this->getConfig() as $field => $settings) {
+            /* @var \Laminas\Diactoros\UploadedFile $upload */
+            $upload = $data[$field];
             if (
                 $this->_table->getValidator()->isEmptyAllowed($field, false) &&
-                isset($data[$field]['error']) && $data[$field]['error'] === UPLOAD_ERR_NO_FILE
+                $upload->getError() === UPLOAD_ERR_NO_FILE
             ) {
                 unset($data[$field]);
             }
@@ -87,9 +90,9 @@ class ProfferBehavior extends Behavior
         foreach ($this->getConfig() as $field => $settings) {
             $tableEntityClass = $this->_table->getEntityClass();
 
-            if ($entity->has($field) && is_array($entity->get($field)) && $entity->get($field)['error'] === UPLOAD_ERR_OK) {
+            if ($entity->has($field) && $entity->get($field) instanceof UploadedFile && $entity->get($field)->getError() === UPLOAD_ERR_OK) {
                 $this->process($field, $settings, $entity, $path);
-            } elseif ($tableEntityClass !== null && $entity instanceof $tableEntityClass && $entity->get('error') === UPLOAD_ERR_OK) {
+            } elseif ($tableEntityClass !== null && $entity instanceof $tableEntityClass && $entity->getError() === UPLOAD_ERR_OK) {
                 $filename = $entity->get('name');
                 $entity->set($field, $filename);
 
@@ -119,7 +122,7 @@ class ProfferBehavior extends Behavior
     {
         $path = $this->createPath($entity, $field, $settings, $path);
 
-        if (is_array($entity->get($field)) && count(array_filter(array_keys($entity->get($field)), 'is_string')) > 0) {
+        if ($entity->get($field) instanceof UploadedFile && !\is_array($entity->get($field))) {
             $uploadList = [$entity->get($field)];
         } else {
             $uploadList = [
@@ -134,13 +137,16 @@ class ProfferBehavior extends Behavior
         }
 
         foreach ($uploadList as $upload) {
-            if ($this->moveUploadedFile($upload['tmp_name'], $path->fullPath())) {
+            /* @var UploadedFile $upload */
+            try {
+                $upload->moveTo($path->fullPath());
+
                 $entity->set($field, $path->getFilename());
                 $entity->set($settings['dir'], $path->getSeed());
 
                 $this->createThumbnails($entity, $settings, $path);
-            } else {
-                throw new CannotUploadFileException("File `{$upload['name']}` could not be copied.");
+            } catch (\Exception $e) {
+                throw $e;
             }
         }
 
@@ -258,6 +264,7 @@ class ProfferBehavior extends Behavior
      * @param string $destination The destination file name
      *
      * @return bool
+     * @deprecated Since 1.0.2 replaced with UploadedFile::moveTo
      */
     protected function moveUploadedFile($file, $destination)
     {
