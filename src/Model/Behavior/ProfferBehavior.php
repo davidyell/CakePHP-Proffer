@@ -92,7 +92,7 @@ class ProfferBehavior extends Behavior
 
             if ($entity->has($field) && $entity->get($field) instanceof UploadedFile && $entity->get($field)->getError() === UPLOAD_ERR_OK) {
                 $this->process($field, $settings, $entity, $path);
-            } elseif ($tableEntityClass !== null && $entity instanceof $tableEntityClass && $entity->getError() === UPLOAD_ERR_OK) {
+            } elseif ($tableEntityClass !== null && $entity instanceof UploadedFile && $entity->getError() === UPLOAD_ERR_OK) {
                 $filename = $entity->get('name');
                 $entity->set($field, $filename);
 
@@ -253,25 +253,5 @@ class ProfferBehavior extends Behavior
         }
 
         return true;
-    }
-
-    /**
-     * Wrapper method for move_uploaded_file to facilitate testing and 'uploading' of local files
-     *
-     * This will check if the file has been uploaded or not before picking the correct method to move the file
-     *
-     * @param string $file Path to the uploaded file
-     * @param string $destination The destination file name
-     *
-     * @return bool
-     * @deprecated Since 1.0.2 replaced with UploadedFile::moveTo
-     */
-    protected function moveUploadedFile($file, $destination)
-    {
-        if (is_uploaded_file($file)) {
-            return move_uploaded_file($file, $destination);
-        }
-
-        return rename($file, $destination);
     }
 }
