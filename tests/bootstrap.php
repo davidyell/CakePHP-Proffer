@@ -24,6 +24,8 @@ define('TMP', ROOT . 'tests' . DS . 'tmp' . DS);
 define('CACHE', TMP);
 define('LOGS', TMP);
 
+define('FIXTURE', ROOT . 'tests' . DS . 'Fixture' . DS);
+
 $loader = new \Cake\Core\ClassLoader();
 $loader->register();
 $loader->addNamespace('Cake\Test\Fixture', ROOT . '/vendor/cakephp/cakephp/tests/Fixture');
