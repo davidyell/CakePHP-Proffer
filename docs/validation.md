@@ -35,7 +35,7 @@ If you want your users to submit a file when creating a record, but not when upd
 ```php
 $validator
     ->requirePresence('image', 'create')
-    ->allowEmpty('image', 'update');
+    ->allowEmptyFile('image', 'update');
 ```
 
 So now your users do not need to upload a file every time they update a record.
