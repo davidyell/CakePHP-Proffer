@@ -87,19 +87,8 @@ class ProfferBehavior extends Behavior
     public function beforeSave(Event $event, EntityInterface $entity, ArrayObject $options, ?ProfferPathInterface $path = null)
     {
         foreach ($this->getConfig() as $field => $settings) {
-            $tableEntityClass = $this->_table->getEntityClass();
-
             if ($entity->has($field) && $entity->get($field) instanceof UploadedFile && $entity->get($field)->getError() === UPLOAD_ERR_OK) {
                 $this->process($field, $settings, $entity, $path);
-            } elseif ($tableEntityClass !== null && $entity instanceof UploadedFile && $entity->getError() === UPLOAD_ERR_OK) {
-                $filename = $entity->getClientFilename();
-                $entity->set($field, $filename);
-
-                if (empty($entity->get($settings['dir']))) {
-                    $entity->set($settings['dir'], null);
-                }
-
-                $this->process($field, $settings, $entity);
             } else {
                 throw new \Exception("Cannot find anything to process for the field `$field`");
             }
