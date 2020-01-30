@@ -139,10 +139,61 @@ browsers will see this as a single file upload field instead of multiple.
 
 :warning: Note that the field name is an array!
 
+For example, if you're creating a Post and want to add multiple Uploads, where the upload filename is stored as `filename`.
+You would use the following in your template.
+
 ```php
 // Template/Posts/add.ctp
-echo $this->Form->input('filename[]', ['type' => 'file', 'multiple' => true, 'label' => 'Files to upload']);
+echo $this->Form->input('uploads.filename[]', ['type' => 'file', 'multiple' => true, 'label' => 'Files to upload']);
 ```
+
+This will create an array of `UploadedFile` class instances in your request data once marshalled. You need to manipulate 
+this data so that it is compatible with CakePHP's marshaller.
+
+For this I would recommend using the `beforeMarshal` event in the parent table, in the above example that would 
+be `PostsTable::beforeMarshal()`.
+
+We'll use the method to manipulate the array into an array of arrays, to match Cake's expected hasMany style request data.
+
+```php
+/**
+ * Change the multiple upload array of UploadedFile into something which the Cake marshaller understands
+ *
+ * @param \Cake\Event\Event $event
+ * @param \ArrayObject $data
+ * @param \ArrayObject $options
+ */
+public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options)
+{
+    $newUploads = [];
+
+    if (isset($data['uploads']['filename'])) {
+        foreach ($data['uploads']['filename'] as $upload) {
+            $newUploads[] = ['filename' => $upload];
+        }
+    }
+
+    $data['uploads'] = $newUploads;
+}
+```
+
+This should result in request data formatted similar to the following.
+
+```
+[
+    'title' => 'Example post',
+    'uploads' => [
+        [
+            'filename' => UploadedFile instance
+        ],
+        [
+            'filename' => UploadedFile instance
+        ],
+    ],
+]
+```
+
+[If you're unsure, you can read more about it in the book.](https://book.cakephp.org/4/en/orm/saving-data.html#converting-hasmany-data)
 
 ## Configuring your templates
 You will need to make sure that your forms are using the file type so that the files can be uploaded.
