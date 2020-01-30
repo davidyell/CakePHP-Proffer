@@ -14,13 +14,14 @@ namespace Proffer\Database\Type;
 
 use Cake\Database\DriverInterface;
 use Cake\Database\Type\BaseType;
+use Laminas\Diactoros\UploadedFile;
 
 class FileType extends BaseType
 {
     /**
-     * Prevent the marshaller changing the upload array into a string
+     * Marshalls flat data into PHP objects
      *
-     * @param mixed $value Passed upload array
+     * @param mixed $value Passed UploadedFile instance
      * @return mixed
      */
     public function marshal($value)

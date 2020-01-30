@@ -66,7 +66,7 @@ class ProfferBehavior extends Behavior
                 $this->_table->getValidator()->isEmptyAllowed($field, false) &&
                 $upload->getError() === UPLOAD_ERR_NO_FILE
             ) {
-                unset($data[$field]);
+                unset($upload);
             }
         }
     }
@@ -92,7 +92,7 @@ class ProfferBehavior extends Behavior
             if ($entity->has($field) && $entity->get($field) instanceof UploadedFile && $entity->get($field)->getError() === UPLOAD_ERR_OK) {
                 $this->process($field, $settings, $entity, $path);
             } elseif ($tableEntityClass !== null && $entity instanceof UploadedFile && $entity->getError() === UPLOAD_ERR_OK) {
-                $filename = $entity->get('name');
+                $filename = $entity->getClientFilename();
                 $entity->set($field, $filename);
 
                 if (empty($entity->get($settings['dir']))) {
@@ -100,6 +100,8 @@ class ProfferBehavior extends Behavior
                 }
 
                 $this->process($field, $settings, $entity);
+            } else {
+                throw new \Exception("Cannot find anything to process for the field `$field`");
             }
         }
 
@@ -124,15 +126,7 @@ class ProfferBehavior extends Behavior
         if ($entity->get($field) instanceof UploadedFile && !\is_array($entity->get($field))) {
             $uploadList = [$entity->get($field)];
         } else {
-            $uploadList = [
-                [
-                    'name' => $entity->get('name'),
-                    'type' => $entity->get('type'),
-                    'tmp_name' => $entity->get('tmp_name'),
-                    'error' => $entity->get('error'),
-                    'size' => $entity->get('size'),
-                ],
-            ];
+            $uploadList = $entity->get($field);
         }
 
         foreach ($uploadList as $upload) {
