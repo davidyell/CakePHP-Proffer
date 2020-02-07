@@ -15,12 +15,12 @@ use Cake\Database\Type;
 use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
 use Cake\ORM\Behavior;
-use Laminas\Diactoros\UploadedFile;
 use Proffer\Exception\InvalidClassException;
 use Proffer\Lib\ImageTransform;
 use Proffer\Lib\ImageTransformInterface;
 use Proffer\Lib\ProfferPath;
 use Proffer\Lib\ProfferPathInterface;
+use Psr\Http\Message\UploadedFileInterface;
 
 /**
  * Proffer behavior
@@ -87,7 +87,11 @@ class ProfferBehavior extends Behavior
     public function beforeSave(Event $event, EntityInterface $entity, ArrayObject $options, ?ProfferPathInterface $path = null)
     {
         foreach ($this->getConfig() as $field => $settings) {
-            if ($entity->has($field) && $entity->get($field) instanceof UploadedFile && $entity->get($field)->getError() === UPLOAD_ERR_OK) {
+            if (
+                $entity->has($field) &&
+                $entity->get($field) instanceof UploadedFileInterface &&
+                $entity->get($field)->getError() === UPLOAD_ERR_OK
+            ) {
                 $this->process($field, $settings, $entity, $path);
             } else {
                 throw new \Exception("Cannot find anything to process for the field `$field`");
@@ -112,7 +116,7 @@ class ProfferBehavior extends Behavior
     {
         $path = $this->createPath($entity, $field, $settings, $path);
 
-        if ($entity->get($field) instanceof UploadedFile && !\is_array($entity->get($field))) {
+        if ($entity->get($field) instanceof UploadedFileInterface && !\is_array($entity->get($field))) {
             $uploadList = [$entity->get($field)];
         } else {
             $uploadList = $entity->get($field);
