@@ -10,13 +10,14 @@ declare(strict_types=1);
 namespace Proffer\Model\Validation;
 
 use Cake\Validation\Validation;
+use Psr\Http\Message\UploadedFileInterface;
 
 class ProfferRules extends Validation
 {
     /**
      * Validate the dimensions of an image. If the file isn't an image then validation will fail
      *
-     * @param array $value An array of the name and value of the field
+     * @param \Psr\Http\Message\UploadedFileInterface $file An array of the name and value of the field
      * @param array $dimensions Array of rule dimensions for example
      * ['dimensions', [
      *        'min' => ['w' => 100, 'h' => 100],
@@ -25,9 +26,9 @@ class ProfferRules extends Validation
      * would validate a minimum size of 100x100 pixels and a maximum of 500x500 pixels
      * @return bool
      */
-    public static function dimensions($value, array $dimensions)
+    public static function dimensions(UploadedFileInterface $file, array $dimensions)
     {
-        $fileDimensions = getimagesize($value['tmp_name']);
+        $fileDimensions = getimagesize($file->getStream()->getMetadata('uri'));
 
         if ($fileDimensions === false) {
             return false;
