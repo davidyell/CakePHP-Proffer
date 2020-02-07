@@ -91,14 +91,12 @@ class ProfferBehavior extends Behavior
     public function beforeSave(Event $event, EntityInterface $entity, ArrayObject $options, ?ProfferPathInterface $path = null)
     {
         foreach ($this->getConfig() as $field => $settings) {
-            if (
-                $entity->has($field) &&
-                $entity->get($field) instanceof UploadedFileInterface &&
-                $entity->get($field)->getError() === UPLOAD_ERR_OK
-            ) {
-                $this->process($field, $settings, $entity, $path);
-            } else {
-                throw new \Exception("Cannot find anything to process for the field `$field`");
+            if ($entity->has($field) && $entity->get($field) instanceof UploadedFileInterface) {
+                if ($entity->get($field)->getError() === UPLOAD_ERR_OK) {
+                    $this->process($field, $settings, $entity, $path);
+                } else {
+                    throw new \Exception("Cannot find anything to process for the field `$field`");
+                }
             }
         }
 
