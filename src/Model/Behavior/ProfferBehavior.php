@@ -67,7 +67,7 @@ class ProfferBehavior extends Behavior
                 $upload instanceof UploadedFileInterface &&
                 $upload->getError() === UPLOAD_ERR_NO_FILE
             ) {
-                unset($upload);
+                unset($data[$field]);
             }
         }
     }
