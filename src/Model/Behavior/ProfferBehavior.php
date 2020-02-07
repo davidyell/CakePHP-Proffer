@@ -60,6 +60,9 @@ class ProfferBehavior extends Behavior
     public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options)
     {
         foreach ($this->getConfig() as $field => $settings) {
+            if (!isset($data[$field])) {
+                continue;
+            }
             /** @var \Laminas\Diactoros\UploadedFile $upload */
             $upload = $data[$field];
             if (
