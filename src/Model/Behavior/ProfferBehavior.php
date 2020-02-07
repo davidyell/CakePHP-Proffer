@@ -186,25 +186,27 @@ class ProfferBehavior extends Behavior
      */
     protected function createThumbnails(EntityInterface $entity, array $settings, ProfferPathInterface $path)
     {
-        if (getimagesize($path->fullPath()) !== false && isset($settings['thumbnailSizes'])) {
-            $imagePaths = [$path->fullPath()];
-
-            if (!empty($settings['transformClass'])) {
-                $imageTransform = new $settings['transformClass']($this->_table, $path);
-                if (!$imageTransform instanceof ImageTransformInterface) {
-                    throw new InvalidClassException("Class {$settings['pathClass']} does not implement the ImageTransformInterface.");
-                }
-            } else {
-                $imageTransform = new ImageTransform($this->_table, $path);
-            }
-
-            $thumbnailPaths = $imageTransform->processThumbnails($settings);
-            $imagePaths = array_merge($imagePaths, $thumbnailPaths);
-
-            $eventData = ['path' => $path, 'images' => $imagePaths];
-            $event = new Event('Proffer.afterCreateImage', $entity, $eventData);
-            $this->_table->getEventManager()->dispatch($event);
+        if (!isset($settings['thumbnailSizes']) || getimagesize($path->fullPath()) === false) {
+            return;
         }
+
+        $imagePaths = [$path->fullPath()];
+
+        if (!empty($settings['transformClass'])) {
+            $imageTransform = new $settings['transformClass']($this->_table, $path);
+            if (!$imageTransform instanceof ImageTransformInterface) {
+                throw new InvalidClassException("Class {$settings['pathClass']} does not implement the ImageTransformInterface.");
+            }
+        } else {
+            $imageTransform = new ImageTransform($this->_table, $path);
+        }
+
+        $thumbnailPaths = $imageTransform->processThumbnails($settings);
+        $imagePaths = array_merge($imagePaths, $thumbnailPaths);
+
+        $eventData = ['path' => $path, 'images' => $imagePaths];
+        $event = new Event('Proffer.afterCreateImage', $entity, $eventData);
+        $this->_table->getEventManager()->dispatch($event);
     }
 
     /**
