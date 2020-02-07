@@ -14,7 +14,6 @@ namespace Proffer\Database\Type;
 
 use Cake\Database\DriverInterface;
 use Cake\Database\Type\BaseType;
-use Laminas\Diactoros\UploadedFile;
 
 class FileType extends BaseType
 {
