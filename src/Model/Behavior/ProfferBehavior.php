@@ -64,6 +64,7 @@ class ProfferBehavior extends Behavior
             $upload = $data[$field];
             if (
                 $this->_table->getValidator()->isEmptyAllowed($field, false) &&
+                $upload instanceof UploadedFileInterface &&
                 $upload->getError() === UPLOAD_ERR_NO_FILE
             ) {
                 unset($upload);
