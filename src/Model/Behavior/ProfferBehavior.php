@@ -15,12 +15,12 @@ use Cake\Database\Type;
 use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
 use Cake\ORM\Behavior;
-use Laminas\Diactoros\UploadedFile;
 use Proffer\Exception\InvalidClassException;
 use Proffer\Lib\ImageTransform;
 use Proffer\Lib\ImageTransformInterface;
 use Proffer\Lib\ProfferPath;
 use Proffer\Lib\ProfferPathInterface;
+use Psr\Http\Message\UploadedFileInterface;
 
 /**
  * Proffer behavior
@@ -60,13 +60,17 @@ class ProfferBehavior extends Behavior
     public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options)
     {
         foreach ($this->getConfig() as $field => $settings) {
+            if (!isset($data[$field])) {
+                continue;
+            }
             /** @var \Laminas\Diactoros\UploadedFile $upload */
             $upload = $data[$field];
             if (
                 $this->_table->getValidator()->isEmptyAllowed($field, false) &&
+                $upload instanceof UploadedFileInterface &&
                 $upload->getError() === UPLOAD_ERR_NO_FILE
             ) {
-                unset($upload);
+                unset($data[$field]);
             }
         }
     }
@@ -87,10 +91,12 @@ class ProfferBehavior extends Behavior
     public function beforeSave(Event $event, EntityInterface $entity, ArrayObject $options, ?ProfferPathInterface $path = null)
     {
         foreach ($this->getConfig() as $field => $settings) {
-            if ($entity->has($field) && $entity->get($field) instanceof UploadedFile && $entity->get($field)->getError() === UPLOAD_ERR_OK) {
-                $this->process($field, $settings, $entity, $path);
-            } else {
-                throw new \Exception("Cannot find anything to process for the field `$field`");
+            if ($entity->has($field) && $entity->get($field) instanceof UploadedFileInterface) {
+                if ($entity->get($field)->getError() === UPLOAD_ERR_OK) {
+                    $this->process($field, $settings, $entity, $path);
+                } else {
+                    throw new \Exception("Cannot find anything to process for the field `$field`");
+                }
             }
         }
 
@@ -112,7 +118,7 @@ class ProfferBehavior extends Behavior
     {
         $path = $this->createPath($entity, $field, $settings, $path);
 
-        if ($entity->get($field) instanceof UploadedFile && !\is_array($entity->get($field))) {
+        if ($entity->get($field) instanceof UploadedFileInterface && !\is_array($entity->get($field))) {
             $uploadList = [$entity->get($field)];
         } else {
             $uploadList = $entity->get($field);
@@ -181,25 +187,27 @@ class ProfferBehavior extends Behavior
      */
     protected function createThumbnails(EntityInterface $entity, array $settings, ProfferPathInterface $path)
     {
-        if (getimagesize($path->fullPath()) !== false && isset($settings['thumbnailSizes'])) {
-            $imagePaths = [$path->fullPath()];
-
-            if (!empty($settings['transformClass'])) {
-                $imageTransform = new $settings['transformClass']($this->_table, $path);
-                if (!$imageTransform instanceof ImageTransformInterface) {
-                    throw new InvalidClassException("Class {$settings['pathClass']} does not implement the ImageTransformInterface.");
-                }
-            } else {
-                $imageTransform = new ImageTransform($this->_table, $path);
-            }
-
-            $thumbnailPaths = $imageTransform->processThumbnails($settings);
-            $imagePaths = array_merge($imagePaths, $thumbnailPaths);
-
-            $eventData = ['path' => $path, 'images' => $imagePaths];
-            $event = new Event('Proffer.afterCreateImage', $entity, $eventData);
-            $this->_table->getEventManager()->dispatch($event);
+        if (!isset($settings['thumbnailSizes']) || getimagesize($path->fullPath()) === false) {
+            return;
         }
+
+        $imagePaths = [$path->fullPath()];
+
+        if (!empty($settings['transformClass'])) {
+            $imageTransform = new $settings['transformClass']($this->_table, $path);
+            if (!$imageTransform instanceof ImageTransformInterface) {
+                throw new InvalidClassException("Class {$settings['pathClass']} does not implement the ImageTransformInterface.");
+            }
+        } else {
+            $imageTransform = new ImageTransform($this->_table, $path);
+        }
+
+        $thumbnailPaths = $imageTransform->processThumbnails($settings);
+        $imagePaths = array_merge($imagePaths, $thumbnailPaths);
+
+        $eventData = ['path' => $path, 'images' => $imagePaths];
+        $event = new Event('Proffer.afterCreateImage', $entity, $eventData);
+        $this->_table->getEventManager()->dispatch($event);
     }
 
     /**
