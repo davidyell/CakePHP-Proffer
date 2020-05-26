@@ -26,7 +26,7 @@ table class which is receiving the uploads.
 
 ```php
 // src/Model/Table/UsersTable.php
-$this->hasMany('UserImages', ['foreignKey' => 'user_id'])
+$this->hasMany('UserImages', ['foreignKey' => 'user_id']);
 
 // src/Model/Table/UserImagesTable.php
 $this->addBehavior('Proffer.Proffer', [

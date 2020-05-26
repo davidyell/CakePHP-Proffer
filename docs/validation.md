@@ -2,6 +2,17 @@
 This manual page deals with how to use the included ProfferRules validation provider to add upload related validation rules to
 your application.
 
+## Basic validation
+If you bake your Table class, be aware that Bake will add some basic string validation for your upload field, because the file name is stored as a string.
+
+You might see some rules like the following, depending on your CakePHP version. You might want to remove these as the request data will be a file and not a string until after the behaviour has run.
+```php
+$validator
+    ->scalar('photo')
+    ->maxLength('photo', 255)
+    ->allowEmptyString('photo');
+```
+
 ## Built-in validation provider
 Proffer comes an extra validation rule to check the dimensions of an uploaded image. Other rules are provided by the core and are listed below.
 
@@ -34,8 +45,8 @@ If you want your users to submit a file when creating a record, but not when upd
 
 ```php
 $validator
-    ->requirePresence('image', 'create')
-    ->allowEmpty('image', 'update');
+    ->requirePresence('photo', 'create')
+    ->allowEmpty('photo', 'update');
 ```
 
 So now your users do not need to upload a file every time they update a record.
