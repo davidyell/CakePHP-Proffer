@@ -13,6 +13,7 @@ namespace Proffer\Lib;
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\Table;
 use Cake\Utility\Text;
+use Psr\Http\Message\UploadedFileInterface;
 
 class ProfferPath implements ProfferPathInterface
 {
@@ -52,7 +53,11 @@ class ProfferPath implements ProfferPathInterface
             $this->setPrefixes($settings['thumbnailSizes']);
         }
 
-        $this->setFilename($entity->get($field)->getClientFilename());
+        if ($entity->get($field) instanceof UploadedFileInterface) {
+            $this->setFilename($entity->get($field)->getClientFilename());
+        } else {
+            $this->setFilename($entity->get($field));
+        }
     }
 
     /**
