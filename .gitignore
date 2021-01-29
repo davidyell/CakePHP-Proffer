@@ -8,3 +8,5 @@ app/[Cc]onfig/database.php
 
 /vendor/
 composer.lock
+.phpunit.result.cache
+.idea

@@ -92,9 +92,10 @@ class ProfferBehavior extends Behavior
     {
         foreach ($this->getConfig() as $field => $settings) {
             if ($entity->has($field) && $entity->get($field) instanceof UploadedFileInterface) {
-                if ($entity->get($field)->getError() === UPLOAD_ERR_OK) {
+                $errorCode = $entity->get($field)->getError();
+                if ($errorCode === UPLOAD_ERR_OK) {
                     $this->process($field, $settings, $entity, $path);
-                } else {
+                } elseif ($errorCode !== UPLOAD_ERR_NO_FILE) {
                     throw new \Exception("Cannot find anything to process for the field `$field`");
                 }
             }

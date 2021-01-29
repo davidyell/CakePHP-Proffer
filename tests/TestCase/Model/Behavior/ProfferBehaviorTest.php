@@ -859,4 +859,39 @@ class ProfferBehaviorTest extends TestCase
         $this->assertEquals('image_640x480.jpg', $entity->get('photo'));
         $this->assertEquals('proffer_test', $entity->get('photo_dir'));
     }
+
+    /**
+     * No upload should not thrown exception
+     * The CakePHP \Cake\Validation\Validation::notEmptyFile() do the job.
+     */
+    public function testBeforeSaveNoUpload()
+    {
+        $schema = $this->createMock(TableSchema::class);
+        $table = $this->createMock(Table::class);
+        $eventManager = $this->createMock(EventManager::class);
+        $table->method('getAlias')
+            ->willReturn('ProfferTest');
+        $table->method('getSchema')
+            ->willReturn($schema);
+        $table->method('getEventManager')
+            ->willReturn($eventManager);
+
+        $entity = new Entity([
+            'photo' => new UploadedFile(null, 0, 4,''),
+            'photo_dir' => 'proffer_test',
+        ]);
+        /** @var ProfferPath $path */
+        $path = $this->_getProfferPathMock($table, $entity);
+
+        $proffer = new ProfferBehavior($table, $this->config);
+
+        $success = $proffer->beforeSave(
+            $this->createMock(Event::class),
+            $entity,
+            new ArrayObject(),
+            $path
+        );
+
+        $this->assertTrue($success);
+    }
 }
