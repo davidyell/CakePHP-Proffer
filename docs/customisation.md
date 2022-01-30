@@ -14,7 +14,7 @@ an example listener which is [available as an example](examples/UploadFilenameLi
 
 // Add your new custom listener
 $listener = new App\Event\LogFilenameListener();
-$this->eventManager()->on($listener);
+$this->getEventManager()->on($listener);
 ```
 
 The advantages of customisation using a listener is that you can encapsulate the file naming functionality into a single
