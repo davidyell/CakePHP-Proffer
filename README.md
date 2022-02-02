@@ -41,7 +41,7 @@ Please open a pull request or submit an issue if there is anything you would lik
 any new functionality that you add and be sure to run the tests before you commit. Also don't forget to run PHPCS with
 the PSR2 standard to avoid errors in TravisCI.
 
-:warning: Please target all new PRs at the `develop` branch.
+:warning: Please target CakePHP 4 related PRs to the `cake-4` branch and other PRs at the `develop` branch.
 
 ## License
 Please see [LICENSE](LICENSE)
