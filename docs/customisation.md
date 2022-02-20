@@ -26,7 +26,7 @@ file and also attach this listener to multiple tables, if you wanted the same na
 your own path class.
 
 ### Customising behavior of file creation/deletion
-Proffer’s image creation can be hooked by using `Proffer.afterCreateImage` event, and by using `Proffer.beforeDeleteImage` event, Proffer’s image deletion can be hooked.
+Proffer’s image creation can be hooked by using `Proffer.afterCreateImage` event, and by using `Proffer.beforeDeleteFolder` event, Proffer’s image deletion can be hooked.
 These events can be used to copy files to external services (e.g. Amazon S3), or deleting files from external services at the same time of Proffer creating/deleting images.
 I have created an example listener which is [available as an example](examples/UploadAndDeleteImageListener.md).
 
