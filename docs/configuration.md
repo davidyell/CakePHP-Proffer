@@ -25,7 +25,7 @@ $this->addBehavior('Proffer.Proffer', [
 				'h' => 300
 			],
 			'mobile' => [			// Create a smaller copy based on width or height that respects ratio
-				'w' => 421,			// Height can be omitted
+				'w' => 421,		// Height can be omitted (or vice versa)
 				'upsize' => false	// Prevent the image from being upsized if it is narrower than specified width
 			]
 		],
