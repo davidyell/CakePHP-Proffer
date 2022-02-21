@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * @category Proffer
@@ -29,6 +30,6 @@ class TestPath extends ProfferPath
             $this->setPrefixes($settings['thumbnailSizes']);
         }
 
-        $this->setFilename($entity->get($field));
+        $this->setFilename($entity->get($field)->getClientFileName());
     }
 }

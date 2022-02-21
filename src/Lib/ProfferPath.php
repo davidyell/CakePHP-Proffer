@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * ProfferPath
  * Class for building, managing and finding paths to uploaded files
@@ -11,10 +13,10 @@ namespace Proffer\Lib;
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\Table;
 use Cake\Utility\Text;
+use Psr\Http\Message\UploadedFileInterface;
 
 class ProfferPath implements ProfferPathInterface
 {
-
     protected $root;
 
     protected $table;
@@ -30,8 +32,8 @@ class ProfferPath implements ProfferPathInterface
     /**
      * Construct the class and setup the defaults
      *
-     * @param Table $table Instance of the table
-     * @param EntityInterface $entity Instance of the entity data
+     * @param \Cake\ORM\Table $table Instance of the table
+     * @param \Cake\Datasource\EntityInterface $entity Instance of the entity data
      * @param string $field The name of the upload field
      * @param array $settings Array of settings for the upload field
      */
@@ -51,7 +53,11 @@ class ProfferPath implements ProfferPathInterface
             $this->setPrefixes($settings['thumbnailSizes']);
         }
 
-        $this->setFilename($entity->get($field));
+        if ($entity->get($field) instanceof UploadedFileInterface) {
+            $this->setFilename($entity->get($field)->getClientFilename());
+        } else {
+            $this->setFilename($entity->get($field));
+        }
     }
 
     /**
@@ -226,10 +232,10 @@ class ProfferPath implements ProfferPathInterface
     public function getFolder()
     {
         $table = $this->getTable();
-        $table = (!empty($table)) ? $table . DS : null;
+        $table = !empty($table) ? $table . DS : null;
 
         $seed = $this->getSeed();
-        $seed = (!empty($seed)) ? $seed . DS : null;
+        $seed = !empty($seed) ? $seed . DS : null;
 
         return $this->getRoot() . DS . $table . $this->getField() . DS . $seed;
     }

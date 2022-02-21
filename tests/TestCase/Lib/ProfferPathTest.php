@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * Created by PhpStorm.
  *
@@ -9,11 +11,11 @@ namespace Proffer\Tests\Lib;
 use Cake\Core\Plugin;
 use Cake\ORM\Entity;
 use Cake\TestSuite\TestCase;
+use Laminas\Diactoros\UploadedFile;
 use Proffer\Lib\ProfferPath;
 
 class ProfferPathTest extends TestCase
 {
-
     /**
      * Recursively remove files and folders
      *
@@ -37,7 +39,7 @@ class ProfferPathTest extends TestCase
         }
     }
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -49,7 +51,7 @@ class ProfferPathTest extends TestCase
      *
      * @return void
      */
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->_rrmdir(TMP . 'ProfferTests' . DS);
     }
@@ -62,7 +64,7 @@ class ProfferPathTest extends TestCase
                     'field' => 'photo',
                     'entity' => [
                         'photo' => 'image_640x480.jpg',
-                        'photo_dir' => 'proffer_test'
+                        'photo_dir' => 'proffer_test',
                     ],
                     'settings' => [
                         'photo' => [
@@ -70,10 +72,10 @@ class ProfferPathTest extends TestCase
                             'dir' => 'photo_dir',
                             'thumbnailSizes' => [
                                 'square' => ['w' => 100, 'h' => 100],
-                                'squareCrop' => ['w' => 100, 'h' => 100, 'crop' => true]
-                            ]
-                        ]
-                    ]
+                                'squareCrop' => ['w' => 100, 'h' => 100, 'crop' => true],
+                            ],
+                        ],
+                    ],
                 ],
                 [
                     TMP . 'ProfferTest' . DS . 'proffertest' . DS . 'photo' . DS . 'proffer_test' .
@@ -81,15 +83,15 @@ class ProfferPathTest extends TestCase
                     TMP . 'ProfferTest' . DS . 'proffertest' . DS . 'photo' . DS . 'proffer_test' .
                     DS . 'square_image_640x480.jpg',
                     TMP . 'ProfferTest' . DS . 'proffertest' . DS . 'photo' . DS . 'proffer_test' .
-                    DS . 'squareCrop_image_640x480.jpg'
-                ]
+                    DS . 'squareCrop_image_640x480.jpg',
+                ],
             ],
             [
                 [
                     'field' => 'profile_picture_image',
                     'entity' => [
                         'profile_picture_image' => 'image_640x480.jpg',
-                        'profile_pictures_dir' => 'proffer_test'
+                        'profile_pictures_dir' => 'proffer_test',
                     ],
                     'settings' => [
                         'profile_picture_image' => [
@@ -97,10 +99,10 @@ class ProfferPathTest extends TestCase
                             'dir' => 'profile_pictures_dir',
                             'thumbnailSizes' => [
                                 'portrait' => ['w' => 300, 'h' => 100],
-                                'portraitCropped' => ['w' => 350, 'h' => 120, 'crop' => true]
-                            ]
-                        ]
-                    ]
+                                'portraitCropped' => ['w' => 350, 'h' => 120, 'crop' => true],
+                            ],
+                        ],
+                    ],
                 ],
                 [
                     TMP . 'ProfferTest' . DS . 'proffertest' . DS . 'profile_picture_image' . DS . 'proffer_test' .
@@ -108,8 +110,8 @@ class ProfferPathTest extends TestCase
                     TMP . 'ProfferTest' . DS . 'proffertest' . DS . 'profile_picture_image' . DS . 'proffer_test' .
                     DS . 'portrait_image_640x480.jpg',
                     TMP . 'ProfferTest' . DS . 'proffertest' . DS . 'profile_picture_image' . DS . 'proffer_test' .
-                    DS . 'portraitCropped_image_640x480.jpg'
-                ]
+                    DS . 'portraitCropped_image_640x480.jpg',
+                ],
             ],
         ];
     }
@@ -122,12 +124,14 @@ class ProfferPathTest extends TestCase
     public function testConstructedFullPath($data, $expected)
     {
         $table = $this->getMockBuilder('Cake\ORM\Table')
-            ->setMethods(['getAlias'])
+            ->onlyMethods(['getAlias'])
             ->getMock();
         $table->method('getAlias')
             ->willReturn('ProfferTest');
 
         $entity = new Entity($data['entity']);
+        $upload = new UploadedFile(FIXTURE . 'image_640x480.jpg', 33000, 0, 'image_640x480.jpg', 'image/jpg');
+        $entity->set($data['field'], $upload);
 
         $path = new ProfferPath($table, $entity, $data['field'], $data['settings'][$data['field']]);
 
@@ -143,14 +147,15 @@ class ProfferPathTest extends TestCase
     public function testGetFolder()
     {
         $table = $this->getMockBuilder('Cake\ORM\Table')
-            ->setMethods(['getAlias'])
+            ->onlyMethods(['getAlias'])
             ->getMock();
         $table->method('getAlias')
             ->willReturn('ProfferTest');
 
+        $upload = new UploadedFile(FIXTURE . 'image_640x480.jpg', 33000, 0, 'image_640x480.jpg', 'image/jpg');
         $entity = new Entity([
-            'photo' => 'image_640x480.jpg',
-            'photo_dir' => 'proffer_test'
+            'photo' => $upload,
+            'photo_dir' => 'proffer_test',
         ]);
 
         $settings = [
@@ -158,8 +163,8 @@ class ProfferPathTest extends TestCase
             'dir' => 'photo_dir',
             'thumbnailSizes' => [
                 'square' => ['w' => 100, 'h' => 100],
-                'squareCrop' => ['w' => 100, 'h' => 100, 'crop' => true]
-            ]
+                'squareCrop' => ['w' => 100, 'h' => 100, 'crop' => true],
+            ],
         ];
 
         $path = new ProfferPath($table, $entity, 'photo', $settings);
@@ -172,14 +177,15 @@ class ProfferPathTest extends TestCase
     public function testPrefixes()
     {
         $table = $this->getMockBuilder('Cake\ORM\Table')
-            ->setMethods(['getAlias'])
+            ->onlyMethods(['getAlias'])
             ->getMock();
         $table->method('getAlias')
             ->willReturn('ProfferTest');
 
+        $upload = new UploadedFile(FIXTURE . 'image_640x480.jpg', 33000, 0, 'image_640x480.jpg', 'image/jpg');
         $entity = new Entity([
-            'photo' => 'image_640x480.jpg',
-            'photo_dir' => 'proffer_test'
+            'photo' => $upload,
+            'photo_dir' => 'proffer_test',
         ]);
 
         $settings = [
@@ -187,8 +193,8 @@ class ProfferPathTest extends TestCase
             'dir' => 'photo_dir',
             'thumbnailSizes' => [
                 'square' => ['w' => 100, 'h' => 100],
-                'squareCrop' => ['w' => 100, 'h' => 100, 'crop' => true]
-            ]
+                'squareCrop' => ['w' => 100, 'h' => 100, 'crop' => true],
+            ],
         ];
         $expected = ['square', 'squareCrop'];
 
@@ -201,14 +207,15 @@ class ProfferPathTest extends TestCase
     public function testDeleteFiles()
     {
         $table = $this->getMockBuilder('Cake\ORM\Table')
-            ->setMethods(['getAlias'])
+            ->onlyMethods(['getAlias'])
             ->getMock();
         $table->method('getAlias')
             ->willReturn('ProfferTest');
 
+        $upload = new UploadedFile(FIXTURE . 'image_640x480.jpg', 33000, 0, 'image_640x480.jpg', 'image/jpg');
         $entity = new Entity([
-            'photo' => 'image_640x480.jpg',
-            'photo_dir' => 'proffer_test'
+            'photo' => $upload,
+            'photo_dir' => 'proffer_test',
         ]);
 
         $settings = [
@@ -216,13 +223,13 @@ class ProfferPathTest extends TestCase
             'dir' => 'photo_dir',
             'thumbnailSizes' => [
                 'square' => ['w' => 100, 'h' => 100],
-                'squareCrop' => ['w' => 100, 'h' => 100, 'crop' => true]
-            ]
+                'squareCrop' => ['w' => 100, 'h' => 100, 'crop' => true],
+            ],
         ];
 
         $path = $this->getMockBuilder('Proffer\Lib\ProfferPath')
             ->setConstructorArgs([$table, $entity, 'photo', $settings])
-            ->setMethods(['getFolder'])
+            ->onlyMethods(['getFolder'])
             ->getMock();
 
         $path->expects($this->any())
@@ -265,14 +272,15 @@ class ProfferPathTest extends TestCase
     public function testCreatingPathFolderWhichExists()
     {
         $table = $this->getMockBuilder('Cake\ORM\Table')
-            ->setMethods(['getAlias'])
+            ->onlyMethods(['getAlias'])
             ->getMock();
         $table->method('getAlias')
             ->willReturn('ProfferTest');
 
+        $upload = new UploadedFile(FIXTURE . 'image_640x480.jpg', 33000, 0, 'image_640x480.jpg', 'image/jpg');
         $entity = new Entity([
-            'photo' => 'image_640x480.jpg',
-            'photo_dir' => 'proffer_test'
+            'photo' => $upload,
+            'photo_dir' => 'proffer_test',
         ]);
 
         $settings = [
@@ -280,8 +288,8 @@ class ProfferPathTest extends TestCase
             'dir' => 'photo_dir',
             'thumbnailSizes' => [
                 'square' => ['w' => 100, 'h' => 100],
-                'squareCrop' => ['w' => 100, 'h' => 100, 'crop' => true]
-            ]
+                'squareCrop' => ['w' => 100, 'h' => 100, 'crop' => true],
+            ],
         ];
 
         $path = new ProfferPath($table, $entity, 'photo', $settings);

@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * Proffer
  * An upload behavior plugin for CakePHP 3
@@ -13,12 +15,12 @@ use Cake\Database\Type;
 use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
 use Cake\ORM\Behavior;
-use Proffer\Exception\CannotUploadFileException;
 use Proffer\Exception\InvalidClassException;
 use Proffer\Lib\ImageTransform;
 use Proffer\Lib\ImageTransformInterface;
 use Proffer\Lib\ProfferPath;
 use Proffer\Lib\ProfferPathInterface;
+use Psr\Http\Message\UploadedFileInterface;
 
 /**
  * Proffer behavior
@@ -32,7 +34,7 @@ class ProfferBehavior extends Behavior
      *
      * @return void
      */
-    public function initialize(array $config)
+    public function initialize(array $config): void
     {
         Type::map('proffer.file', '\Proffer\Database\Type\FileType');
         $schema = $this->_table->getSchema();
@@ -50,16 +52,23 @@ class ProfferBehavior extends Behavior
      * If a field is allowed to be empty as defined in the validation it should be unset to prevent processing
      *
      * @param \Cake\Event\Event $event Event instance
-     * @param ArrayObject $data Data to process
-     * @param ArrayObject $options Array of options for event
+     * @param \ArrayObject $data Data to process
+     * @param \ArrayObject $options Array of options for event
      *
      * @return void
      */
     public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options)
     {
         foreach ($this->getConfig() as $field => $settings) {
-            if ($this->_table->getValidator()->isEmptyAllowed($field, false) &&
-                isset($data[$field]['error']) && $data[$field]['error'] === UPLOAD_ERR_NO_FILE
+            if (!isset($data[$field])) {
+                continue;
+            }
+            /** @var \Laminas\Diactoros\UploadedFile $upload */
+            $upload = $data[$field];
+            if (
+                $this->_table->getValidator()->isEmptyAllowed($field, false) &&
+                $upload instanceof UploadedFileInterface &&
+                $upload->getError() === UPLOAD_ERR_NO_FILE
             ) {
                 unset($data[$field]);
             }
@@ -73,28 +82,21 @@ class ProfferBehavior extends Behavior
      *
      * @param \Cake\Event\Event $event The event
      * @param \Cake\Datasource\EntityInterface $entity The entity
-     * @param ArrayObject $options Array of options
+     * @param \ArrayObject $options Array of options
      * @param \Proffer\Lib\ProfferPathInterface|null $path Inject an instance of ProfferPath
      *
      * @return true
      * @throws \Exception
      */
-    public function beforeSave(Event $event, EntityInterface $entity, ArrayObject $options, ProfferPathInterface $path = null)
+    public function beforeSave(Event $event, EntityInterface $entity, ArrayObject $options, ?ProfferPathInterface $path = null)
     {
         foreach ($this->getConfig() as $field => $settings) {
-            $tableEntityClass = $this->_table->getEntityClass();
-
-            if ($entity->has($field) && is_array($entity->get($field)) && $entity->get($field)['error'] === UPLOAD_ERR_OK) {
-                $this->process($field, $settings, $entity, $path);
-            } elseif ($tableEntityClass !== null && $entity instanceof $tableEntityClass && $entity->get('error') === UPLOAD_ERR_OK) {
-                $filename = $entity->get('name');
-                $entity->set($field, $filename);
-
-                if (empty($entity->get($settings['dir']))) {
-                    $entity->set($settings['dir'], null);
+            if ($entity->has($field) && $entity->get($field) instanceof UploadedFileInterface) {
+                if ($entity->get($field)->getError() === UPLOAD_ERR_OK) {
+                    $this->process($field, $settings, $entity, $path);
+                } else {
+                    throw new \Exception("Cannot find anything to process for the field `$field`");
                 }
-
-                $this->process($field, $settings, $entity);
             }
         }
 
@@ -112,32 +114,27 @@ class ProfferBehavior extends Behavior
      * @return void
      * @throws \Exception If the file cannot be renamed / moved to the correct path
      */
-    protected function process($field, array $settings, EntityInterface $entity, ProfferPathInterface $path = null)
+    protected function process($field, array $settings, EntityInterface $entity, ?ProfferPathInterface $path = null)
     {
         $path = $this->createPath($entity, $field, $settings, $path);
 
-        if (is_array($entity->get($field)) && count(array_filter(array_keys($entity->get($field)), 'is_string')) > 0) {
+        if ($entity->get($field) instanceof UploadedFileInterface && !\is_array($entity->get($field))) {
             $uploadList = [$entity->get($field)];
         } else {
-            $uploadList = [
-                [
-                    'name' => $entity->get('name'),
-                    'type' => $entity->get('type'),
-                    'tmp_name' => $entity->get('tmp_name'),
-                    'error' => $entity->get('error'),
-                    'size' => $entity->get('size'),
-                ]
-            ];
+            $uploadList = $entity->get($field);
         }
 
         foreach ($uploadList as $upload) {
-            if ($this->moveUploadedFile($upload['tmp_name'], $path->fullPath())) {
+            /** @var \Laminas\Diactoros\UploadedFile $upload */
+            try {
+                $upload->moveTo($path->fullPath());
+
                 $entity->set($field, $path->getFilename());
                 $entity->set($settings['dir'], $path->getSeed());
 
                 $this->createThumbnails($entity, $settings, $path);
-            } else {
-                throw new CannotUploadFileException("File `{$upload['name']}` could not be copied.");
+            } catch (\Exception $e) {
+                throw $e;
             }
         }
 
@@ -155,7 +152,7 @@ class ProfferBehavior extends Behavior
      * @return \Proffer\Lib\ProfferPathInterface
      * @throws \Proffer\Exception\InvalidClassException If the custom class doesn't implement the interface
      */
-    protected function createPath(EntityInterface $entity, $field, array $settings, ProfferPathInterface $path = null)
+    protected function createPath(EntityInterface $entity, $field, array $settings, ?ProfferPathInterface $path = null)
     {
         if (!empty($settings['pathClass'])) {
             $path = new $settings['pathClass']($this->_table, $entity, $field, $settings);
@@ -168,8 +165,8 @@ class ProfferBehavior extends Behavior
 
         $event = new Event('Proffer.afterPath', $entity, ['path' => $path]);
         $this->_table->getEventManager()->dispatch($event);
-        if (!empty($event->result)) {
-            $path = $event->result;
+        if (!empty($event->getResult())) {
+            $path = $event->getResult();
         }
 
         $path->createPathFolder();
@@ -190,25 +187,27 @@ class ProfferBehavior extends Behavior
      */
     protected function createThumbnails(EntityInterface $entity, array $settings, ProfferPathInterface $path)
     {
-        if (getimagesize($path->fullPath()) !== false && isset($settings['thumbnailSizes'])) {
-            $imagePaths = [$path->fullPath()];
-
-            if (!empty($settings['transformClass'])) {
-                $imageTransform = new $settings['transformClass']($this->_table, $path);
-                if (!$imageTransform instanceof ImageTransformInterface) {
-                    throw new InvalidClassException("Class {$settings['pathClass']} does not implement the ImageTransformInterface.");
-                }
-            } else {
-                $imageTransform = new ImageTransform($this->_table, $path);
-            }
-
-            $thumbnailPaths = $imageTransform->processThumbnails($settings);
-            $imagePaths = array_merge($imagePaths, $thumbnailPaths);
-
-            $eventData = ['path' => $path, 'images' => $imagePaths];
-            $event = new Event('Proffer.afterCreateImage', $entity, $eventData);
-            $this->_table->getEventManager()->dispatch($event);
+        if (!isset($settings['thumbnailSizes']) || getimagesize($path->fullPath()) === false) {
+            return;
         }
+
+        $imagePaths = [$path->fullPath()];
+
+        if (!empty($settings['transformClass'])) {
+            $imageTransform = new $settings['transformClass']($this->_table, $path);
+            if (!$imageTransform instanceof ImageTransformInterface) {
+                throw new InvalidClassException("Class {$settings['pathClass']} does not implement the ImageTransformInterface.");
+            }
+        } else {
+            $imageTransform = new ImageTransform($this->_table, $path);
+        }
+
+        $thumbnailPaths = $imageTransform->processThumbnails($settings);
+        $imagePaths = array_merge($imagePaths, $thumbnailPaths);
+
+        $eventData = ['path' => $path, 'images' => $imagePaths];
+        $event = new Event('Proffer.afterCreateImage', $entity, $eventData);
+        $this->_table->getEventManager()->dispatch($event);
     }
 
     /**
@@ -218,12 +217,12 @@ class ProfferBehavior extends Behavior
      *
      * @param \Cake\Event\Event $event The passed event
      * @param \Cake\Datasource\EntityInterface $entity The entity
-     * @param ArrayObject $options Array of options
+     * @param \ArrayObject $options Array of options
      * @param \Proffer\Lib\ProfferPathInterface $path Inject an instance of ProfferPath
      *
      * @return true
      */
-    public function afterDelete(Event $event, EntityInterface $entity, ArrayObject $options, ProfferPathInterface $path = null)
+    public function afterDelete(Event $event, EntityInterface $entity, ArrayObject $options, ?ProfferPathInterface $path = null)
     {
         foreach ($this->getConfig() as $field => $settings) {
             $dir = $entity->get($settings['dir']);
@@ -244,24 +243,5 @@ class ProfferBehavior extends Behavior
         }
 
         return true;
-    }
-
-    /**
-     * Wrapper method for move_uploaded_file to facilitate testing and 'uploading' of local files
-     *
-     * This will check if the file has been uploaded or not before picking the correct method to move the file
-     *
-     * @param string $file Path to the uploaded file
-     * @param string $destination The destination file name
-     *
-     * @return bool
-     */
-    protected function moveUploadedFile($file, $destination)
-    {
-        if (is_uploaded_file($file)) {
-            return move_uploaded_file($file, $destination);
-        }
-
-        return rename($file, $destination);
     }
 }

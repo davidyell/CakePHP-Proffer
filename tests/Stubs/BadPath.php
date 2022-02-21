@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * BadPath.php
@@ -10,5 +11,4 @@ namespace Proffer\Tests\Stubs;
 
 class BadPath
 {
-
 }

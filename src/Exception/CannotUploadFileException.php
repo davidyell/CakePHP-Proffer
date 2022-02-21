@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 /**
  * CannotUploadFileException
@@ -10,5 +11,4 @@ namespace Proffer\Exception;
 
 class CannotUploadFileException extends \Exception
 {
-
 }

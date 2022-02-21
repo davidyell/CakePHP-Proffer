@@ -16,7 +16,6 @@ use Intervention\Image\ImageManager;
 
 class ImageTransform implements ImageTransformInterface
 {
-
     /**
      * @var \Cake\ORM\Table $table Instance of the table being used
      */
