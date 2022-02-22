@@ -81,6 +81,7 @@ class ImageTransform implements ImageTransformInterface
     {
         $defaultConfig = [
             'jpeg_quality' => 100,
+            'upsize' => true,
         ];
         $config = array_merge($defaultConfig, $config);
 
@@ -100,7 +101,7 @@ class ImageTransform implements ImageTransformInterface
         } elseif (!empty($config['custom'])) {
             $image = $this->thumbnailCustom($image, $config['custom'], $config['params']);
         } else {
-            $image = $this->thumbnailResize($image, $width, $height);
+            $image = $this->thumbnailResize($image, $width, $height, $config['upsize']);
         }
 
         unset($config['crop'], $config['w'], $config['h'], $config['custom'], $config['params'], $config['orientate']);
@@ -150,14 +151,22 @@ class ImageTransform implements ImageTransformInterface
      * @param \Intervention\Image\Image $image Image instance
      * @param int $width Desired width in pixels
      * @param int $height Desired height in pixels
+     * @param boolean $upsize if false the image will not be upsized
      *
      * @return \Intervention\Image\Image
      */
-    protected function thumbnailResize(Image $image, $width, $height)
+    protected function thumbnailResize(Image $image, $width, $height, $upsize)
     {
+        if ($upsize) {
+            return $image->resize($width, $height, function ($constraint) {
+                $constraint->aspectRatio();
+            });
+        } else {
         return $image->resize($width, $height, function ($constraint) {
             $constraint->aspectRatio();
+                $constraint->upsize();
         });
+    }
     }
 
     /**

@@ -20,7 +20,7 @@ class UploadAndDeleteImageListener implements EventListenerInterface {
     {
         return [
             'Proffer.afterCreateImage' => 'createImage',
-            'Proffer.beforeDeleteImage' => 'deleteImage',
+            'Proffer.beforeDeleteFolder' => 'deleteImage',
         ];
     }
 

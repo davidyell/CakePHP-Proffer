@@ -24,6 +24,10 @@ $this->addBehavior('Proffer.Proffer', [
 				'w' => 100,
 				'h' => 300
 			],
+			'mobile' => [			// Create a smaller copy based on width or height that respects ratio
+				'w' => 421,		// Height can be omitted (or vice versa)
+				'upsize' => false	// Prevent the image from being upsized if it is narrower than specified width
+			]
 		],
 		'thumbnailMethod' => 'gd'	// Options are Imagick or Gd
 	]
@@ -57,16 +61,21 @@ Additional thumbnail generation types are available using the `crop` and `fit` o
 #### Fit
 > Combine cropping and resizing to format image in a smart way. The method will find the best fitting aspect ratio of
 > your given width and height on the current image automatically, cut it out and resize it to the given dimension.
-See [Intervention Fit method](http://image.intervention.io/api/fit)
+See [Intervention Fit method](https://image.intervention.io/v2/api/fit)
 
 #### Crop
 > Cut out a rectangular part of the current image with given width and height.
 By default, will be the centre of the image.
-See [Intervention Crop method](http://image.intervention.io/api/crop)
+See [Intervention Crop method](https://image.intervention.io/v2/api/crop)
 
 #### Orientate
 > Reads the EXIF image profile setting 'Orientation' and performs a rotation on the image to display the image correctly.
-See [Intervention Orientate method](http://image.intervention.io/api/orientate) for PHP installation requirements.
+See [Intervention Orientate method](https://image.intervention.io/v2/api/orientate) for PHP installation requirements.
+
+#### Upsize
+> sets $constraint->upsize(); when calling Intervention's resize function
+See [Intervention Resize method](https://image.intervention.io/v2/api/resize)
+
 
 ## Template
 In order to upload a file to your application you will need to add the form fields to your view.
