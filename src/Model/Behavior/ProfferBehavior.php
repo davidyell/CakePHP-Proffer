@@ -95,7 +95,9 @@ class ProfferBehavior extends Behavior
                 if ($entity->get($field)->getError() === UPLOAD_ERR_OK) {
                     $this->process($field, $settings, $entity, $path);
                 } else {
-                    throw new \Exception("Cannot find anything to process for the field `$field`");
+                    if (empty($settings['skipEmpty'])) {
+                        throw new \Exception("Cannot find anything to process for the field `$field`");
+                    }
                 }
             }
         }
