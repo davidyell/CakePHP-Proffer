@@ -1,3 +1,14 @@
+# :fallen_leaf: Archived
+I'm very sorry, but I have not worked on this project for a long time and so I have chosen to archive it. The CakePHP 4 version of the plugin never got to a release stage.
+
+I would recommend checking out https://github.com/FriendsOfCake/cakephp-upload which provides similar functionality, except the image manipulation, and is activly maintained.
+
+Thanks to everyone who contributed!
+
+
+----
+
+
 # CakePHP3-Proffer
 An upload plugin for CakePHP 3. Looking for CakePHP 4? Check out the `cake-4` branch.
 
