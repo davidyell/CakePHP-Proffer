@@ -292,6 +292,48 @@ class ProfferBehaviorTest extends TestCase
     }
 
     /**
+     * A bit of a unit and integration test as it will still dispatch the events to the listener
+     *
+     * @dataProvider validFileProvider
+     *
+     * @param array $entityData
+     * @param array $expected
+     * @throws \Exception
+     */
+    public function testBeforeSaveWithoutValidFile(array $expected)
+    {
+        $entityData = [
+            'photo' => new UploadedFile(FIXTURE . 'image_640x480.jpg', 33000, UPLOAD_ERR_NO_FILE, 'image_640x480.jpg'),
+            'photo_dir' => 'proffer_test',
+        ];
+
+        $schema = $this->createMock(TableSchema::class);
+        $table = $this->createMock(Table::class);
+        $eventManager = $this->createMock(EventManager::class);
+        $table->method('getAlias')
+              ->willReturn('ProfferTest');
+        $table->method('getSchema')
+              ->willReturn($schema);
+        $table->method('getEventManager')
+              ->willReturn($eventManager);
+
+        $entity = new Entity($entityData);
+        /** @var ProfferPath $path */
+        $path = $this->_getProfferPathMock($table, $entity);
+
+        $proffer = new ProfferBehavior($table, $this->config);
+
+        $this->expectException(\Exception::class);
+
+        $proffer->beforeSave(
+            $this->createMock(Event::class),
+            $entity,
+            new ArrayObject(),
+            $path
+        );
+    }
+
+    /**
      * Test afterDelete
      */
     public function testAfterDelete()
